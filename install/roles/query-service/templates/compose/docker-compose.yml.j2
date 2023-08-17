@@ -1,0 +1,30 @@
+version: '2.4'
+
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: always
+{% if query_service_mem_limit %}
+    mem_limit: {{ query_service_mem_limit }}
+{% endif %}
+    network_mode: {{ docker_network_mode }}
+    ports:
+      - {{ ports.query_service_main }}:{{ ports.query_service_main }}
+    environment:
+      OPTS: >-
+        -XX:ErrorFile=/kes/logs/java_error%p.log
+      JAVA_OPTS: >-
+        -Xmx{{ query_service_mem_limit | regex_search('^[0-9]+') | int * 75 // 100 | int }}{{ query_service_mem_limit | regex_search('\\w$') }}
+        -Duser.timezone=UTC 
+        -Djava.net.preferIPv4Stack=true 
+        -Dlogback.configurationFile=/app/conf/logback.xml 
+        -Dconfig.file=/app/conf/prod.conf
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - "{{ service_mnt_dir_loc }}/logs:/app/logs"
+      - "{{ service_mnt_dir_loc }}/conf/prod.conf:/app/conf/prod.conf:ro"
+      - "{{ service_mnt_dir_loc }}/conf/logback.xml:/app/conf/logback.xml:ro"

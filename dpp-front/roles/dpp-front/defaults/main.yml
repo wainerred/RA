@@ -1,0 +1,3 @@
+---
+# defaults file for dpp-front
+dpp_frontend_mem_limit: false

@@ -1,0 +1,15 @@
+{
+  "spell-checker-service": {
+    "workers": {{ spell_checker_workers }},
+    "pipeline_per_stream": {{ spell_checker_pipeline_per_stream }},
+    "tokenizers": {{ spell_checker_tokenizers }},
+    "endpoint": "0.0.0.0:{{ ports.dpp_spell_checker_grpc }}",
+    "http-server-port": {{ ports.dpp_spell_checker_http }},
+    "data-repository-address": "http://{{ host.elasticsearch_spell_checker }}:{{ ports.elasticsearch_spell_checker_main }}",
+    "data-repository-index-base": "{{ spell_checker_index_pattern }}-base",
+    "data-repository-index-dictionaries": "{{ spell_checker_index_pattern }}-dictionaries"
+  },
+  "logger": {
+    "loglevel": 8
+  }
+}

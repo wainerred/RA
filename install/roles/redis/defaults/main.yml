@@ -1,0 +1,8 @@
+---
+redis_dpp_nodes: 3
+redis_cluster_replica: false
+redis_mem_limit: false
+
+redis_command: |
+  docker exec -it {{ dictionary_hosts[service].name }}-01 
+  redis-cli -p {{ ports.redis_dpp_main + 1 }}

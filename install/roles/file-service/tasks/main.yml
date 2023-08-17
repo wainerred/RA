@@ -1,0 +1,35 @@
+---
+
+- name: Set global vars
+  import_role:
+    name: set-global-vars
+  tags:
+    - always
+
+- name: "Set role vars"
+  include: set_vars.yml
+  tags:
+    - always
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: DB init and patches
+  include: db-patches.yml
+  run_once: true
+  delegate_to: "{{ hostvars[groups['postgres_backend'][0]].inventory_hostname }}"
+  tags:
+    - patch-db
+
+- name: Preparing file-service
+  include: "install-file-service.yml"
+
+- name: Preparing file-service
+  include: "install-file-service-cleaner.yml"
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start

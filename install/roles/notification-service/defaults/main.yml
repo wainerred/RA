@@ -1,0 +1,9 @@
+---
+notification_service_mem_limit: 2048M
+
+notification_db_type: postgres
+notification_que_type: redis
+
+keyspace_notification_service: notification_service
+topic_kb_notifications: notification
+stream_notifications: notification

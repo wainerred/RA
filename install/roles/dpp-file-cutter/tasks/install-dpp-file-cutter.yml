@@ -1,0 +1,36 @@
+---
+
+- name: "Remove directory"
+  file:
+    path: "{{ item }}" # required. Path to the file being managed.
+    state: directory # not required. choices: absent;directory;file;hard;link;touch. If C(directory), all intermediate subdirectories will be created if they do not exist. Since Ansible 1.7 they will be created with the supplied permissions. If C(file), the file will NOT be created if it does not exist; see the C(touch) value or the M(copy) or M(template) module if you want that behavior.  If C(link), the symbolic link will be created or changed. Use C(hard) for hardlinks. If C(absent), directories will be recursively deleted, and files or symlinks will be unlinked. Note that C(absent) will not cause C(file) to fail if the C(path) does not exist as the state did not change. If C(touch) (new in 1.4), an empty file will be created if the C(path) does not exist, while an existing file or directory will receive updated file access and modification times (similar to the way `touch` works from the command line).
+  with_items:
+    - "{{ service_mnt_dir_loc }}"
+    - "{{ service_compose_dir }}"
+  tags:
+    - never
+    - remove
+
+- name: "Create directory"
+  file:
+    path: "{{ item }}" # required. Path to the file being managed.
+    state: directory # not required. choices: absent;directory;file;hard;link;touch. If C(directory), all intermediate subdirectories will be created if they do not exist. Since Ansible 1.7 they will be created with the supplied permissions. If C(file), the file will NOT be created if it does not exist; see the C(touch) value or the M(copy) or M(template) module if you want that behavior.  If C(link), the symbolic link will be created or changed. Use C(hard) for hardlinks. If C(absent), directories will be recursively deleted, and files or symlinks will be unlinked. Note that C(absent) will not cause C(file) to fail if the C(path) does not exist as the state did not change. If C(touch) (new in 1.4), an empty file will be created if the C(path) does not exist, while an existing file or directory will receive updated file access and modification times (similar to the way `touch` works from the command line).
+  with_items:
+    - "{{ service_mnt_dir_loc }}/conf"
+    - "{{ service_mnt_dir_loc }}/logs"
+    - "{{ service_compose_dir }}"
+
+- name: "Generate configs"
+  template:
+    src: "{{ conf_item }}"
+    dest: "{{ service_mnt_dir_loc }}/conf/{{ conf_item | basename | regex_replace('.j2$','') }}"
+  with_fileglob:
+    - "templates/conf/*.j2"
+  loop_control:
+    loop_var: conf_item
+  
+- name: "{{ service_name }} : Generate docker-compose.yml"
+  template:
+    src: "compose/docker-compose.yml.j2"
+    dest: "{{ service_compose_dir }}/docker-compose.yml"
+    

@@ -1,0 +1,9 @@
+---
+
+# Install frontend
+- name: "Install Frontend"
+  hosts:
+    - frontend
+  roles:
+    - frontend
+  gather_facts: false

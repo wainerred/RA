@@ -1,0 +1,240 @@
+{% if frontend_https_enabled %}
+server {
+    listen  80;
+    server_name
+{% for domain in frontend_domain %}
+        {{ domain }}    www.{{ domain }}
+{% endfor %}
+    ;
+    location / {
+        return 301 {{ frontend_scheme }}://{{ frontend_domain[0] }}$request_uri;
+    }
+{% if frontend_certbot %}
+    include /etc/nginx/letsencrypt.conf;
+{% endif %}
+}
+{% endif %}
+
+{% if frontend_domain | length > 1 and frontend_https_enabled %}
+server {
+    listen  443 ssl;
+{% if frontend_certbot %}
+    ssl_certificate         /letsencrypt/live/{{ frontend_domain[0] }}/fullchain.pem;
+    ssl_certificate_key     /letsencrypt/live/{{ frontend_domain[0] }}/privkey.pem;
+{% else %}
+    ssl_certificate         /etc/nginx/certs/fullchain.pem;
+    ssl_certificate_key     /etc/nginx/certs/privkey.pem;
+{% endif %}
+    server_name
+{% for domain in frontend_domain[1:] %}
+        {{ domain }}    www.{{ domain }}
+{% endfor %}
+    ;
+    location / {
+        return 301 {{ frontend_scheme }}://{{ frontend_domain[0] }}$request_uri;
+    }
+}
+{% endif %}
+
+server {
+{% if frontend_https_enabled %}
+    listen  443 ssl;
+{% if frontend_certbot %}
+    ssl_certificate         /letsencrypt/live/{{ frontend_domain[0] }}/fullchain.pem;
+    ssl_certificate_key     /letsencrypt/live/{{ frontend_domain[0] }}/privkey.pem;
+{% else %}
+    ssl_certificate         /etc/nginx/certs/fullchain.pem;
+    ssl_certificate_key     /etc/nginx/certs/privkey.pem;
+{% endif %}
+{% else %}
+    listen  80;
+{% if frontend_certbot %}
+    include /etc/nginx/letsencrypt.conf;
+{% endif %}
+{% endif %}
+    server_name  
+        {{ frontend_domain[0] }}
+    ;  
+
+    set $root {{ frontend_root_dir }};
+
+{% if not frontend_https_enabled and frontend_certbot %}
+    include /etc/nginx/letsencrypt.conf;
+{% endif %}
+
+    root $root;
+
+    location / {
+         gzip_static on;
+         try_files $uri /index.html =404;
+         add_header Cache-Control "must-revalidate";
+    }
+
+
+    location = /favicon.ico {
+        try_files {{ frontend_ico_path }} =404;
+        add_header Cache-Control "must-revalidate";
+    }
+
+
+    #Вебсокет для бэкенда
+    location /api/events {
+        proxy_pass http://{{ host.plexus_server }}:{{ ports.plexus_server_main }}/events;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade "websocket";
+        proxy_set_header Connection "Upgrade";
+
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        Host $http_host;
+
+        add_header X-Request-Time $request_time;
+
+{% if frontend_https_enabled or reverse_proxy %}
+        proxy_cookie_path / "/; secure; HttpOnly; SameSite=None";
+{% endif %}
+        proxy_cookie_domain ~.* .{{ frontend_domain[0] }};
+
+        proxy_read_timeout 700s;
+    }
+
+
+    # Бекенд для сайта
+    location /api/ {
+        proxy_pass              http://{{ host.plexus_server }}:{{ ports.plexus_server_main }}/;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header       Host $http_host;
+
+        add_header X-Request-Time $request_time;
+
+{% if frontend_https_enabled or reverse_proxy %}
+        proxy_cookie_path / "/; secure; HttpOnly; SameSite=None";
+{% endif %}
+        proxy_cookie_domain ~.* .{{ frontend_domain[0] }};
+    }
+
+    location /static/report/ {
+        proxy_pass              http://{{ host.plexus_reports }}:{{ ports.plexus_reports_main }}/static/report/;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        Host $http_host;
+
+        add_header X-Request-Time $request_time;
+
+{% if frontend_https_enabled or reverse_proxy %}
+        proxy_cookie_path / "/; secure; HttpOnly; SameSite=None";
+{% endif %}
+        proxy_cookie_domain ~.* .{{ frontend_domain[0] }};
+    }
+
+    location /storage/contents {
+
+        proxy_pass              http://{{ host.plexus_server }}:{{ ports.plexus_server_main }}/storage/contents;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        Host $http_host;
+        
+        add_header X-Request-Time $request_time;
+        add_header Cache-Control 'no-cache, no-store, must-revalidate';
+
+{% if frontend_https_enabled or reverse_proxy %}
+        proxy_cookie_path / "/; secure; HttpOnly; SameSite=None";
+{% endif %}
+        proxy_cookie_domain ~.* .{{ frontend_domain[0] }};
+
+        proxy_intercept_errors on;
+        error_page 401 =302 {{ frontend_scheme }}://{{ frontend_domain[0] }};
+    }
+
+    location /api/v1/ {
+        proxy_pass              http://{{ host.plexus_resource }}:{{ ports.plexus_resource_main }}/;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        Host $http_host;
+    }
+
+    location /api/v1/internal {
+        return 301 {{ frontend_scheme }}://{{ frontend_domain[0] }};
+    }
+
+    location /api/storage/contents {
+        proxy_pass              http://{{ host.plexus_resource }}:{{ ports.plexus_resource_main }}/storage/contents;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        Host $http_host;
+        
+        add_header X-Request-Time $request_time;
+        add_header Cache-Control 'no-cache, no-store, must-revalidate';
+
+{% if frontend_https_enabled or reverse_proxy %}
+        proxy_cookie_path / "/; secure; HttpOnly; SameSite=None";
+{% endif %}
+        proxy_cookie_domain ~.* .{{ frontend_domain[0] }};
+
+        proxy_intercept_errors on;
+        error_page 401 =302 {{ frontend_scheme }}://{{ frontend_domain[0] }};
+    }    
+
+    location /swagger {
+        proxy_pass              http://{{ host.plexus_api_swagger }}:{{ ports.plexus_api_swagger_main }}/swagger;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        Host $http_host;
+
+        add_header X-Request-Time $request_time;
+        add_header Cache-Control 'no-cache, no-store, must-revalidate';
+
+{% if frontend_https_enabled or reverse_proxy %}
+        proxy_cookie_path / "/; secure; HttpOnly; SameSite=None";
+{% endif %}
+        proxy_cookie_domain ~.* .{{ frontend_domain[0] }};
+    }    
+
+    # AuthorizationServer
+    location /auth/ {
+
+        proxy_pass              http://{{ host.plexus_auth }}:{{ ports.plexus_auth_main }}/;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        Host $http_host;
+
+{% if frontend_https_enabled or reverse_proxy %}
+        proxy_cookie_path / "/; secure; HttpOnly; SameSite=None";
+{% endif %}
+        proxy_cookie_domain ~.* .{{ frontend_domain[0] }};
+    }
+
+    location /auth/token/ {
+
+        proxy_pass              http://{{ host.plexus_auth }}:{{ ports.plexus_auth_main }}/oauth/token/;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        Host $http_host;
+
+{% if frontend_https_enabled or reverse_proxy %}
+        proxy_cookie_path / "/; secure; HttpOnly; SameSite=None";
+{% endif %}
+        proxy_cookie_domain ~.* .{{ frontend_domain[0] }};
+     }    
+{% if frontend_external_storage is defined %}
+    location /external-storage/ {
+        proxy_pass              {{ frontend_external_storage }}/;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        Host $http_host;
+
+        add_header X-Request-Time $request_time;
+        add_header Cache-Control 'no-cache, no-store, must-revalidate';
+
+{% if frontend_https_enabled or reverse_proxy %}
+        proxy_cookie_path / "/; secure; HttpOnly; SameSite=None";
+{% endif %}
+        proxy_cookie_domain ~.* .{{ frontend_domain[0] }};
+
+        proxy_intercept_errors on;
+        error_page 401 =302 {{ frontend_scheme }}://{{ frontend_domain[0] }};
+    }
+{% endif %}
+}
+

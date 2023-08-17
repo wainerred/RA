@@ -1,0 +1,10 @@
+---
+file_service_cleaner_mem_limit: false
+created_date_work_window: 14d
+file_service_mem_limit: false
+file_service_data_dir: "{{ docker_mounts_root }}/{{ dictionary_hosts.file_service.name }}/data"
+file_service_xmx: 2048M
+file_service_xms: 2048M
+file_service_begin_ratio: 0.95
+file_service_complete_ratio: 0.9
+file_service_total_storage_capacity: false

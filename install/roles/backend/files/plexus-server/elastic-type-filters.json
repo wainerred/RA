@@ -1,0 +1,9 @@
+{
+  "device_audio": [
+    {
+      "exists": {
+        "field": "dialog.parent_id"
+      }
+    }
+  ]
+}

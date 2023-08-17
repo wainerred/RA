@@ -1,0 +1,56 @@
+{% if frontend_domain | length > 1 or frontend_https_enabled %}
+server {
+    listen  80;
+{% if frontend_domain | length > 1 %} 
+    server_name
+{% for domain in frontend_domain[1:] %}
+        {{ domain }}    www.{{ domain }}
+{% endfor %}
+    ;  
+{% else %}
+    server_name {{ frontend_domain[0] }} www.{{ frontend_domain[0] }};
+{% endif %}
+    location / {
+        return 302 {{ frontend_scheme }}://{{ frontend_domain[0] }}$request_uri;
+    }
+{% if frontend_certbot %}
+    include /etc/nginx/letsencrypt.conf;
+{% endif %}
+}
+{% endif %}
+
+server {
+{% if frontend_https_enabled %}
+    listen  443 ssl;
+{% if frontend_certbot %}
+    ssl_certificate         /letsencrypt/live/{{ frontend_domain[0] }}/fullchain.pem;
+    ssl_certificate_key     /letsencrypt/live/{{ frontend_domain[0] }}/privkey.pem;
+{% else %}
+    ssl_certificate         /etc/nginx/certs/fullchain.pem;
+    ssl_certificate_key     /etc/nginx/certs/privkey.pem;
+{% endif %}
+{% else %}
+    listen  80;
+{% if frontend_certbot %}
+    include /etc/nginx/letsencrypt.conf;
+{% endif %}
+{% endif %}
+    server_name  
+        {{ frontend_domain[0] }}
+    ;  
+
+    set $root {{ frontend_root_dir }}/landing;
+
+    root $root;
+
+    location / {
+        return 302  {{ frontend_scheme }}://app.{{ frontend_domain[0] }}$request_uri;
+    }
+
+
+    location = /favicon.ico {
+        alias $root/images/touchpoint/{{ frontend_ico_path | basename }}    ;
+        add_header Cache-Control "must-revalidate";
+    }
+}
+

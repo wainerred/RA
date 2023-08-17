@@ -1,0 +1,36 @@
+{
+  "packages": [],
+  "collections": [],
+  "object_types": [],
+  "default_entity_types": [
+    {
+      "id": "name",
+      "name": "Имена",
+      "display_names": {
+        "en": "Names"
+      },
+      "custom": false,
+      "enable_by_default": false,
+      "extract_type": "kb"
+    },
+    {
+      "id": "patr",
+      "name": "Отчества",
+      "display_names": {
+        "en": "Patronymic"
+      },
+      "custom": false,
+      "enable_by_default": false,
+      "extract_type": "kb"
+    }
+  ],
+  "account_roles": {},
+  "project_roles": {},
+  "update_packages": {},
+  "update_collections": {},
+  "update_default_entity_types": {},
+  "update_object_types": {},
+  "update_account_roles": {},
+  "update_project_roles": {},
+  "dictionaries": {}
+}

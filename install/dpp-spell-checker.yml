@@ -1,0 +1,6 @@
+---
+- name: "Install dpp-spell-checker"
+  hosts:
+    - dpp_spell_checker
+  roles:
+    - dpp-spell-checker

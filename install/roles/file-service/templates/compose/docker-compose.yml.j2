@@ -1,0 +1,64 @@
+version: '2.4'
+
+services:
+  {{ file_service.service_name }}:
+    image: {{ file_service.service_repo }}/{{ file_service.service_img }}:{{ file_service.service_tag }}
+    container_name: {{ file_service.service_name }}
+    restart: always
+{% if file_service_mem_limit %}
+    mem_limit: {{ file_service_mem_limit }}
+{% endif %}
+    network_mode: {{ docker_network_mode }}
+    environment:
+      CONFIG_NAME: file-service.conf
+      HEAP_OPTS: >-
+{% if file_service_mem_limit %}
+        -Xmx{{ file_service_mem_limit | regex_search('^[0-9]+') | int * 75 // 100 | int }}{{ file_service_mem_limit | regex_search('\\w$') }}
+        -Xms{{ file_service_mem_limit | regex_search('^[0-9]+') | int * 75 // 100 | int }}{{ file_service_mem_limit | regex_search('\\w$') }}
+{% else %}
+        -Xmx{{ file_service_xmx }}
+        -Xms{{ file_service_xms }}
+{% endif %}
+        -Xss1M
+      OPTS: >-
+        -XX:+UseConcMarkSweepGC
+        -XX:CMSInitiatingOccupancyFraction=75
+        -XX:+UseCMSInitiatingOccupancyOnly
+        -XX:+AlwaysPreTouch
+        -XX:+DisableExplicitGC
+        -verbose:gc -XX:+PrintGCDetails
+        -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps
+        -XX:+PrintTenuringDistribution
+        -XX:+PrintAdaptiveSizePolicy
+        -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCApplicationConcurrentTime
+        -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=50M -Xloggc:/file-service/logs/gc.log
+        -XX:+UseGCOverheadLimit
+        -XX:+ExitOnOutOfMemoryError
+        -XX:+PrintCommandLineFlags
+    ports:
+      - {{ ports.file_service_main }}:{{ ports.file_service_main }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - "{{ file_service_data_dir }}:/file-service/data"
+      - "{{ file_service.service_mnt_dir_loc }}/conf:/file-service/configs"
+      - "{{ file_service.service_mnt_dir_loc }}/logs:/file-service/logs"
+
+  {{ file_service_cleaner.service_name }}:
+    image: {{ file_service_cleaner.service_repo }}/{{ file_service_cleaner.service_img }}:{{ file_service_cleaner.service_tag }}
+    container_name: {{ file_service_cleaner.service_name }}
+    restart: always
+{% if file_service_cleaner_mem_limit %}
+    mem_limit: {{ file_service_cleaner_mem_limit }}
+{% endif %}
+    network_mode: {{ docker_network_mode }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - "{{ file_service_cleaner.service_mnt_dir_loc }}/crontab:/var/spool/cron:ro"
+      - "{{ file_service_cleaner.service_mnt_dir_loc }}/conf/clear_deleted_dir.sh:/clear_deleted_dir.sh:ro"
+      - "{{ file_service_data_dir }}:/file-service/data"

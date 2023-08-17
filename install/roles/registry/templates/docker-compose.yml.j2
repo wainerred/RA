@@ -1,0 +1,10 @@
+version: '2.4'
+services:
+  docker-regisrty:
+    image: {{ docker_registry_image }}
+    restart: always
+    container_name: utils-docker-registry
+    volumes:
+      - {{ service_path_data }}/data:/var/lib/registry
+    ports:
+      - 5000:5000

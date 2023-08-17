@@ -1,0 +1,34 @@
+{
+  "server_settings":{
+{% if service == 'dpp_category' %}
+      "enable_grpc_server": true,
+      "grpc_port": {{ ports.dpp_category_grpc }},
+{% if ports.dpp_category_api_http is not defined %}
+      "enable_rest_server": true,
+      "rest_port": {{ ports.dpp_category_http }}
+{% else %}
+      "enable_rest_server": false,
+      "rest_port": 11111
+{% endif %}
+{% else %}
+      "enable_rest_server": true,
+      "enable_grpc_server": false,
+      "rest_port": {{ ports.dpp_category_api_http }},
+      "grpc_port": 11111
+{% endif %}
+  },
+  "elastic_settings": {
+    "hosts": ["{{ internal_host if internal_host else ansible_host }}:{{ ports.local_nginx_es }}"],
+    "index": "category_server_data"
+  },
+  "category_settings": {
+    "supported_languages": [
+      "ru",
+      "en"
+    ],
+    "processors_count": {{ dpp_category_processors_count }}
+  },
+  "log": {
+    "level": "trace"
+  }
+}

@@ -1,0 +1,8 @@
+---
+
+- name: "{{ dictionary_hosts.elasticsearch_dump.name }} : Set variables"
+  set_fact:
+    service_name: "{{ dictionary_hosts.elasticsearch_dump.name }}"
+    service_img: "{{ dictionary_hosts.elasticsearch_dump.img }}"
+    service_tag: "{{ dictionary_hosts.elasticsearch_dump.tag }}"
+    service_repo: "{{ dictionary_hosts.elasticsearch_dump.repo }}"

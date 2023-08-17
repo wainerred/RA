@@ -1,0 +1,11 @@
+---
+
+# Install plexus-rsyslog
+- name: "Install plexus-rsyslog"
+  hosts:
+    - plexus_rsyslog
+  roles:
+    - backend
+  vars:
+    service: plexus_rsyslog
+  gather_facts: false

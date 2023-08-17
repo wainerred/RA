@@ -1,0 +1,14 @@
+{
+    "name": "tika-processor",
+    "kind": "grpc",
+    "type": "processor",
+    "urls": [
+{%- set tika_addr = [] -%}
+{%- for addr in hosts.dpp_tika_processor -%}
+{%- for tika_port in range(1, tika_count + 1) -%}
+{{ tika_addr.append(addr+":"+((ports.dpp_tika_processor_nginx | int + tika_port) | string))}}
+{%- endfor -%}
+{%- endfor -%}
+"{{ tika_addr | join("\",\"") }}"
+    ]
+}

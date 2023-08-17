@@ -1,0 +1,9 @@
+---
+service_models_path: "{{ docker_mounts_root }}/3i-speech-service-models"
+service_name: "{{ dictionary_hosts.iii_speech_service.name }}"
+service_img: "{{ dictionary_hosts.iii_speech_service.img }}"
+service_tag: "{{ dictionary_hosts.iii_speech_service.tag }}"
+service_repo: "{{ dictionary_hosts.iii_speech_service.repo }}"
+service_compose_dir: "{{ docker_compose_root }}/{{ dictionary_hosts.iii_speech_service.name }}"
+service_mnt_dir_loc: "{{ docker_mounts_root }}/{{ dictionary_hosts.iii_speech_service.name }}"
+current_group_name: "iii_speech_service"

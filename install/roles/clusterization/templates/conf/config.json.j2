@@ -1,0 +1,28 @@
+{
+  "server": {
+    "ip": "0.0.0.0",
+    "port": {{ ports.clusterization_main }},
+    "thread_num": 4
+  },
+  "elastic": {
+    "documents": {
+      "ip": "{{ host.elasticsearch }}",
+      "port": "{{ ports.elasticsearch_main }}"
+    },
+    "clusters": {
+      "ip": "{{ host.elasticsearch }}",
+      "port": "{{ ports.elasticsearch_main }}",
+      "prefix" : "{{ project_name }}_{{ area }}_clusterization"
+    }
+  },
+  "query_service": {
+    "ip" : "{{ host.query_service }}",
+    "port" : {{ ports.query_service_main }}
+  },
+  "log": {
+    "level": "debug"
+  },
+  "worker": {
+    "thread_num" : {{ clusterization_thread_num }}
+  }
+}

@@ -1,0 +1,6 @@
+---
+# defaults file for energosbt
+records_pusher_mem_limit: false
+time_zone: Europe/Moscow
+cpus_limit: false
+records_pusher_excel_dir: /dss/excel

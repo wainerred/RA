@@ -1,0 +1,12 @@
+upstream es_pl_servers {
+{% for ip in hosts.elasticsearch %}
+    server {{ ip }}:{{ ports.elasticsearch_main }};
+{% endfor %}
+}
+
+server {
+    listen {{ ports.local_nginx_es }};
+    location / {
+        proxy_pass http://es_pl_servers$request_uri;
+    }
+}

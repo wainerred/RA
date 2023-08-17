@@ -1,0 +1,12 @@
+---
+- name: "Install category"
+  hosts:
+    - dpp_category
+  roles:
+    - local-nginx
+    - dpp-category
+  vars:
+    local_nginx_conf_d:
+      - elastic.conf.j2
+    service: dpp_category
+  gather_facts: false

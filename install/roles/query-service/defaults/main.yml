@@ -1,0 +1,3 @@
+---
+query_service_mem_limit: 2048M
+database_queries: queries

@@ -1,0 +1,11 @@
+{
+    "name": "Spell checker",
+    "kind": "grpc",
+    "type": "processor",
+    "urls": [
+{% for adr in hosts.dpp_spell_checker %}
+        "{{ adr }}:{{ ports.dpp_spell_checker_grpc }}"{% if not loop.last %}, 
+{% endif %}
+{% endfor %}
+    ]
+}

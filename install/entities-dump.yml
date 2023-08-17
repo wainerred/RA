@@ -1,0 +1,7 @@
+---
+
+- name: PUT entities dump
+  hosts:
+    - elasticsearch[0]
+  roles:
+    - entities-dump

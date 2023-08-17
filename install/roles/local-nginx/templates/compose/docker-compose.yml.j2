@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    network_mode: {{ docker_network_mode }}
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: '128M'
+    volumes:
+      # - {{ service_mnt_dir_loc }}/log:/var/log/nginx
+      - {{ service_mnt_dir_loc }}/nginx/conf.d:/etc/nginx/conf.d:ro
+      - {{ service_mnt_dir_loc }}/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - {{ ports.local_nginx_es }}:{{ ports.local_nginx_es }}
+      

@@ -1,0 +1,3 @@
+---
+# defaults file for dpp-proxy
+dpp_proxy_mem_limit: false

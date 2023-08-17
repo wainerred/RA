@@ -1,0 +1,40 @@
+---
+- name: "Create tmp directories for query-service patch"
+  file:
+    path: "/tmp/patch/query-service"
+    state: directory
+    mode: 0644
+
+- name: "Download init-script query-service"
+  template:
+    src: "{{ init_script }}"
+    dest: "/tmp/patch/query-service/{{ init_script | basename | regex_replace('.j2', '') }}"
+    mode: 0644
+  with_fileglob:
+    - "templates/query-service/patches/*.j2"
+  loop_control:
+    loop_var: init_script
+
+- name: "Generate command"
+  set_fact:
+    command: ""
+
+- name: "Add init query-service to command"
+  set_fact:
+    command: "{{ command }} psql -h {{ host.postgres_dpp }} -p {{ ports.postgres_dpp_main }} -U postgres -a -f /patches/query-service/init-script.sql ; \
+   psql -h {{ host.postgres_dpp }} -p {{ ports.postgres_dpp_main }} -U postgres -d {{ database_queries }} -a -f /patches/query-service/1_add_settings.sql ; \
+   psql -h {{ host.postgres_dpp }} -p {{ ports.postgres_dpp_main }} -U postgres -d {{ database_queries }} -a -f /patches/query-service/2_add_filters.sql ; \
+   psql -h {{ host.postgres_dpp }} -p {{ ports.postgres_dpp_main }} -U postgres -d {{ database_queries }} -a -f /patches/query-service/3_add_expanded_query.sql"
+
+- name: "DB init"
+  shell: "docker run -it --rm \
+  --net host \
+  -e PGPASSWORD={{ postgres_dpp_password }} \
+  -v /tmp/patch:/patches \
+  {{ dictionary_hosts.postgres_dpp.repo }}/{{ dictionary_hosts.postgres_dpp.img }}:{{ dictionary_hosts.postgres_dpp.tag }} \
+  bash -c '{{ command }}'"
+
+- name: "Remove directory /tmp/patch/"
+  file:
+    path: "/tmp/patch/"
+    state: absent

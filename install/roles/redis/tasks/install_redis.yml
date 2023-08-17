@@ -1,0 +1,55 @@
+---
+
+- set_fact:
+    redis_node: "{{ redis_node | int - 1 }}"
+  tags: always
+  
+- set_fact:
+    redis_port: "{{ ( dictionary_hosts[service].ports.main | int ) + ( redis_node | int ) }}"
+    service_name: "{{ dictionary_hosts[service].name }}-{{ redis_node }}"
+    service_compose_dir: "{{ docker_compose_root }}/{{ dictionary_hosts[service].name }}-{{ redis_node }}"
+    service_mnt_dir_loc: "{{ docker_mounts_root }}/{{ dictionary_hosts[service].name }}-{{ redis_node }}"
+  tags: always  
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+  tags:
+    - stop
+    - remove
+    - restart
+
+- name: "Create directory"
+  file:
+    path: "{{ item }}"
+    state: directory 
+  with_items:
+    - "{{ service_mnt_dir_loc }}/conf"
+    - "{{ service_mnt_dir_loc }}/data"
+    - "{{ service_mnt_dir_loc }}/logs"
+    - "{{ service_mnt_dir_loc }}/backup"
+
+- name: "Remove directory"
+  file:
+    path: "{{ item }}"
+    state: absent 
+  with_items:
+    - "{{ service_mnt_dir_loc }}"
+    - "{{ service_compose_dir }}"   
+  tags:
+    - never
+    - remove 
+
+- name: "Generate config for {{ service_name }}"
+  template:
+    src: "conf/redis.conf.j2" # required. Path of a Jinja2 formatted template on the Ansible controller. This can be a relative or absolute path.
+    dest: "{{ service_mnt_dir_loc }}/conf/redis.conf" # required. Location to render the template to on the remote machine.
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start
+  tags:
+    - restart
+    - start 

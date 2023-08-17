@@ -1,0 +1,122 @@
+notification {
+  actor-system.name = "notification-system"
+  api.service {
+    bind {
+      address = 0.0.0.0
+      port = {{ ports.notification_service_main }}
+      timeout = 60sec
+    }
+    internal-ask-timeout = 2min
+  }
+
+  persistence {
+    snapshot-size = 50
+  }
+}
+
+query {
+  host = {{ host.query_service }}
+  port = {{ ports.query_service_main }}
+}
+
+elasticsearch {
+  hosts = [
+{%- for es_ip in hosts.elasticsearch_entity %}
+"{{ es_ip }}:{{ ports.elasticsearch_entity_main }}"{%- if not loop.last %}, {% endif %}
+{% endfor %}]
+  topic-query-size = 200
+  max-retry-timeout = 2m
+  topic-query-concurrent-group-searches = 4
+  request-config {
+    connection-request-timeout = 0
+  }
+  default-source-fields = [
+    "title",
+    "created_date",
+    "text",
+    "client",
+    "operator",
+    "mono"
+    "entities",
+    "categories"
+  ]
+}
+
+{% if notification_db_type == "postgres" %}
+postgres {
+  driver = "org.postgresql.Driver"
+  url = "jdbc:postgresql://{{ host.postgres_dpp }}:{{ ports.postgres_dpp_main }}/{{ keyspace_notification_service }}"
+  user = "postgres"
+  password = "{{ postgres_dpp_password }}"
+  connectionTimeout = "15s"
+  idleTimeout = "60s"
+  numThreads = 10
+}
+{% endif %}
+
+{% if notification_db_type == "cassandra" %}
+cassandra {
+  read-timeout = 5min
+  connection-points = ["{{ groups['cassandra'] | map('extract', hostvars, 'ansible_host') | list | join('","') }}"]
+  pooling {
+    local {
+      connections {
+        max = 4
+        core = 1
+      }
+      max-requests-per-connection = 1024
+    }
+    remote {
+      connections {
+        max = 4
+        core = 1
+      }
+      max-requests-per-connection = 256
+    }
+  }
+  keyspace = "{{ keyspace_notification_service }}"
+  consistency = ONE
+}
+{% endif %}
+
+{% if notification_que_type == "redis" %}
+redis {
+  urls = [
+{%- set redis_addr = [] -%}
+{%- for addr in hosts.redis_dpp -%}
+{%- for port in range(1, redis_dpp_nodes+1) -%}
+{{ redis_addr.append("redis://"+addr+":"+((ports.redis_dpp_main | int + port) | string))}}
+{%- endfor -%}
+{%- endfor -%}
+"{{ redis_addr | join("\",\"") }}"]
+  stream = "{{ stream_notifications }}"
+  kb-stream = "{{ topic_kb_notifications }}"
+  max-size = 1024
+  cluster = true
+  cluster-topology-refresh-period-seconds = 600
+}
+{% endif %}
+
+{% if notification_que_type == "kafka" %}
+kafka {
+  exporter {
+    topic = "notifications"
+    kb-topic = "kb-notifications"
+    properties: {
+      bootstrap.servers = "{{ groups['kafka'] | map('extract', hostvars, 'ansible_host') | list | join(':9092,') }}:9092"
+    }
+  }
+}
+{% endif %}
+
+akka {
+  loggers = ["akka.event.slf4j.Slf4jLogger"]
+  logging-filter = "akka.event.slf4j.Slf4jLoggingFilter"
+  # Options: OFF, ERROR, WARNING, INFO, DEBUG
+  loglevel = "DEBUG"
+  stdout-loglevel = "DEBUG"
+
+  actor.allow-java-serialization = off
+
+  coordinated-shutdown.exit-jvm = on
+}

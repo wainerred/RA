@@ -1,0 +1,7 @@
+---
+# Install frontend
+- name: "Install Frontend"
+  hosts:
+    - frontend_20
+  roles:
+    - frontend-20

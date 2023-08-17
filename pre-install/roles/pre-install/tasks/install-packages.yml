@@ -1,0 +1,28 @@
+---
+
+- name: "Install epel-release"
+  yum:
+    name:
+      - epel-release
+
+- name: "Install packages"
+  yum:
+    name:
+      - mc
+      - htop
+      - vim
+      - rsync
+      - system-storage-manager
+      - net-tools
+      - pciutils
+      - jq
+      - iftop
+      - iotop
+      - screen
+      - pigz
+      - pv
+      - netcat
+      - ethtool
+      - sysstat
+      - bash-completion
+      - qemu-guest-agent

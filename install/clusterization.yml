@@ -1,0 +1,7 @@
+---
+
+- name: "Install clusterization"
+  hosts:
+    - clusterization
+  roles:
+    - clusterization

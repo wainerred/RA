@@ -1,0 +1,37 @@
+---
+
+- name: "{{ service_name }} : Remove directories"
+  file:
+    path: "{{ dir_item }}"
+    state: absent
+  with_items:
+    - "{{ service_mounts_dir }}"
+  loop_control:
+    loop_var: dir_item
+  tags:
+   - never
+   - remove
+
+- name: "{{ service_name }} : Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+  with_items:
+    - "{{ service_mounts_dir }}/conf"
+    - "{{ service_mounts_dir }}/stopwords/ru"
+  loop_control:
+    loop_var: dir_item
+
+- name: "{{ service_name }} : Generate configs"
+  template:
+    src: "{{ conf_item }}"
+    dest: "{{ service_mounts_dir }}/conf/{{ conf_item | basename | regex_replace('.j2','') }}"
+  with_fileglob:
+      - "templates/conf/*.j2"
+  loop_control:
+    loop_var: conf_item
+
+# - name: "{{ service_name }} : Copy files"
+#   copy:
+#     src: files/stopwords/ru/stoplist
+#     dest: "{{ service_mounts_dir }}/stopwords/ru/stoplist"

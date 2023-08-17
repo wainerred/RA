@@ -1,0 +1,3 @@
+---
+dpp_nlp_service_mem_limit:  False
+entities_index:             entities

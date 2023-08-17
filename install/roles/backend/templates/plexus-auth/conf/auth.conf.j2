@@ -1,0 +1,118 @@
+include "application.conf"
+
+play {
+  http {
+    session {
+      cookieName = "TP15_SESSION"
+    }
+  }
+{% if backend_modules_openid %}
+  modules.disabled += "ru.dsslab.plexus.auth.modules.sso.SsoDefaultModule"
+  modules.enabled += "ru.dsslab.plexus.auth.modules.oidc.SsoOidcModule"
+{% endif %}
+
+{% if backend_modules_journal %}
+  modules.disabled += "ru.dsslab.plexus.journalv2.MockJournalFlushModule"
+  modules.enabled += "ru.dsslab.plexus.journalv2.ElasticJournalFlushModule"
+{% endif %}
+
+{% if versions.plexus_auth is version('3.13.0', '>=') and backend_kerberos %}
+  modules.disabled += "ru.dsslab.plexus.auth.modules.sso.SsoDefaultModule"
+  modules.enabled += "ru.dsslab.plexus.auth.modules.kerberos.SsoKerberosModule"
+  modules.enabled += "ru.dsslab.plexus.auth.modules.kerberos.KerberosAuthenticatorModule"
+{% endif %}
+
+{% if backend_mail %}
+  mailer {
+    host = {{ mail_server_host }}
+    port = {{ mail_server_port }}
+    user = "{{ mail_server_user }}"
+    password = "{{ mail_server_pass }}"
+    tls = false
+  }
+{% endif %}
+}
+
+
+plexus {
+ auth.expire-period-min = 480
+ timeout = "1 min"
+ login-attempts = {{ backend_auth_login_attempts }}
+
+  clients {
+{% if backend_modules_openid %}
+    oidc {
+      client-id =     "{{ backend_openid_client_id }}"
+      client-secret = "{{ backend_openid_client_secret }}"
+      discovery-uri = "{{ backend_openid_discovery_uri }}"
+      response-type = "{{ backend_openid_response_type }}"
+      cache-ttl = "10 min"
+      scope = ["profile", "openid", "email"]
+      username-field = "upn"
+      sid-field = "upn"
+      connection-timeout-ms = 2500
+      read-timeout-ms = 2500
+      max-response-size-byte = 0 // 0 - unlimit
+      token-validate = false
+      # Если нет параметра 'single-logout-uri' то будет применен oidc-slo
+      single-logout-uri = "https://{{ backend_cert_host_name }}/adfs/ls/?wa=wsignout1.0"
+
+    }
+{% endif %}
+{% if versions.plexus_auth is version('3.13.0', '>=') and backend_kerberos %}
+    kerberos {
+      principal-name-transforms = {{ backend_principal_name_transforms | to_nice_json }}
+      authenticator {
+        ask-timeout = "1 min" // как долго ждать ответ от kdc-серверов при аутентификации пользователя
+        relogin-interval = "24 hour" // как часто перелогиниваться бэкенду
+        login-backoff-interval = "30 sec" // через сколько времени попытаться залогиниться бэкенду после неуспешной попытки
+        login-backoff-random-factor = 0.5 // к login-backoff-interval прибавится ещё random(0, factor) * interval
+        wait-service-login = false
+        login-configuration-name = "com.sun.security.jgss.initiate"
+        restart-policy { // параметры перезапуска kerberos-аутентификатора
+          min-backoff = "5 sec"
+          max-backoff = "5 min"
+          random-factor = 0.2
+        }
+      }
+    }
+{% endif %}
+  }
+
+{% if backend_modules_journal %}
+  journal-flush-manager {
+    flush-interval-seconds = 30
+    buffer-capacity = 1000
+  }
+{% endif %}
+}
+
+{% if backend_modules_journal %}
+journal-elastic4s {
+  hosts = [
+{%- set es_addr = [] -%}
+{%- for addr in hosts.elasticsearch -%}
+{{ es_addr.append("{}:{}".format(addr, ports.elasticsearch_main)) }}
+{%- endfor -%}
+"{{ es_addr | join("\",\"") }}"]
+  index-template = "journal_<account_id>_<yyyy>-<MM>"
+  // load file from resource: use file form the conf dir if it exists or load it from the plexus-common resource
+  component-template-settings = "/journal-component-template.json"
+  // load file from resource: use file form the conf dir if it exists or load it from the plexus-common resource
+  index-template-settings = "/journal-index-template.json"
+  field-pattern = "<[^<>]*>"
+}
+{% endif %}
+
+akka {
+ loglevel = INFO
+ stdout-loglevel = INFO
+}
+
+slick.dbs.default {
+  db {
+    url = "jdbc:postgresql://{{ host.postgres_backend }}:{{ ports.postgres_backend_main }}/accounts"
+    user="postgres"
+    password="{{ postgres_back_password }}"
+  }
+}

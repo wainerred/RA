@@ -1,0 +1,24 @@
+---
+
+- name: Set global vars
+  import_role:
+    name: set-global-vars
+  tags: always
+
+- name: "Set role vars"
+  include: set-vars.yml
+  tags: always
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: "Install clusterization"
+  include: install-clusterization.yml
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start
+

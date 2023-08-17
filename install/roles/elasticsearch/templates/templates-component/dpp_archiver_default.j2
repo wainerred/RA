@@ -1,0 +1,22 @@
+{
+  "template": {
+    "settings": {
+      "index": {
+        "refresh_interval": "60s",
+        "number_of_shards": "{{ es_component_template_number_of_shards }}",
+        "translog": {
+          "flush_threshold_size": "1024mb",
+          "sync_interval": "60s",
+          "durability": "async"
+        },
+        "number_of_replicas": "1",
+        "merge": {
+          "scheduler": {
+            "max_thread_count": "1"
+          }
+        },
+        "codec": "best_compression"
+      }
+    }
+  }
+}

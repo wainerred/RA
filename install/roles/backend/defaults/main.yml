@@ -1,0 +1,106 @@
+---
+DEBUG_MOD_QA: false
+plexus_reports_mem_limit: 2048M
+plexus_server_mem_limit: 2048M
+plexus_resource_mem_limit: 2048M
+plexus_auth_mem_limit: 1024M
+plexus_rsyslog_mem_limit: 512M
+plexus_api_swagger_mem_limit: false
+
+backend_account_id: 1
+backend_worker_id: 1
+backend_auth_login_attempts: 5
+
+backend_default_user: admin@touchpoint
+backend_default_pass: password
+
+available_hosts: false
+report_style: "touchpoint"
+
+plexus_external_file_service: false
+
+notification_db_type: postgres
+notification_que_type: redis
+
+backend_modules_chat_splitter: false
+backend_modules_translate: false
+backend_modules_ldap: false
+backend_modules_stats: false
+backend_modules_reset_pass: true
+backend_modules_journal: false
+backend_mail: false
+backend_modules_openid: false
+backend_modules_badges: false
+backend_root_categories: false
+backend_stats_ocr: false
+backend_orgstruct: false
+backend_feedback_extended: false
+backend_mattermost: false
+backend_spell_checker: false
+mail_feedback_subject:
+backend_modules_role_detecting: false
+backend_kerberos: false
+backend_slow_request_log: false
+backend_ldap_user_sync: false
+backend_project_aggregate: false
+backend_asr_metric_durations: ["1h", "3h", "12h"]
+# если необходимо выводить каждую категорию в отдельном столбце при выгрузке в csv
+backend_category_multi_column: false
+# если необходимо добавить дополнительную оценку документа (калибровку)
+backend_additional_weight: false
+# Задание на документ
+backend_document_task: false
+# Группы комментариев
+backend_commnet_group: false
+#
+backend_extra_hosts: false
+
+stream_notifications: notification
+
+backend_secret_key: 5eS9X8Ug9JugJR5smcuotCC3
+
+frontend_type: touchpoint
+
+backend_types:
+  - chat.json.j2
+  - default.json.j2
+  - device_audio.json.j2
+  - ingest.json.j2
+
+backend_file_source_watermark: 0.95
+backend_principal_name_transforms:
+  - {type: lowercase}
+
+backend_exporter_rabbitmq_conection_string: amqp://user:password@127.0.0.1:5672
+backend_exporter_exchange_point: dss_export
+backend_exporter_routing_key: dss_export
+backend_exporter_queue: dss_export
+
+backend_default_authority_field: file.properties.agent_id
+backend_default_authority_name_field: file.properties.operator
+backend_document_task_manager_interval_sec: 86400
+
+mail_server_tls: false
+
+
+additional_weights_header_template: \"<category_name>\" / Калибровка
+additional_weights_modify_header_template: \"<category_name>\" / Ручные изменения калибровки
+additional_weights_diff_header_template: \"<category_name>\" / Разница в оценке
+modified_category_header_template: \"<category_name>\" / Ручные изменения
+
+backend_notification_email_template: |
+  Автопоиск нашёл {{ "{{ document_length }}" }} новых документов по Вашему запросу:
+  {{ "{{ query }}" }}
+
+  Для просмотра документов пройдите по ссылке: {{ "{{ base_url }}" }}/projects/{{ "{{ project_id }}" }}/search?notificationId={{ "{{ notification_id }}" }}
+  Для настройки уведомлений пройдите по ссылке: {{ "{{ base_url }}" }}/projects/{{ "{{ project_id }}" }}/notifications?id={{ "{{ alert_id }}" }}
+
+frontend_scheme: "{{ 'https' if frontend_https_enabled or reverse_proxy else 'http' }}"
+frontend_domain_20: false
+
+backend_custom_email: false
+backend_billing: false
+
+disable_file_converter: false
+
+throttling_timeout: true

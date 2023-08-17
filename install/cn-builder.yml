@@ -1,0 +1,7 @@
+---
+
+- name: "Install cn-builder"
+  hosts:
+    - cn_builder
+  roles:
+    - cn-builder

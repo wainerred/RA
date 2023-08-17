@@ -1,0 +1,259 @@
+{
+  "sentiment": {
+    "POSITIVE": {
+      "name": "Позитивная",
+      "display_names": {
+        "en": "Positive",
+        "ru": "Позитивная"
+      }
+    },
+    "NEGATIVE": {
+      "name": "Негативная",
+      "display_names": {
+        "en": "Negative",
+        "ru": "Негативная"
+      }
+    },
+    "MIXED": {
+      "name": "Смешанная",
+      "display_names": {
+        "en": "Mixed",
+        "ru": "Смешанная"
+      }
+    },
+    "NEUTRAL": {
+      "name": "Нейтральная",
+      "display_names": {
+        "en": "Neutral",
+        "ru": "Нейтральная"
+      }
+    }
+  },
+  "speech-metric": {
+    "silence": {
+      "name": "Тишина",
+      "display_names": {
+        "en": "Silence",
+        "ru": "Тишина"
+      }
+    },
+    "client": {
+      "name": "Речь клиента",
+      "display_names": {
+        "en": "Client speech",
+        "ru": "Речь клиента"
+      }
+    },
+    "operator": {
+      "name": "Речь оператора",
+      "display_names": {
+        "en": "Operator speech",
+        "ru": "Речь оператора"
+      }
+    },
+    "interrupt": {
+      "name": "Перебивание",
+      "display_names": {
+        "en": "Interrupt",
+        "ru": "Перебивание"
+      }
+    }
+  },
+  "language": {
+    "ru": {
+      "name": "Русский",
+      "display_names": {
+        "en": "Russian",
+        "ru": "Русский"
+      }
+    },
+    "en": {
+      "name": "Английский",
+      "display_names": {
+        "en": "English",
+        "ru": "Английский"
+      }
+    },
+    "kk": {
+      "name": "Казахский",
+      "display_names": {
+        "en": "Kazakh",
+        "ru": "Казахский"
+      }
+    },
+    "unk": {
+      "name": "Неизвестный",
+      "display_names": {
+        "en": "Unknown",
+        "ru": "Неизвестный"
+      }
+    },
+    "uz": {
+      "name": "Узбекский",
+      "display_names": {
+        "ru": "Узбекский",
+        "en": "Uzbek"
+      }
+    },
+    "ky": {
+      "name": "Киргизский",
+      "display_names": {
+        "ru": "Киргизский",
+        "en": "Kirghiz, Kyrgyz"
+      }
+    },
+    "tk": {
+      "name": "Туркменский",
+      "display_names": {
+        "ru": "Туркменский",
+        "en": "Turkmen"
+      }
+    },
+    "kaa": {
+      "name": "Каракалпакский",
+      "display_names": {
+        "ru": "Каракалпакский",
+        "en": "Karakalpak"
+      }
+    },
+    "prs": {
+      "name": "Дари",
+      "display_names": {
+        "ru": "Дари",
+        "en": "Dari"
+      }
+    },
+    "td": {
+      "name": "Таджикский",
+      "display_names": {
+        "ru": "Таджикский",
+        "en": "Tajik"
+      }
+    },
+    "hz": {
+      "name": "Хорезмский",
+      "display_names": {
+        "ru": "Хорезмский",
+        "en": "Dari"
+      }
+    },
+    "zh": {
+      "name": "Китайский",
+      "display_names": {
+        "ru": "Китайский",
+        "en": "ZH"
+      }
+    },
+    "fa": {
+      "name": "Персидский",
+      "display_names": {
+        "ru": "Персидский",
+        "en": "FA"
+      }
+    },
+    "ar": {
+      "name": "Арабский",
+      "display_names": {
+        "ru": "Арабский",
+        "en": "AR"
+      }
+    },
+    "de": {
+      "name": "Немецкий",
+      "display_names": {
+        "ru": "Немецкий",
+        "en": "DE"
+      }
+    }
+  },
+  "gender": {
+    "female": {
+      "name": "Женский",
+      "display_names": {
+        "en": "Female",
+        "ru": "Женский"
+      }
+    },
+    "male": {
+      "name": "Мужской",
+      "display_names": {
+        "en": "Male",
+        "ru": "Мужской"
+      }
+    }
+  },
+  "action_type": {
+    "login": {
+      "name": "Вход",
+      "display_names": {
+        "en": "Login",
+        "ru": "Вход"
+      }
+    },
+    "logout": {
+      "name": "Выход",
+      "display_names": {
+        "en": "Logout",
+        "ru": "Выход"
+      }
+    },
+    "login_as_user": {
+      "name": "Вход от имени пользователя",
+      "display_names": {
+        "en": "Login as user",
+        "ru": "Вход от имени пользователя"
+      }
+    },
+    "logout_as_user": {
+      "name": "Выход от имени пользователя",
+      "display_names": {
+        "en": "Logout as user",
+        "ru": "Выход от имени пользователя"
+      }
+    },
+    "view_document": {
+      "name": "Просмотр документа",
+      "display_names": {
+        "en": "View document",
+        "ru": "Просмотр документа"
+      }
+    },
+    "view_dashboard": {
+      "name": "Просмотр дашборда",
+      "display_names": {
+        "en": "View dashboard",
+        "ru": "Просмотр дашборда"
+      }
+    },
+    "search_documents": {
+      "name": "Поиск документов",
+      "display_names": {
+        "en": "Search documents",
+        "ru": "Поиск документов"
+      }
+    }
+  },
+  "resource_type": {
+    "project": {
+      "name": "Проект",
+      "display_names": {
+        "en": "Project",
+        "ru": "Проект"
+      }
+    },
+    "document": {
+      "name": "Документ",
+      "display_names": {
+        "en": "Document",
+        "ru": "Документ"
+      }
+    },
+    "dashboard": {
+      "name": "Дашборд",
+      "display_names": {
+        "en": "Dashboard",
+        "ru": "Дашборд"
+      }
+    }
+  }
+}

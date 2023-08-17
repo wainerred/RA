@@ -1,0 +1,27 @@
+{
+  "index_patterns": [
+    "{{ spell_checker_index_pattern }}*"
+  ],
+  "template": {
+    "settings": {
+      "number_of_shards": {{ number_of_shards }},
+      "number_of_replicas": {{ number_of_replicas }}
+    },
+    "mappings": {
+      "_source": {
+        "enabled": true
+      },
+      "dynamic": false,
+      "properties": {
+        "custom": {
+          "type": "boolean"
+        },
+        "lines": {
+          "type": "text"
+        }
+      }
+    }
+  },
+  "composed_of": [],
+  "priority": 100
+}

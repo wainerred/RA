@@ -1,0 +1,3 @@
+---
+dpp_elastic_exporter_mem_limit: False
+export_log_level: info

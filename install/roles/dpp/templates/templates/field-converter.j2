@@ -1,0 +1,11 @@
+{
+    "name": "Field converter",
+    "kind": "grpc",
+    "type": "processor",
+    "urls": [
+{% for adr in hosts.dpp_dictionary_enricher %}
+        "{{ adr }}:{{ ports.dpp_dictionary_enricher_grpc }}"{% if not loop.last %}, 
+{% endif %}
+{% endfor %}
+    ]
+}

@@ -1,0 +1,36 @@
+version: '2.4'
+services:
+{% for painless_id in range(1, painless_count + 1) %}
+  {{ service_name }}-{{ '%02d' | format(painless_id) }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}-{{ '%02d' | format(painless_id) }}
+    restart: always
+{% if dpp_painless_processor_mem_limit %}
+    mem_limit: {{ dpp_painless_processor_mem_limit }}
+{% endif %}
+    environment:
+      JAVA_OPTS: >-
+{% if dpp_painless_processor_mem_limit %}
+        -Xmx{{ dpp_painless_processor_mem_limit | regex_search('^[0-9]+') | int * 75 // 100 }}{{ dpp_painless_processor_mem_limit | regex_search('\\w$') }}
+{% else %}
+        -Xmx512M
+{% endif %}
+        -Xss2M
+        -Duser.timezone=UTC
+        -Djava.net.preferIPv4Stack=true
+        -Dlogback.configurationFile=/service/conf/logback.xml
+        -Dconfig.file=/service/conf/service.conf
+    network_mode: {{ docker_network_mode }}
+    ports:
+      - {{ ports.dpp_painless_processor_grpc | int + painless_id }}:{{ ports.dpp_painless_processor_grpc | int + painless_id }}
+      - {{ ports.dpp_painless_processor_rest | int + painless_id }}:{{ ports.dpp_painless_processor_rest | int + painless_id }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 512M
+    volumes:
+      - "{{ service_mnt_dir_loc }}-{{ '%02d' | format(painless_id) }}/conf/service.conf:/service/conf/service.conf:ro"
+      - "{{ service_mnt_dir_loc }}-{{ '%02d' | format(painless_id) }}/conf/logback.xml:/service/conf/logback.xml:ro"
+      - "{{ service_mnt_dir_loc }}-{{ '%02d' | format(painless_id) }}/logs:/service/logs:rw"
+      - "{{ service_mnt_dir_loc }}-{{ '%02d' | format(painless_id) }}/tmp:/tmp:rw"
+{% endfor %}

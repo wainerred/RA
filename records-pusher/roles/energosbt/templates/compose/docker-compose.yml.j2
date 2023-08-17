@@ -1,0 +1,32 @@
+version: '2.4'
+
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: always
+{% if records_pusher_mem_limit %}
+    mem_limit: {{ records_pusher_mem_limit }}
+{% endif %}
+{% if cpus_limit %}
+    cpus: {{ cpus_limit }}
+{% endif %}
+    network_mode: {{ docker_network_mode }}
+{% if ip_dns is defined and ip_dns %}
+    dns:
+{% for dns in ip_dns %}
+      - {{ dns }}
+{% endfor %}
+{% endif %}
+    environment:
+      TZ: {{ time_zone }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - "{{ service_mnt_dir_loc }}/logs:/app/logs"
+      - "{{ service_mnt_dir_loc }}/db:/app/db"
+      - "{{ service_mnt_dir_loc }}/conf:/app/conf"
+      - "{{ service_mnt_dir_loc }}/data:/app/data"
+      - "{{ records_pusher_excel_dir }}:/app/excel"

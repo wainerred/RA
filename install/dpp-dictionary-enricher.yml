@@ -1,0 +1,10 @@
+---
+- name: "Install dictionary-enricher"
+  hosts:
+    - dpp_dictionary_enricher
+  roles:
+    - dpp-dictionary-enricher
+    - local-nginx
+  vars:
+    local_nginx_conf_d:
+      - elastic.conf.j2

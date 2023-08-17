@@ -1,0 +1,11 @@
+{
+    "name": "Speaker role detector",
+    "kind": "grpc",
+    "type": "processor",
+    "urls": [
+{% for adr in hosts.dpp_speaker_role_detector %}
+        "{{ adr }}:{{ ports.dpp_speaker_role_detector_grpc }}"{% if not loop.last %}, 
+{% endif %}
+{% endfor %}
+    ]
+}

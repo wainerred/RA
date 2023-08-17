@@ -1,0 +1,10 @@
+export const config = {
+{% if frontend_type == 'touchpoint' %}
+    FRONTEND: 'https://app.{{ frontend_domain[0] }}',
+    HOST: 'app.{{ frontend_domain[0] }}',
+{% else %}
+    FRONTEND: 'https://{{ frontend_domain[0] }}',
+    HOST: '{{ frontend_domain[0] }}',
+{% endif %}
+    PORT: {{ ports.plexus_reports_main }}
+}

@@ -1,0 +1,9 @@
+---
+- name: "Set Variables"
+  set_fact:
+    service_name: "{{ dictionary_hosts.elasticsearch.name }}"
+    service_img: "{{ dictionary_hosts.elasticsearch.img }}"
+    service_tag: "{{ dictionary_hosts.elasticsearch.tag }}"
+    service_repo: "{{ dictionary_hosts.elasticsearch.repo }}"
+    service_mnt_dir_loc: "{{ docker_mounts_root }}/{{ dictionary_hosts.elasticsearch.name }}"
+    service_compose_dir: "{{ docker_compose_root }}/{{ dictionary_hosts.elasticsearch.name }}"

@@ -1,0 +1,25 @@
+---
+# tasks file for dpp-proxy
+- name: Set global vars
+  import_role:
+    name: ../install/roles/set-global-vars
+  tags:
+    - always
+
+- name: "Set role vars"
+  include_vars: main.yml
+  tags: always
+
+- name: "Stop service"
+  import_role:
+    name: ../install/roles/_docker
+    tasks_from: stop
+
+- name: "Install"
+  include: install.yml
+  tags: install
+
+- name: "Start service"
+  import_role:
+    name: ../install/roles/_docker
+    tasks_from: start

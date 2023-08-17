@@ -1,0 +1,10 @@
+---
+
+- name: "{{ dictionary_hosts.cn_builder.name }} : Set Variables"
+  set_fact:
+    service_name:         "{{ dictionary_hosts.cn_builder.name }}"
+    service_img:          "{{ dictionary_hosts.cn_builder.img }}"
+    service_tag:          "{{ dictionary_hosts.cn_builder.tag }}"
+    service_repo:         "{{ dictionary_hosts.cn_builder.repo }}"
+    service_mnt_dir_loc:   "{{ docker_mounts_root }}/{{ dictionary_hosts.cn_builder.name }}"
+    service_compose_dir:   "{{ docker_compose_root }}/{{ dictionary_hosts.cn_builder.name }}"

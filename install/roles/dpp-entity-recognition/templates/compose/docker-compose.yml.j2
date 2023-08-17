@@ -1,0 +1,21 @@
+version: '2.4'
+
+services:
+ {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: {{ docker_restart }}
+    network_mode: {{ docker_network_mode }}
+{% if dpp_entity_recognition_mem_limit %}
+    mem_limit: {{ dpp_entity_recognition_mem_limit }}
+{% endif %}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    ports:
+      - {{ ports.dpp_entity_recognition_grpc }}:{{ ports.dpp_entity_recognition_grpc }}
+    volumes:
+      - "{{ service_mnt_dir_loc }}/configs:/entity_recognition/configs:ro"
+      - "{{ service_mnt_dir_loc }}/logs:/entity_recognition/logs:rw" 
+      - "{{ service_mnt_dir_loc }}/models:/entity_recognition/models:ro"

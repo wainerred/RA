@@ -1,0 +1,11 @@
+---
+postgres_file_service_mem_limit: 2048M
+postgres_backend_mem_limit: 2048M
+postgres_crawler_mem_limit: 2048M
+postgres_dpp_mem_limit: 2048M
+
+effective_cache_size: 1536MB
+shared_buffers: 512MB
+max_connections: 100
+work_mem: 2621kB
+maintenance_work_mem: 128MB

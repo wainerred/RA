@@ -1,0 +1,12 @@
+---
+
+- name: "Stop services"
+  ignore_errors: yes
+  docker_compose:
+    project_src: "{{ service_compose_dir }}"
+    state: absent
+    remove_volumes: yes
+  tags:
+    - stop
+    - restart
+    - remove

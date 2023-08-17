@@ -1,0 +1,6 @@
+---
+tfs_batch_mode: false
+tensorflow_mem_limit: false
+tensorflow_type: cpu
+cpuset: false
+videocard_count: 1

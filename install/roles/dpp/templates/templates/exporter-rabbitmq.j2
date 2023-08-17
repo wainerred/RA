@@ -1,0 +1,11 @@
+{
+  "kind": "grpc",
+  "name": "Exporter rabbitmq",
+  "type": "exporter",
+  "urls": [
+{% for adr in hosts.dpp_exporter_rabbitmq %}
+        "{{ adr }}:{{ ports.dpp_exporter_rabbitmq_grpc }}"{% if not loop.last %},
+{% endif %}
+{% endfor %}
+  ]
+}

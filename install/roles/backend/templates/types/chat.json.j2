@@ -1,0 +1,1045 @@
+{
+  "fields": {
+{% if backend_additional_weight %}
+    "additional_weights": {
+      "type": "object",
+      "display_names": {
+        "en": "Additional Weights",
+        "ru": "Калибровка"
+      },
+      "operations": {
+        "aggregate": false,
+        "fetch": true,
+        "highlight": false,
+        "exists": true,
+        "equals": false
+      },
+      "elastic": {
+        "dynamic": true
+      },
+      "dynamic": false,
+      "root_dynamic": false,
+      "multiple": false,
+      "source": true,
+      "view": {}
+    },
+{% if versions.plexus_server is version('3.18.0', '>=') %}
+    "additional_weights_settings": {
+      "type": "object",
+      "display_names": {
+        "en": "additional_weights_settings",
+        "ru": "Настройки калибровки"
+      },
+      "operations": {
+        "fetch": true,
+        "dictionary_schema": true
+      },
+      "elastic": {},
+      "source": true,
+      "view": {}
+    },
+    "additional_weights_settings.modified_ids": {
+      "type": "string",
+      "operations": {
+        "fetch": true
+      },
+      "elastic": {},
+      "source": false,
+      "multiple": true,
+      "view": {}
+    },
+{% endif %}
+{% endif %}
+{% if versions.plexus_server is version('3.26.0', '>=') %}
+    "_dialog": {
+      "type": "object",
+      "multiple": true,
+      "source": false,
+      "operations": {
+        "fetch": true
+      },
+      "display_names": {
+        "ru": "Диалог",
+        "en": "Dialog"
+      },
+      "script": {
+        "source": "",
+        "type": "search",
+        "params": {
+          "system": true
+        }
+      }
+    },
+{% endif %}
+    "_internal_data.checklist_id": {
+      "type": "string",
+      "display_names": {
+        "en": "Checklist.Id",
+        "ru": "Идентификатор чек-листа"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true
+      },
+      "multiple": false,
+      "source": false,
+      "view": {}
+    },
+    "operator": {
+      "type": "object",
+      "display_names": {
+        "en": "operator",
+        "ru": "operator"
+      },
+      "operations": {
+        "script_input_schema": true
+      },
+      "elastic": {
+        "dynamic": true
+      },
+      "view": {}
+    },
+    "operator.transcript": {
+      "type": "string",
+      "display_names": {
+        "en": "Operator speech",
+        "ru": "Речь оператора"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "contains": true,
+        "highlight": true,
+        "highlight_key": "operator.transcript",
+        "aggregate": true
+      },
+      "elastic": {
+        "term_vector": "with_positions_offsets",
+        "fielddata": true
+      },
+      "view": {},
+      "multiple": false,
+      "source": false
+    },
+    "operator.silence": {
+      "type": "double",
+      "display_names": {
+        "en": "operator.silence",
+        "ru": "operator.silence"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "client": {
+      "type": "object",
+      "display_names": {
+        "en": "client",
+        "ru": "client"
+      },
+      "operations": {
+        "script_input_schema": true
+      },
+      "elastic": {
+        "dynamic": true
+      },
+      "view": {}
+    },
+    "client.transcript": {
+      "type": "string",
+      "display_names": {
+        "en": "Client speech",
+        "ru": "Речь клиента"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "contains": true,
+        "highlight": true,
+        "highlight_key": "client.transcript",
+        "aggregate": true
+      },
+      "elastic": {
+        "term_vector": "with_positions_offsets",
+        "fielddata": true
+      },
+      "view": {},
+      "multiple": false,
+      "source": false
+    },
+    "client.silence": {
+      "type": "double",
+      "display_names": {
+        "en": "client.silence",
+        "ru": "client.silence"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": true
+      },
+      "elastic": {},
+      "view": {}
+    },
+    "file": {
+      "operations": {
+        "script_input_schema": true
+      },
+      "display_names": {
+        "en": "file",
+        "ru": "file"
+      },
+      "view": {},
+      "elastic": {
+        "dynamic": false
+      },
+      "multiple": false,
+      "type": "object",
+      "source": true
+    },
+    "file.properties": {
+      "operations": {},
+      "display_names": {
+        "en": "File properties",
+        "ru": "Свойства файла"
+      },
+      "view": {},
+      "elastic": {
+        "dynamic": true
+      },
+      "multiple": false,
+      "type": "object",
+      "source": true
+    },
+    "file.properties.operator": {
+      "type": "string",
+      "multiple": false,
+      "source": false,
+      "display_names": {
+        "en": "Operator",
+        "ru": "Оператор"
+      },
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "highlight": false,
+        "exists": true,
+        "equals": true,
+        "local_receiver_schema": true,
+        "suggest": {
+          "suggest_field": "file.properties.operator.suggest"
+        }
+      },
+      "view": {},
+      "elastic": {
+        "fields": {
+          "suggest": {
+            "type": "completion",
+            "analyzer": "standard"
+          }
+        }
+      }
+    },
+    "file.properties.platform": {
+      "multiple": false,
+      "display_names": {
+        "en": "Platform",
+        "ru": "Платформа"
+      },
+      "operations": {
+        "aggregate": true,
+        "fetch": true,
+        "highlight": false,
+        "sort": true,
+        "exists": true,
+        "equals": true,
+        "local_receiver_schema": true
+      },
+      "type": "string",
+      "source": false,
+      "view": {}
+    },
+    "file.properties.chat_id": {
+      "type": "string",
+      "display_names": {
+        "en": "Chat ID",
+        "ru": "Идентификатор чата"
+      },
+      "operations": {
+        "aggregate": true,
+        "fetch": true,
+        "sort": true,
+        "exists": true,
+        "equals": true,
+        "local_receiver_schema": true
+      },
+      "source": false,
+      "multiple": false,
+      "view": {}
+    },
+    "stopwords_count": {
+      "operations": {
+        "aggregate": true,
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "sort": true,
+        "script_input_schema": true
+      },
+      "display_names": {
+        "en": "Stopwords count",
+        "ru": "Количество стоп-слов"
+      },
+      "view": {},
+      "multiple": false,
+      "type": "integer",
+      "source": false
+    },
+    "stopwords": {
+      "operations": {
+        "aggregate": true,
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "sort": true,
+        "script_input_schema": true
+      },
+      "display_names": {
+        "en": "Stopwords",
+        "ru": "Стоп-слова"
+      },
+      "view": {},
+      "multiple": true,
+      "type": "string",
+      "source": false
+    },
+    "language": {
+      "operations": {
+        "aggregate": true,
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "script_input_schema": true
+      },
+      "display_names": {
+        "en": "Language",
+        "ru": "Язык"
+      },
+      "view": {
+        "dictionary_id": "language"
+      },
+      "multiple": true,
+      "type": "string",
+      "source": false
+    },
+    "_categories.script_manual": {
+      "type": "boolean",
+      "display_names": {
+        "en": "Categories.Script manual",
+        "ru": "Ручная оценка Х"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "sort": true
+      },
+      "multiple": false,
+      "source": false,
+      "view": {}
+    },
+    "spell_correction": {
+      "type": "object",
+      "display_names": {
+        "en": "spell_correction",
+        "ru": "Ошибочные слова (объект)"
+      },
+      "multiple": false,
+      "source": true,
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "script_input_schema": true
+      },
+      "view": {}
+    },
+    "spell_correction.misspellings": {
+      "type": "object",
+      "display_names": {
+        "en": "spell_correction.misspellings",
+        "ru": "spell_correction.misspellings"
+      },
+      "multiple": true,
+      "source": true,
+      "operations": {},
+      "view": {}
+    },
+    "spell_correction.misspellings.value": {
+      "type": "string",
+      "display_names": {
+        "en": "spell_correction.misspellings.value",
+        "ru": "Ошибочные слова"
+      },
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "operations": {
+        "fetch": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "view": {}
+    },
+    "spell_correction.misspellings.count": {
+      "type": "integer",
+      "display_names": {
+        "en": "spell_correction.misspellings.count",
+        "ru": "spell_correction.misspellings.count"
+      },
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "operations": {},
+      "view": {}
+    },
+    "spell_correction.misspellings.data_id": {
+      "type": "integer",
+      "display_names": {
+        "en": "spell_correction.misspellings.data_id",
+        "ru": "spell_correction.misspellings.data_id"
+      },
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "operations": {},
+      "elastic": {
+        "index": false
+      },
+      "view": {}
+    },
+    "spell_correction.count": {
+      "type": "integer",
+      "display_names": {
+        "en": "spell_correction.count",
+        "ru": "Ошибочные слова (количество)"
+      },
+      "multiple": false,
+      "source": false,
+      "operations": {
+        "fetch": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true,
+        "sort": true
+      },
+      "view": {}
+    },
+    "fcr": {
+      "type": "object",
+      "display_names": {
+        "en": "fcr",
+        "ru": "fcr"
+      },
+      "multiple": false,
+      "source": true,
+      "operations": {},
+      "view": {}
+    },
+    "fcr.unresolved": {
+      "type": "boolean",
+      "display_names": {
+        "en": "non-FCR",
+        "ru": "non-FCR"
+      },
+      "multiple": false,
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "source": false,
+      "view": {}
+    },
+    "fcr.count": {
+      "type": "integer",
+      "display_names": {
+        "en": "fcr.count",
+        "ru": "Длина цепочки"
+      },
+      "multiple": false,
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "source": false,
+      "view": {}
+    },
+    "fcr.topic_id": {
+      "type": "string",
+      "display_names": {
+        "en": "fcr.topic_id",
+        "ru": "Идентификатор цепочки"
+      },
+      "multiple": false,
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "source": false,
+      "view": {}
+    },
+    "fcr.data_hash": {
+      "type": "string",
+      "display_names": {
+        "en": "fcr.data_hash",
+        "ru": "fcr.data_hash"
+      },
+      "multiple": false,
+      "operations": {},
+      "source": false,
+      "view": {}
+    },
+    "fcr.version": {
+      "type": "long",
+      "display_names": {
+        "en": "fcr.version",
+        "ru": "fcr.version"
+      },
+      "multiple": false,
+      "operations": {},
+      "source": false,
+      "view": {}
+    },
+    "silence": {
+      "type": "object",
+      "display_names": {
+        "en": "Silence (object)",
+        "ru": "Паузы (объект)"
+      },
+      "multiple": false,
+      "source": true,
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "script_input_schema": true
+      },
+      "view": {}
+    },
+    "silence.count": {
+      "type": "integer",
+      "display_names": {
+        "en": "Silence.Count",
+        "ru": "Количество пауз"
+      },
+      "multiple": false,
+      "source": false,
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "view": {}
+    },
+    "silence.max_duration": {
+      "type": "long",
+      "display_names": {
+        "en": "silence.max_duration",
+        "ru": "silence.max_duration"
+      },
+      "multiple": false,
+      "source": false,
+      "view": {
+        "format": "hh:mm:ss",
+        "time_unit": "s"
+      },
+      "operations": {}
+    },
+    "silence.sum_duration": {
+      "type": "long",
+      "display_names": {
+        "en": "silence.sum_duration",
+        "ru": "silence.sum_duration"
+      },
+      "multiple": false,
+      "source": false,
+      "view": {
+        "format": "hh:mm:ss",
+        "time_unit": "s"
+      },
+      "operations": {}
+    },
+    "silence.max_duration_s": {
+      "type": "double",
+      "display_names": {
+        "en": "Silence.Max Duration",
+        "ru": "Макс. длительность паузы"
+      },
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "view": {
+        "format": "hh:mm:ss",
+        "time_unit": "s"
+      }
+    },
+    "silence.sum_duration_s": {
+      "type": "double",
+      "display_names": {
+        "en": "Silence.Sum Duration",
+        "ru": "Общая длительность пауз"
+      },
+      "multiple": false,
+      "source": false,
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "view": {
+        "format": "hh:mm:ss",
+        "time_unit": "s"
+      }
+    },
+    "silence.intervals": {
+      "type": "nested",
+      "display_names": {
+        "en": "silence.intervals",
+        "ru": "silence.intervals"
+      },
+      "operations": {},
+      "elastic": {
+        "include_in_parent": true
+      },
+      "multiple": true,
+      "source": true,
+      "view": {}
+    },
+    "silence.intervals.duration": {
+      "type": "long",
+      "display_names": {
+        "en": "silence.intervals.duration",
+        "ru": "silence.intervals.duration"
+      },
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "operations": {},
+      "view": {}
+    },
+    "silence.intervals.channel_from": {
+      "type": "string",
+      "display_names": {
+        "en": "silence.intervals.channel_from",
+        "ru": "silence.intervals.channel_from"
+      },
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "operations": {},
+      "view": {}
+    },
+    "silence.intervals.channel_to": {
+      "type": "string",
+      "display_names": {
+        "en": "silence.intervals.channel_to",
+        "ru": "silence.intervals.channel_to"
+      },
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "operations": {},
+      "view": {}
+    },
+    "silence.intervals.place_fraction": {
+      "type": "double",
+      "display_names": {
+        "en": "silence.intervals.place_fraction",
+        "ru": "silence.intervals.place_fraction"
+      },
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "operations": {},
+      "view": {}
+    },
+    "silence.intervals.begin": {
+      "type": "long",
+      "display_names": {
+        "en": "silence.intervals.begin",
+        "ru": "silence.intervals.begin"
+      },
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "operations": {},
+      "view": {}
+    },
+    "silence.intervals.end": {
+      "type": "long",
+      "display_names": {
+        "en": "silence.intervals.end",
+        "ru": "silence.intervals.end"
+      },
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "operations": {},
+      "view": {}
+    },
+    "silence.intervals.place": {
+      "type": "string",
+      "display_names": {
+        "en": "silence.intervals.place",
+        "ru": "silence.intervals.place"
+      },
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "operations": {},
+      "view": {}
+    },
+    "first_reply": {
+      "type": "object",
+      "display_names": {
+        "en": "first_reply",
+        "ru": "first_reply"
+      },
+      "operations": {
+        "script_input_schema": true
+      },
+      "multiple": false,
+      "source": false,
+      "view": {}
+    },
+    "first_reply.time": {
+      "type": "double",
+      "display_names": {
+        "en": "first_reply.time",
+        "ru": "Время первого ответа"
+      },
+      "operations": {
+        "fetch": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true,
+        "sort": true
+      },
+      "multiple": false,
+      "source": false,
+      "view": {
+        "format": "hh:mm:ss",
+        "time_unit": "s"
+      }
+    },
+    "file.properties.department": {
+      "type": "string",
+      "display_names": {
+        "en": "Department",
+        "ru": "Отдел"
+      },
+      "operations": {
+        "aggregate": true,
+        "fetch": true,
+        "highlight": false,
+        "sort": true,
+        "exists": true,
+        "equals": true,
+        "local_receiver_schema": true,
+        "suggest": {
+          "suggest_field": "file.properties.department.suggest"
+        }
+      },
+      "source": false,
+      "multiple": false,
+      "elastic": {
+        "fields": {
+          "suggest": {
+            "type": "completion",
+            "analyzer": "standard"
+          }
+        }
+      },
+      "view": {}
+    },
+    "file.properties.department_id": {
+      "type": "string",
+      "display_names": {
+        "en": "Department ID",
+        "ru": "Идентификатор Отдел"
+      },
+      "operations": {
+        "aggregate": true,
+        "fetch": true,
+        "highlight": false,
+        "sort": true,
+        "exists": true,
+        "equals": true,
+        "local_receiver_schema": true,
+        "suggest": {
+          "suggest_field": "file.properties.department_id.suggest"
+        }
+      },
+      "source": false,
+      "multiple": false,
+      "elastic": {
+        "fields": {
+          "suggest": {
+            "type": "completion",
+            "analyzer": "standard"
+          }
+        }
+      },
+      "view": {}
+    },
+    "file.properties.agent_id": {
+      "type": "string",
+      "display_names": {
+        "en": "Agent ID",
+        "ru": "Идентификатор оператора"
+      },
+      "operations": {
+        "aggregate": true,
+        "fetch": true,
+        "highlight": false,
+        "sort": true,
+        "exists": true,
+        "equals": true
+      },
+      "source": false,
+      "multiple": false,
+      "view": {}
+    },
+    "file.properties.agentid": {
+      "type": "string",
+      "display_names": {
+        "en": "Agent ID (deprecated)",
+        "ru": "Идентификатор оператора (deprecated)"
+      },
+      "operations": {
+        "aggregate": false,
+        "fetch": false,
+        "highlight": false,
+        "sort": false,
+        "exists": false,
+        "equals": false
+      },
+      "source": false,
+      "multiple": false,
+      "view": {}
+    },
+    "system": {
+      "type": "object",
+      "display_names": {
+        "en": "system",
+        "ru": "system"
+      },
+      "operations": {
+        "script_input_schema": true
+      },
+      "elastic": {
+        "dynamic": true
+      },
+      "view": {}
+    },
+    "system.transcript": {
+      "type": "string",
+      "display_names": {
+        "en": "System speech",
+        "ru": "Системные сообщения"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "contains": true,
+        "highlight": true,
+        "highlight_key": "system.transcript",
+        "aggregate": true
+      },
+      "elastic": {
+        "term_vector": "with_positions_offsets",
+        "fielddata": true
+      },
+      "view": {},
+      "multiple": false,
+      "source": false
+    },
+    "file.properties.record_start_time": {
+      "operations": {
+        "aggregate": true,
+        "fetch": true,
+        "equals": true,
+        "highlight": false,
+        "sort": true,
+        "local_receiver_schema": true
+      },
+      "display_names": {
+        "en": "Record date",
+        "ru": "Дата записи"
+      },
+      "view": {
+        "fetch_results": true,
+        "fetch_details": true
+      },
+      "multiple": false,
+      "type": "date",
+      "source": false
+    },
+    "weight": {
+      "type": "double",
+      "display_names": {
+        "en": "Weight",
+        "ru": "Выполнение чек-листа"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "aggregate": true,
+        "sort": true,
+        "equals": true,
+        "weight_script_output_schema": true
+      },
+      "elastic": {},
+      "multiple": false,
+      "source": false,
+      "view": {}
+    },
+    "weights": {
+      "type": "object",
+      "display_names": {
+        "en": "Weights",
+        "ru": "Выполнение чек-листа с обработкой"
+      },
+      "operations": {
+        "aggregate": false,
+        "fetch": true,
+        "highlight": false,
+        "exists": true,
+        "equals": false,
+        "weight_script_output_schema": true
+      },
+      "elastic": {
+        "dynamic": true
+      },
+      "dynamic": true,
+      "root_dynamic": false,
+      "multiple": false,
+      "source": true,
+      "view": {}
+    },
+    "silence.max_durations": {
+      "type": "object",
+      "display_names": {
+        "en": "silence.max_durations",
+        "ru": "silence.max_durations"
+      },
+      "source": true,
+      "operations": {},
+      "view": {}
+    },
+    "silence.max_durations.client_operator": {
+      "type": "long",
+      "display_names": {
+        "en": "Silence.Max Durations.Client Operator",
+        "ru": "Максимальное время ответа оператора"
+      },
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "view": {
+        "format": "hh:mm:ss",
+        "time_unit": "ms"
+      }
+    },
+    "silence.max_durations.operator_operator": {
+      "type": "long",
+      "display_names": {
+        "en": "Silence.Max Durations.Operator Operator",
+        "ru": "Максимальное время отсутствия операторов"
+      },
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "view": {
+        "format": "hh:mm:ss",
+        "time_unit": "ms"
+      }
+    },
+    "silence.max_durations.uninterr_same_operator": {
+      "type": "long",
+      "display_names": {
+        "en": "Silence.Max Durations.Uninterr Same Operator",
+        "ru": "Максимальное время отсутствия одного оператора"
+      },
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "view": {
+        "format": "hh:mm:ss",
+        "time_unit": "ms"
+      }
+    },
+    "first_reply.reaction_time": {
+      "type": "double",
+      "display_names": {
+        "en": "first_reply.reaction_time",
+        "ru": "Время реакции"
+      },
+      "operations": {
+        "fetch": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true,
+        "sort": true
+      },
+      "multiple": false,
+      "source": false,
+      "view": {
+        "format": "hh:mm:ss",
+        "time_unit": "s"
+      }
+    }
+  },
+  "display_names": {
+    "ru": "Чаты",
+    "en": "Chats"
+  },
+  "default": false,
+  "dynamic_templates": []
+}

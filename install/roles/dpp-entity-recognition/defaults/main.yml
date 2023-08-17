@@ -1,0 +1,4 @@
+---
+dpp_entity_recognition_mem_limit: false
+dpp_entity_recognition_pull_external_model: true
+docker_restart: unless-stopped

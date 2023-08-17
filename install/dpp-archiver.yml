@@ -1,0 +1,10 @@
+---
+- name: "Install dpp-archiver"
+  hosts:
+    - dpp_archiver
+  roles:
+    - local-nginx
+    - dpp-archiver
+  vars:
+    local_nginx_conf_d:
+      - elastic.conf.j2

@@ -1,0 +1,26 @@
+---
+
+- name: "Set global vars"
+  import_role:
+    name: set-global-vars
+  tags: 
+    - always
+
+- name: "Set local vars"
+  import_tasks: set-vars.yml
+  tags:
+    - always  
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: "Install DPP-painless-processor"
+  include: "install-dpp-painless-processor.yml"
+  loop: "{{ range(1, painless_count + 1) | list }}"
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start

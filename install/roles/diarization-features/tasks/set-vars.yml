@@ -1,0 +1,9 @@
+---
+- name: "{{ dictionary_hosts.diarization_features.name }} : Set variables"
+  set_fact:
+    service_compose_dir:   "{{ docker_compose_root }}/{{ dictionary_hosts.diarization_features.name }}"
+    service_name:         "{{ dictionary_hosts.diarization_features.name }}"
+    service_img:          "{{ dictionary_hosts.diarization_features.img }}"
+    service_tag:          "{{ dictionary_hosts.diarization_features.tag }}"
+    service_repo:         "{{ dictionary_hosts.diarization_features.repo }}"
+    service_mnt_dir_loc:  "{{ docker_mounts_root }}/{{ dictionary_hosts.diarization_features.name }}"

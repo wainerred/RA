@@ -1,0 +1,8 @@
+---
+service_name: "{{ dictionary_hosts.frontend_20.name }}"
+service_img: "{{ dictionary_hosts.frontend_20.img }}"
+service_tag: "{{ dictionary_hosts.frontend_20.tag }}"
+service_repo: "{{ dictionary_hosts.frontend_20.repo }}"
+service_mnt_dir_loc: "{{ gluster_swarm_mnt if swarm_mode.frontend_20 else docker_mounts_root }}/{{ dictionary_hosts.frontend_20.name }}"
+service_compose_dir: "{{ gluster_swarm_mnt if swarm_mode.frontend_20 else docker_compose_root }}/{{ dictionary_hosts.frontend_20.name }}"
+service_domain: "{{ frontend_domain_20 }}"

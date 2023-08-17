@@ -1,0 +1,18 @@
+- name: Install gluster repo
+  yum:
+    name:
+      - "centos-release-gluster{{ gluster_version }}"
+    state: present
+  when: not local_install
+  tags:
+    - never
+    - install-glfs
+
+- name: Install gluster-client
+  yum:
+    name:
+      - glusterfs-client
+    state: present
+  tags:
+    - never
+    - install-glfs

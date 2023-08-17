@@ -1,0 +1,217 @@
+---
+- name: Create directory for models
+  file:
+    path: "{{ service_models_path }}"
+    state: directory
+    mode: 0755
+
+################### ASR_LM
+- name: "ASR_LM models"
+  block:
+    - name: "Create directories"
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "{{ service_models_path }}/lm_models"
+
+    - name: "Download lm_models"
+      include: updated_models.yml
+      vars:
+        src_path: /mediaserver-resources/lm-models
+        dest_path: '{{ service_models_path }}/lm_models'
+        models: '{{ asr_lm_models }}'
+        sub_dir: lm
+  when: asr_threads is defined or stream_enable
+  tags:
+    - models
+
+################### NLP
+- name: "NLP models"
+  block:
+    - name: "Create directories"
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "{{ service_models_path }}/nlp"
+
+    - name: "Download {{ nlp_model }}"
+      include: updated_models.yml
+      vars:
+        src_path: /mediaserver-resources/nlp
+        dest_path: '{{ service_models_path }}/nlp'
+        models: '{{ nlp_model }}'
+        sub_dir: nlp
+  when: nlp_model is defined
+  tags: models
+
+################### LangID
+- name: "LangID model"
+  block:
+    - name: "Create directories"
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "{{ service_models_path }}/lang_id"
+
+    - name: "Download {{ lang_id }}"
+      include: updated_models.yml
+      vars:
+        src_path: /mediaserver-resources/lang-id
+        dest_path: '{{ service_models_path }}/lang_id'
+        models: '{{ langid_model }}'
+        sub_dir: lid
+  when: langid_model is defined
+  tags:
+    - models
+
+################### Speech Detector
+- name: "Speech Detector model"
+  block:
+    - name: "Create directories"
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "{{ service_models_path }}/speech_detector"
+
+    - name: "Download {{ speech_detector }}"
+      include: updated_models.yml
+      vars:
+        src_path: /mediaserver-resources/speech-detector
+        dest_path: '{{ service_models_path }}/speech_detector'
+        models: '{{ sd_model }}'
+        sub_dir: sd
+  when: sd_model is defined
+  tags: models
+
+################### Gender
+- name: "Gender model"
+  block:
+    - name: "Create directories"
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "{{ service_models_path }}/gender_id"
+
+    - name: "Download {{ gender_model }}"
+      include: updated_models.yml
+      vars:
+        src_path: /mediaserver-resources/gender_id
+        dest_path: '{{ service_models_path }}/gender_id'
+        models: '{{ gender_model }}'
+        sub_dir: gender
+  when: gender_model is defined
+  tags: models
+
+################### Speaker
+- name: "Speaker model"
+  block:
+    - name: "Create directories"
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "{{ service_models_path }}/speaker_id"
+
+    - name: "Download {{ speaker_model }}"
+      include: updated_models.yml
+      vars:
+        src_path: /mediaserver-resources/speaker_id
+        dest_path: '{{ service_models_path }}/speaker_id'
+        models: '{{ speaker_model }}'
+        sub_dir: speaker
+  when: speaker_model is defined
+  tags: models
+
+################### diarization_id
+- name: "diarization_id model"
+  block:
+    - name: "Create directories"
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "{{ service_models_path }}/diarization_id"
+
+    - name: "Download {{ diarization_id }}"
+      include: updated_models.yml
+      vars:
+        src_path: /mediaserver-resources
+        dest_path: '{{ service_models_path }}/diarization_id'
+        models: '{{ diarization_id }}'
+        sub_dir: diarization_id
+  when: diarization_id is defined
+  tags: models
+
+################### sentiment
+- name: "sentiment model"
+  block:
+    - name: "Create directories"
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "{{ service_models_path }}/sentiments"
+
+    - name: "Download {{ sentiments_model }}"
+      include: updated_models.yml
+      vars:
+        src_path: /mediaserver-resources/sentiments
+        dest_path: '{{ service_models_path }}/sentiments'
+        models: '{{ sentiments_model }}'
+        sub_dir: sentiment
+  when: sentiments_model is defined
+  tags: models
+
+################### Acustic sentiments
+- name: "Acustic sentiments"
+  block:
+    - name: "Create directories"
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "{{ service_models_path }}/sentiments"
+
+    - name: "Download {{ sentiments_acoustic }}"
+      include: updated_models.yml
+      vars:
+        src_path: /mediaserver-resources/sentiments
+        dest_path: '{{ service_models_path }}/sentiments-acoustic'
+        models: '{{ sentiments_acoustic }}'
+        sub_dir: sentiment
+  when: sentiments_acoustic is defined
+  tags: models
+################### Text sentiments
+- name: "Text sentiments"
+  block:
+    - name: "Create directories"
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - "{{ service_models_path }}/sentiments"
+
+    - name: "Download {{ sentiments_text }}"
+      include: updated_models.yml
+      vars:
+        src_path: /mediaserver-resources/sentiments
+        dest_path: '{{ service_models_path }}/sentiments-text'
+        models: '{{ sentiments_text }}'
+        sub_dir: sentiment
+  when: sentiments_text is defined
+  tags: models

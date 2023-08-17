@@ -1,0 +1,25 @@
+---
+- name: "Remove directories"
+  file:
+    path: "{{ dir_item }}"
+    state: absent
+  with_items:
+    - "{{ service_mnt_dir }}/data"
+    - "{{ service_mnt_dir }}/backups"
+    - "{{ service_compose_dir }}"
+  loop_control:
+    loop_var: dir_item
+  tags:
+    - never
+    - remove
+
+- name: "Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+    mode: 0644
+  with_items:
+    - "{{ service_mnt_dir }}/data"
+    - "{{ service_mnt_dir }}/backups"
+  loop_control:
+    loop_var: dir_item

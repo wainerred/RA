@@ -1,0 +1,48 @@
+include "application.conf"
+service {
+  actor-system.name = "audio-trasform-system"
+  api.service {
+    bind {
+      address = 0.0.0.0
+      port = {{ audio_transform_port }}
+      timeout = 10sec
+    }
+    internal-ask-timeout = 30min
+    internal-actor-termination-time = 10min
+  }
+  transform {
+    queue {
+      queue-size = 100
+      overflow-strategy = "backpressure"
+      parallelism = 5
+    }
+    // ATTENTION: This directory will be cleanup on start time
+    base-path = "/service/data"
+    file-delete-timeout = 200s
+    max-redirect-count = 5
+  }
+  cut-audio {
+    shell-command = "bash -c"
+    cut-command-template = "/usr/bin/ffmpeg -ss '{begin-time}' -i {input-file} -c copy {output-file}"
+    cut-with-duration-command-template = "/usr/bin/ffmpeg -ss '{begin-time}' -i {input-file} -t '{duration}' -c copy {output-file}"
+    shell-timeout = 5min
+  }
+}
+
+dispatchers {
+  blocking-dispatcher {
+    type = Dispatcher
+    executor = "thread-pool-executor"
+    thread-pool-executor {
+      // or in Akka 2.4.2+
+      fixed-pool-size = 16
+    }
+    throughput = 1
+  }
+}
+
+akka.http {
+  server {
+    request-timeout = 200 s // default 20 s
+  }
+}

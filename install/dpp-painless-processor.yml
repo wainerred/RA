@@ -1,0 +1,6 @@
+---
+- name: "Install dpp-painless-processor"
+  hosts:
+    - dpp_painless_processor
+  roles:
+    - dpp-painless-processor

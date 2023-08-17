@@ -1,0 +1,29 @@
+version: '2.4'
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: always
+{% if cn_builder_mem_limit %}    
+    mem_limit: {{ cn_builder_mem_limit }}
+{% endif %}    
+    network_mode: {{ docker_network_mode }}
+    ports:
+      - {{ ports.cn_builder_main }}:{{ ports.cn_builder_main }}
+    environment:
+      JAVA_OPTS: >-
+        -Xmx{{ cn_builder_mem_limit | regex_search('^[0-9]+') | int * 50 // 100 }}{{ cn_builder_mem_limit | regex_search('\\w$') }}
+        -Duser.timezone=UTC
+        -Djava.net.preferIPv4Stack=true
+        -Dlogback.configurationFile=/app/conf/logback.xml
+        -Dconfig.file=/app/conf/service.conf
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - "{{ service_mnt_dir_loc }}/logs:/app/logs"
+      - "{{ service_mnt_dir_loc }}/conf:/app/conf"
+      - "{{ service_mnt_dir_loc }}/cn-tmp:/cn-tmp"
+      - "{{ service_mnt_dir_loc }}/tmp:/tmp"
+      - "{{ service_mnt_dir_loc }}/certs:/etc/pki/ca-trust/source/anchors/:ro"

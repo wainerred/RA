@@ -1,0 +1,6 @@
+---
+- name: "Install dpp-file-cutter"
+  hosts:
+    - dpp_file_cutter
+  roles:
+    - dpp-file-cutter

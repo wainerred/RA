@@ -1,0 +1,12 @@
+include "backend.conf"
+play {
+
+  modules.disabled += "ru.dsslab.plexus.modules.scope.ScopeFetchModule"
+  modules.enabled += "ru.dsslab.plexus.modules.scope.CachedScopeFetchModule"
+
+  modules.disabled += "ru.dsslab.plexus.modules.InitModules"
+  modules.enabled += "ru.dsslab.plexus.modules.InitStubModules"
+  modules.disabled += "ru.dsslab.plexus.modules.CookieAuthenticatedModule"
+  modules.enabled += "ru.dsslab.plexus.modules.OAuthAuthenticatedModule"
+  modules.disabled += "ru.dsslab.plexus.modules.SessionAuthenticatedModule"
+}

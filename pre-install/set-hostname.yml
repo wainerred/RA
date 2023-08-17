@@ -1,0 +1,8 @@
+---
+- name: Set hostname
+  hosts:
+    - servers
+  tasks:
+    - name: Set hostname
+      hostname:
+        name: "{{ inventory_hostname }}"

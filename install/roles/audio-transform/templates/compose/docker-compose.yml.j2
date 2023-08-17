@@ -1,0 +1,29 @@
+version: '2.4'
+
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag}}
+    container_name: {{ service_name }}
+    restart: unless-stopped
+    mem_limit: {{ audio_transform_mem_limit }}
+    network_mode: {{ docker_network_mode }}
+    environment:
+      JAVA_OPTS: >-
+        -Xms{{ audio_transform_mem_limit | regex_search('^[0-9]+') | int * 75 // 100 }}{{ audio_transform_mem_limit | regex_search('\\w$') }}
+        -Xmx{{ audio_transform_mem_limit | regex_search('^[0-9]+') | int * 75 // 100 }}{{ audio_transform_mem_limit | regex_search('\\w$') }}
+        -Duser.timezone=UTC
+        -Djava.net.preferIPv4Stack=true
+        -Dlogback.configurationFile=/service/conf/logback.xml
+        -Dconfig.file=/service/conf/service.conf
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    ports:
+      - {{ ports.audio_transform_main }}:{{ ports.audio_transform_main }}
+    volumes:
+      - {{ service_mnt_dir_loc }}/conf/service.conf:/service/conf/service.conf:ro
+      - {{ service_mnt_dir_loc }}/conf/logback.xml:/service/conf/logback.xml:ro
+      - {{ service_mnt_dir_loc }}/logs:/service/logs
+      - {{ service_mnt_dir_loc }}/tmp:/tmp
+      - {{ service_mnt_dir_loc }}/data:/service/data

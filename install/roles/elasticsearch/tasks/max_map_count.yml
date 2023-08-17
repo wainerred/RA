@@ -1,0 +1,9 @@
+---
+
+- name: "Write vm.max_map_count to sysctl.conf"  
+  lineinfile:
+      path: "/etc/sysctl.conf" # required. The file to modify.,Before 2.3 this option was only usable as I(dest), I(destfile) and I(name).
+      line: "vm.max_map_count=262144" # not required. Required for C(state=present). The line to insert/replace into the file. If C(backrefs) is set, may contain backreferences that will get expanded with the C(regexp) capture groups if the regexp matches.
+      
+- name: "Set vm.max_map_count"
+  shell: "sysctl -w vm.max_map_count=262144"

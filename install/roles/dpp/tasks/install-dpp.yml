@@ -1,0 +1,35 @@
+---
+
+- name: "Remove directory"
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ service_mnt_dir_loc }}"
+    - "{{ service_compose_dir }}"
+  tags:
+    - never
+    - remove
+
+- name: "Create directory"
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0644
+  with_items:
+    - "{{ service_mnt_dir_loc }}/conf"
+    - "{{ service_mnt_dir_loc }}/logs"
+  tags:
+    - config
+
+- name: "Generate configs"
+  template:
+    src: "{{ conf_item }}"
+    dest: "{{ service_mnt_dir_loc }}/conf/{{ conf_item | basename | regex_replace('.j2$','') }}"
+    mode: 0644
+  with_fileglob:
+    - "templates/conf/*.j2"
+  loop_control:
+    loop_var: conf_item
+  tags:
+    - config

@@ -1,0 +1,71 @@
+---
+
+- name: "Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+    mode: 0644
+  with_items:
+    - "{{ service_mnt_dir_loc }}/conf"
+    - "{{ service_mnt_dir_loc }}/conf/notification_email_static"
+    - "{{ service_mnt_dir_loc }}/logs"
+    - "{{ service_mnt_dir_loc }}/tmp"
+  loop_control:
+    loop_var: dir_item
+
+- name: "Generate config"
+  template:
+    src: "{{ conf_item }}"
+    dest: "{{ service_mnt_dir_loc }}/conf/{{ conf_item | basename | regex_replace('.j2', '') }}"
+    mode: 0644
+  with_fileglob:
+    - "templates/plexus-server/conf/*.j2"
+  loop_control:
+    loop_var: conf_item
+  tags:
+    - config
+
+- name: "Generate journal es settings"
+  copy:
+    src: "{{ conf_item }}"
+    dest: "{{ service_mnt_dir_loc }}/conf/{{ conf_item | basename | regex_replace('.j2', '') }}"
+    mode: 0644
+  with_fileglob:
+    - "files/journal-es-settings/*.json"
+  loop_control:
+    loop_var: conf_item
+
+- name: "Copy static files"
+  copy:
+    src: "{{ conf_item }}"
+    dest: "{{ service_mnt_dir_loc }}/conf/{{ conf_item | basename }}"
+    mode: 0644
+  with_fileglob:
+    - "files/plexus-server/*"
+  loop_control:
+    loop_var: conf_item
+  tags:
+    - config
+
+- name: "Copy logo"
+  copy:
+    src: "{{ conf_item }}"
+    dest: "{{ service_mnt_dir_loc }}/conf/notification_email_static/{{ conf_item | basename }}"
+    mode: 0644
+  with_fileglob:
+    - "../../../../customization/{{ ansible_inventory_sources[0].split('/')[-1] }}/logo/*"
+  loop_control:
+    loop_var: conf_item
+  tags:
+    - config
+
+- name: Copy custom email
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "{{ service_mnt_dir_loc }}/conf/{{ item | basename | regex_replace('.j2', '') }}"
+    mode: 0644
+  with_fileglob:
+    - "../../../../customization/{{ ansible_inventory_sources[0].split('/')[-1] }}/email/*.j2"
+  when: backend_custom_email and versions.plexus_server is version('3.25.0', '>=')
+  tags:
+    - config

@@ -1,0 +1,24 @@
+CREATE DATABASE files ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE = 'en_US.utf8';
+
+ALTER DATABASE files OWNER TO postgres;
+
+\connect files
+
+CREATE TABLE storage (
+    owner_id        uuid NOT NULL,
+    owner_raw_id    text NOT NULL,
+    storage_limit   bigint NOT NULL,
+    rotation_settings   text{% if versions.file_service is version('3.6.0', '>=') %},{% endif +%}
+{% if versions.file_service is version('3.6.0', '>=') %}
+    settings text
+{% endif %}
+);
+
+ALTER TABLE ONLY storage ADD CONSTRAINT pk_storage PRIMARY KEY (owner_id);
+
+CREATE EXTENSION pg_trgm;
+
+ALTER TABLE storage ADD COLUMN rotation_settings text;
+{% if versions.file_service is version('3.6.0', '>=') %}
+ALTER TABLE storage ADD COLUMN settings text;
+{% endif %}

@@ -1,0 +1,74 @@
+{% if frontend_domain | length > 1 or frontend_https_enabled %}
+server {
+    listen  80;
+{% if frontend_domain | length > 1 %} 
+    server_name
+{% for domain in frontend_domain[1:] %}
+        auth.{{ domain }}    www.auth.{{ domain }}
+{% endfor %}
+    ;  
+{% else %}
+    server_name auth.{{ frontend_domain[0] }} www.auth.{{ frontend_domain[0] }};
+{% endif %}
+    location / {
+        return 302 {{ frontend_scheme }}://oauth.{{ frontend_domain[0] }}$request_uri;
+    }
+{% if frontend_certbot %}
+    include /etc/nginx/letsencrypt.conf;
+{% endif %}
+}
+{% endif %}
+
+server {
+{% if frontend_https_enabled %}
+    listen  443 ssl;
+{% if frontend_certbot %}
+    ssl_certificate         /letsencrypt/live/{{ frontend_domain[0] }}/fullchain.pem;
+    ssl_certificate_key     /letsencrypt/live/{{ frontend_domain[0] }}/privkey.pem;
+{% else %}
+    ssl_certificate         /etc/nginx/certs/fullchain.pem;
+    ssl_certificate_key     /etc/nginx/certs/privkey.pem;
+{% endif %}
+{% else %}
+    listen  80;
+{% if frontend_certbot %}
+    include /etc/nginx/letsencrypt.conf;
+{% endif %}
+{% endif %}
+    server_name  
+        oauth.{{ frontend_domain[0] }}
+    ;  
+
+    set $root  {{ frontend_root_dir }}/oauth;
+    root $root;
+
+    # AuthorizationServer
+    location / {
+        gzip_static on;
+        #try_files $uri /clientOauth.html =404;
+        try_files $uri =404;
+        add_header Cache-Control "must-revalidate";
+    }
+
+    location /token/ {
+        proxy_pass              http://{{ host.plexus_auth }}:{{ ports.plexus_auth_main }}/oauth/token/;
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        Host $http_host;
+
+        #proxy_cookie_domain ~.* .{{ frontend_domain[0] }};
+    }
+
+    location /authorize {
+        alias {{ frontend_root_dir }}/oauth;
+
+        gzip_static on;
+        try_files $uri /clientOauth.html =404;
+        add_header Cache-Control "must-revalidate";
+
+{% if frontend_https_enabled or reverse_proxy %}
+        proxy_cookie_path / "/; secure; HttpOnly; SameSite=None";
+{% endif %}
+        proxy_cookie_domain ~.* .{{ frontend_domain[0] }};
+    }
+}

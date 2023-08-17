@@ -1,0 +1,64 @@
+---
+- name: Set vars
+  include_vars: dump.yml
+
+- name: Create tmp dir
+  file:
+    path: "{{ tmp_dir }}"
+    state: directory
+    mode: 0644
+
+- name: Copy dumps to tmp dir
+  copy:
+    src: "{{ item }}"
+    dest: "{{ tmp_dir }}/{{ item | basename }}"
+    mode: 0644
+  with_fileglob:
+    - "tasks/files/*json"
+
+- name: "Login to regestri"
+  docker_login:
+    registry_url: "{{ docker_registry_url }}"
+    username: "{{ docker_login }}"
+    password: "{{ docker_pass }}"
+    reauthorize: true
+  when: docker_ext_registry
+
+- name: Load dump base index
+  docker_container:
+    name: "es-dump-sp-base-index"
+    image: "{{ dump_repo }}/{{ dump_img }}:{{ dump_tag }}"
+    auto_remove: true
+    network_mode: host
+    restart_policy: false
+    volumes:
+      - "{{ tmp_dir }}:/dump"
+    command: |
+      --input=/dump/index-spell-checker-base.json
+      --output=http://{{ host.elasticsearch }}:{{ ports.elasticsearch_main }}/{{ spell_checker_index_pattern }}-base
+      --type=data
+
+- name: Load dump dictionaries index
+  docker_container:
+    name: "es-dump-sp-index"
+    image: "{{ dump_repo }}/{{ dump_img }}:{{ dump_tag }}"
+    auto_remove: true
+    network_mode: host
+    restart_policy: false
+    volumes:
+      - "{{ tmp_dir }}:/dump"
+    command: |
+      --input=/dump/index-spell-checker-dictionaries.json
+      --output=http://{{ host.elasticsearch }}:{{ ports.elasticsearch_main }}/{{ spell_checker_index_pattern }}-dictionaries
+      --type=data
+
+- name: "Logout to regestri"
+  docker_login:
+    registry_url: "{{ docker_registry_url }}"
+    state: absent
+  when: docker_ext_registry
+
+- name: Remove tmp dir
+  file:
+    path: "{{ tmp_dir }}"
+    state: absent

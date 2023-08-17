@@ -1,0 +1,18 @@
+{
+    "name": "Lang-id",
+    "kind": "grpc",
+    "type": "processor",
+    "urls": [
+        {%- set addrs = [] -%}
+        {%- for host in groups['iii_speech_service'] -%}
+        {%- if hostvars[host].triton_videocards is defined -%}
+        {%- for i in hostvars[host].triton_videocards -%}
+        {{ addrs.append(hostvars[host][inventory_ip]+':'+((ports.iii_speech_service_langid | int) + (loop.index0 | int * 10)) | string ) }}
+        {%- endfor -%}
+        {%- else -%}
+        {{ addrs.append(hostvars[host][inventory_ip]+':'+(ports.iii_speech_service_langid | string )) }}
+        {%- endif -%}
+        {%- endfor -%}
+        "{{ '", "'.join(addrs) }}"
+    ]
+}

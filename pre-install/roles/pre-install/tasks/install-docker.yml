@@ -1,0 +1,36 @@
+---
+
+- name: install pip
+  yum:
+    name:
+      - python-pip
+  when: not use_python3
+
+- name: install pip3
+  yum:
+    name:
+      - python3-pip
+  when: use_python3
+
+- name: Upgrade pip
+  pip:
+    name: pip<21.0
+    extra_args: '--upgrade'
+
+- name: Install Docker
+  include_role:
+    name: ansible-role-docker
+  vars:
+    docker_install_compose: false
+
+- name: Install docker python package
+  include_role:
+    name: ansible-role-pip
+  vars:
+    pip_install_packages:
+      - name: docker
+      - name: pathlib
+      - name: pyyaml
+      - name: docker-compose==1.23.0
+      - name: pyexpect
+      - name: jsondiff

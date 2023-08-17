@@ -1,0 +1,9 @@
+---
+
+# Install NVIDIA Triton Inference Server
+- name: 'Install NVIDIA Triton Inference Server'
+  hosts:
+    - triton
+  roles:
+    - triton
+  gather_facts: false

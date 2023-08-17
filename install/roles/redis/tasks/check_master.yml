@@ -1,0 +1,16 @@
+---
+- name: Copy script
+  copy:
+    src: "redis_master_check.sh"
+    dest: "/etc/redis_master_check.sh"
+  tags:
+    - never
+    - check
+
+- name: "Add task to cron"
+  cron:
+    name: ""
+    job: "/etc/redis_master_check.sh {{ ansible_host }} {{ dictionary_hosts[service].ports.main | int + 1 }}"
+  tags:
+    - never
+    - check

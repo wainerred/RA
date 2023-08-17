@@ -1,0 +1,43 @@
+version: '3.7'
+
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+{% if frontend_mem_limit %}
+      resources:
+        limits:
+          memory: {{ frontend_mem_limit }}
+{% endif %}
+      placement:
+        constraints:
+          - "node.labels.analytic==true"
+      update_config:
+        parallelism: 1
+        delay: 10s
+    ports:
+      - {{ ports.frontend_20_main }}:{{ ports.frontend_20_main }}
+    networks:
+      - {{ docker_swarm_network }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - {{ service_mnt_dir_loc }}/conf/externalSettings.js:/usr/share/nginx/html/externalSettings.js
+      - {{ service_mnt_dir_loc }}/conf/externalSettings.js.gz:/usr/share/nginx/html/externalSettings.js.gz
+      - {{ service_mnt_dir_loc }}/conf/nginx.conf:/etc/nginx/nginx.conf:ro
+      - {{ service_mnt_dir_loc }}/conf/mime.types:/etc/nginx/mime.types:ro
+      - {{ service_mnt_dir_loc }}/sites-enabled:/etc/nginx/sites-enabled
+{% if frontend_favicon_path is defined %}
+      - {{ frontend_favicon_path }}:/favicon
+{% endif %}
+
+networks:
+  {{ docker_swarm_network }}:
+    external: true
+    name: {{ docker_swarm_network }}

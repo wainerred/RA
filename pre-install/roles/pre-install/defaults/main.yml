@@ -1,0 +1,5 @@
+---
+gluster_mount_enable: false
+local_install: false
+gluster_version: 7
+use_python3: false

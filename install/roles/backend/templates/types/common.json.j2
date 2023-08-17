@@ -1,0 +1,51 @@
+{
+  "fields": {
+    "_hash.checksum": {
+      "type": "string",
+      "display_names": {
+        "en": "Exact dublicates",
+        "ru": "Точные дубли"
+      },
+      "operations": {
+        "fetch": false,
+        "exists": true,
+        "equals": true,
+        "aggregate": false,
+        "sort": false,
+        "highlight": false,
+        "collapse": true
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": false,
+      "source": false
+    },
+    "images": {
+      "type": "string",
+      "display_names": {
+        "en": "images",
+        "ru": "images"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": true,
+        "script_input_schema": true
+      },
+      "elastic": {},
+      "view": {
+        "image": true
+      },
+      "multiple": true,
+      "source": false
+    }
+  },
+  "dynamic_templates": [],
+  "display_names": {
+    "ru": "Тексты",
+    "en": "Texts"
+  },
+  "default": false
+}

@@ -1,0 +1,60 @@
+---
+
+- name: Set global vars
+  import_role:
+    name: set-global-vars
+
+- name: "Set role vars"
+  include: set_vars.yml
+
+- name: Set vars
+  set_fact:
+    tmp_dir: /tmp/entities_dump
+
+- name: Create tmp dir
+  file:
+    state: directory
+    path: "{{ tmp_dir }}"
+    mode: 0644
+
+- name: Extract dumps
+  unarchive:
+    src: entities_dump.tgz
+    dest: "{{ tmp_dir }}"
+
+- name: Get dump file path
+  find:
+    path: "{{ tmp_dir }}"
+  register: dump_file
+
+- name: "Login to regestri"
+  docker_login:
+    registry_url: https://docker-registry.3itech.ru/
+    username: "{{ docker_login }}"
+    password: "{{ docker_pass }}"
+    reauthorize: true
+  when: docker_ext_registry
+
+- name: Run elastic dump
+  docker_container:
+    name: "{{ service_name }}"
+    image: "{{ service_repo }}/{{ service_img }}:{{ service_tag }}"
+    auto_remove: true
+    volumes:
+      - "{{ tmp_dir }}:/dump"
+    command: |
+      --input=/dump/{{ dump_file.files[0].path | basename }}
+      --output=http://{{ host.elasticsearch }}:{{ ports.elasticsearch_main }}/{{ entities_index }}
+      --type=data
+      --limit=1000
+
+- name: "Logout to regestri"
+  docker_login:
+    registry_url: https://docker-registry.3itech.ru/
+    state: absent
+  when: docker_ext_registry      
+
+- name: Remove tmp dir
+  file:
+    state: absent
+    path: "{{ tmp_dir }}"

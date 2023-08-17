@@ -1,0 +1,29 @@
+---
+- name: "Set global vars"
+  import_role:
+    name: set-global-vars
+  tags: 
+    - always
+
+- name: "Set local vars"
+  import_tasks: set-vars.yml
+  tags:
+    - always  
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: "Init Database for notification-service in postgres"
+  import_tasks: "init-postgres.yml"
+  delegate_to: "{{ hostvars[groups['postgres_dpp'][0]].inventory_hostname }}"
+  when: notification_db_type == "postgres"
+
+- name: "Install notification-service"
+  include: "install-notification-service.yml"
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start

@@ -1,0 +1,10 @@
+---
+# defaults file for dpp-spell-checker
+dpp_spell_checker_mem_limit: false
+spell_checker_index_pattern: spell-checker
+number_of_shards: 1
+number_of_replicas: "{{ 1 if (groups['elasticsearch_spell_checker_data'] | length | int > 1) else 0 }}"
+spell_checker_workers: 1
+spell_checker_pipeline_per_stream: 1
+spell_checker_tokenizers: 1
+docker_registry_url: https://docker-registry.3itech.ru/

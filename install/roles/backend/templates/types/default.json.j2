@@ -1,0 +1,1918 @@
+{
+  "fields": {
+{% if versions.plexus_server is version('3.20.0', '>=') %}
+    "additional_weights_settings.diff_ids": {
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true
+      },
+      "display_names": {
+        "en": "additional_weights_settings.diff_ids",
+        "ru": "Идентификаторы отличающихся категорий"
+      },
+      "multiple": true,
+      "type": "string",
+      "source": false,
+      "view": {}
+    }, 
+{% endif %}
+{% if versions.plexus_server is version('3.18.3', '>=') %}
+    "file.properties.holds": {
+      "operations": {
+        "fetch": true,
+        "exists": true
+      },
+      "display_names": {
+        "en": "Holds",
+        "ru": "Удержания"
+      },
+      "view": {},
+      "elastic": {
+        "dynamic": true
+      },
+      "multiple": true,
+      "type": "object",
+      "source": true
+    },
+    "file.properties.holds.hold_started": {
+      "operations": {},
+      "display_names": {
+        "en": "Hold.Started",
+        "ru": "Дата начала удержания"
+      },
+      "view": {},
+      "elastic": {},
+      "multiple": true,
+      "type": "date",
+      "source": false
+    },
+    "file.properties.holds.hold_ended": {
+      "operations": {},
+      "display_names": {
+        "en": "Hold.Ended",
+        "ru": "Дата окончания удержания"
+      },
+      "view": {},
+      "elastic": {},
+      "multiple": true,
+      "type": "date",
+      "source": false
+    },
+    "file.properties._holds": {
+      "operations": {
+        "fetch": true
+      },
+      "display_names": {
+        "en": "Holds (system)",
+        "ru": "Удержания (системное поле)"
+      },
+      "view": {},
+      "elastic": {},
+      "multiple": false,
+      "type": "object",
+      "source": true
+    },
+    "file.properties._holds.type": {
+      "operations": {},
+      "view": {},
+      "elastic": {},
+      "multiple": false,
+      "type": "string",
+      "source": false
+    },
+    "file.properties._holds.intervals": {
+      "operations": {},
+      "view": {},
+      "elastic": {},
+      "multiple": true,
+      "type": "object",
+      "source": true
+    },
+    "file.properties._holds.intervals.start": {
+      "operations": {},
+      "view": {},
+      "elastic": {},
+      "multiple": true,
+      "type": "long",
+      "source": false
+    },
+    "file.properties._holds.intervals.duration": {
+      "operations": {},
+      "view": {},
+      "elastic": {},
+      "multiple": true,
+      "type": "long",
+      "source": false
+    }, 
+{% endif %}
+{% if backend_commnet_group and versions.plexus_server is version('3.15.0', '>=') %}
+    "comment_groups": {
+      "type": "nested",
+      "display_names": {
+        "en": "comment_groups",
+        "ru": "comment_groups"
+      },
+      "operations": {
+        "fetch": true,
+        "dictionary_schema": true
+      },
+      "elastic": {
+        "include_in_parent": false
+      },
+      "source": true,
+      "multiple": true,
+      "view": {}
+    },
+    "comment_groups.id": {
+      "type": "string",
+      "display_names": {
+        "en": "comment_groups.id",
+        "ru": "comment_groups.id"
+      },
+      "operations": {},
+      "elastic": {},
+      "multiple": true,
+      "view": {}
+    },
+    "comment_groups.statistic": {
+      "type": "object",
+      "display_names": {
+        "en": "comment_groups.statistic",
+        "ru": "comment_groups.statistic"
+      },
+      "operations": {},
+      "elastic": {},
+      "multiple": true,
+      "source": true,
+      "view": {}
+    },
+    "comment_groups.statistic.comments_count": {
+      "type": "integer",
+      "display_names": {
+        "en": "comment_groups.statistic.comments_count",
+        "ru": "Кол-во комментариев группы"
+      },
+      "operations": {
+        "fetch": true
+      },
+      "elastic": {},
+      "multiple": true,
+      "source": true,
+      "view": {}
+    },
+    "comment_groups.comments": {
+      "type": "object",
+      "display_names": {
+        "en": "comment_groups.comments",
+        "ru": "comment_groups.comments"
+      },
+      "operations": {},
+      "elastic": {},
+      "multiple": true,
+      "source": true,
+      "view": {}
+    },
+    "comment_groups.comments.id": {
+      "type": "integer",
+      "display_names": {
+        "en": "comment_groups.comments.id",
+        "ru": "comment_groups.comments.id"
+      },
+      "operations": {},
+      "elastic": {},
+      "multiple": true,
+      "view": {}
+    },
+    "comment_groups.comments.user_id": {
+      "type": "string",
+      "display_names": {
+        "en": "comment_groups.comments.user_id",
+        "ru": "comment_groups.comments.user_id"
+      },
+      "operations": {},
+      "elastic": {},
+      "multiple": true,
+      "view": {}
+    },
+    "comment_groups.comments.created_date": {
+      "type": "date",
+      "display_names": {
+        "en": "comment_groups.comments.created_date",
+        "ru": "comment_groups.comments.created_date"
+      },
+      "operations": {},
+      "elastic": {},
+      "multiple": true,
+      "view": {}
+    },
+    "comment_groups.comments.modified_date": {
+      "type": "date",
+      "display_names": {
+        "en": "comment_groups.comments.modified_date",
+        "ru": "comment_groups.comments.modified_date"
+      },
+      "operations": {},
+      "elastic": {},
+      "multiple": true,
+      "view": {}
+    },
+    "comment_groups.comments.text": {
+      "type": "string",
+      "display_names": {
+        "en": "comment_groups.comments.text",
+        "ru": "comment_groups.comments.text"
+      },
+      "operations": {},
+      "elastic": {
+        "type": "text"
+      },
+      "multiple": true,
+      "view": {}
+    },
+    "comment_groups.comments.links": {
+      "type": "string",
+      "multiple": true,
+      "display_names": {
+        "en": "comment_groups.comments.links",
+        "ru": "comment_groups.comments.links"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "comment_groups.statistic.index": {
+      "type": "integer",
+      "multiple": true,
+      "source": true,
+      "display_names": {
+        "en": "comment_groups.statistic.index",
+        "ru": "comment_groups.statistic.index"
+      },
+      "operations": {},
+      "view": {}
+    },
+{% endif %}
+{% if backend_document_task and versions.plexus_server is version('3.15.0', '>=') %}
+    "document_stages": {
+      "type": "nested",
+      "display_names": {
+        "en": "Document stages",
+        "ru": "Задания на документ"
+      },
+      "operations": {
+        "fetch": true,
+        "dictionary_schema": true
+      },
+      "elastic": {
+        "include_in_parent": false
+      },
+      "source": true,
+      "multiple": true,
+      "view": {}
+    },
+    "document_stages.id": {
+      "type": "string",
+      "multiple": true,
+      "operations": {
+        "fetch": true,
+        "equals": true,
+        "aggregate": true
+      },
+      "view": {}
+    },
+    "document_stages.task_id": {
+      "type": "string",
+      "multiple": true,
+      "operations": {},
+      "view": {}
+    },
+    "document_stages.action_type": {
+      "type": "string",
+      "multiple": true,
+      "operations": {},
+      "view": {}
+    },
+    "document_stages.created_date": {
+      "type": "date",
+      "multiple": true,
+      "operations": {},
+      "view": {}
+    },
+    "document_stages.random_create": {
+      "type": "boolean",
+      "multiple": true,
+      "operations": {},
+      "view": {}
+    },
+    "document_stages.user_id": {
+      "type": "string",
+      "multiple": true,
+      "operations": {
+        "fetch": true,
+        "equals": true,
+        "aggregate": true
+      },
+      "elastic": {},
+      "view": {}
+    },
+{% endif %}
+{% if versions.plexus_server is version('3.13.0', '>=') %}
+    "doclib": {
+      "type": "object",
+      "source": true,
+      "display_names": {
+        "en": "doclib",
+        "ru": "Библиотека документов"
+      },
+      "operations": {
+        "fetch": true,
+        "dictionary_schema": true
+      },
+      "elastic": {
+        "dynamic": true
+      },
+      "view": {}
+    },
+    "doclib.item_id": {
+      "type": "string",
+      "display_names": {
+        "en": "doclib.item_id",
+        "ru": "Библиотека документов.ID раздела"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": true
+      },
+      "elastic": {},
+      "view": {}
+    },
+    "doclib.partiton_id": {
+      "type": "string",
+      "display_names": {
+        "en": "doclib.partiton_id",
+        "ru": "doclib.partiton_id"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "doclib.user_id": {
+      "type": "string",
+      "display_names": {
+        "en": "doclib.user_id",
+        "ru": "doclib.user_id"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "doclib.created_date": {
+      "type": "date",
+      "display_names": {
+        "en": "doclib.created_date",
+        "ru": "doclib.created_date"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "_categories.added": {
+      "type": "object",
+      "multiple": true,
+      "source": true,
+      "operations": {},
+      "view": {}
+    },
+    "_categories.added.id": {
+      "type": "string",
+      "multiple": true,
+      "source": false,
+      "operations": {},
+      "view": {}
+    },
+    "_categories.added.factor": {
+      "type": "double",
+      "multiple": true,
+      "source": false,
+      "operations": {},
+      "view": {}
+    },
+{% endif %}
+{% if backend_orgstruct %}
+    "authority.access_ids": {
+      "type": "string",
+      "multiple": true,
+      "source": false,
+      "operations": {
+        "fetch": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true,
+        "orgstruct_dictionary_schema": true
+      },
+      "display_names": {
+        "en": "authority.access_ids",
+        "ru": "Авторизация.Идентификаторы доступа"
+      },
+      "view": {}
+    },
+{% endif %}
+{% if backend_root_categories %}
+    "root_categories_highlight_info": {
+      "type": "object",
+      "display_names": {
+        "en": "root_categories_highlight_info",
+        "ru": "Выделеления рутовых категорий"
+      },
+      "operations": {},
+      "elastic": {
+        "enabled": false
+      },
+      "view": {},
+      "multiple": false,
+      "source": true
+    },
+    "root_categories": {
+      "type": "nested",
+      "display_names": {
+        "en": "root_categories",
+        "ru": "Рутовые категории"
+      },
+      "operations": {
+        "aggregate": false,
+        "fetch": true,
+        "highlight": false,
+        "exists": false,
+        "sort": false,
+        "script_input_schema": true,
+        "local_receiver_schema": true,
+        "weight_script_output_schema": true
+      },
+      "elastic": {
+        "include_in_parent": true
+      },
+      "view": {},
+      "multiple": true,
+      "source": true
+    },
+    "root_categories.owner": {
+      "type": "string",
+      "display_names": {
+        "en": "root_categories.owner",
+        "ru": "Рутовые категории.Владелец"
+      },
+      "operations": {},
+      "elastic": {
+        "index": false
+      },
+      "view": {}
+    },
+    "root_categories.data_id": {
+      "type": "integer",
+      "display_names": {
+        "en": "root_categories.data_id",
+        "ru": "Рутовые категории.Идентификатор данных"
+      },
+      "operations": {},
+      "elastic": {
+        "index": false
+      },
+      "view": {}
+    },
+    "root_categories.subtype": {
+      "type": "string",
+      "display_names": {
+        "en": "root_categories.subtype",
+        "ru": "Рутовые категории.Подтип"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "root_categories.weight": {
+      "type": "double",
+      "display_names": {
+        "en": "root_categories.weight",
+        "ru": "Рутовые категории.Вес"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "root_categories.id": {
+      "type": "string",
+      "display_names": {
+        "en": "root_categories.id",
+        "ru": "Рутовые категории.Идентификатор"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "local_receiver_schema": true,
+        "suggest": {
+          "suggest_field": "root_categories.value.suggest",
+          "display_value_field": "root_categories.value"
+        }
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "root_categories.value": {
+      "type": "string",
+      "display_names": {
+        "en": "root_categories.value",
+        "ru": "Рутовые категории.Значение"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "local_receiver_schema": true,
+        "suggest": {
+          "suggest_field": "root_categories.value.suggest"
+        }
+      },
+      "elastic": {
+        "fields": {
+          "suggest": {
+            "analyzer": "standard",
+            "type": "completion"
+          }
+        }
+      },
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+{% endif %}
+    "sentiment": {
+      "type": "object",
+      "display_names": {
+        "en": "Sentiment",
+        "ru": "Тональность.Объект"
+      },
+      "operations": {
+        "aggregate": false,
+        "fetch": true,
+        "highlight": false,
+        "exists": false,
+        "sort": false,
+        "script_input_schema": true
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": false,
+      "source": true
+    },
+    "sentiment.details": {
+      "type": "object",
+      "display_names": {
+        "en": "sentiment.details",
+        "ru": "sentiment.details"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "sentiment.details.negative": {
+      "type": "integer",
+      "display_names": {
+        "en": "sentiment.details.negative",
+        "ru": "Тональность.Негативная"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": true
+      },
+      "elastic": {},
+      "view": {}
+    },
+    "sentiment.details.neutral": {
+      "type": "integer",
+      "display_names": {
+        "en": "sentiment.details.neutral",
+        "ru": "Тональность.Нейтральная"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": true
+      },
+      "elastic": {},
+      "view": {}
+    },
+    "sentiment.details.positive": {
+      "type": "integer",
+      "display_names": {
+        "en": "sentiment.details.positive",
+        "ru": "Тональность.Позитивная"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": true
+      },
+      "elastic": {},
+      "view": {}
+    },
+    "sentiment.value": {
+      "type": "string",
+      "display_names": {
+        "en": "Sentiment",
+        "ru": "Тональность"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": false,
+        "highlight": false
+      },
+      "elastic": {},
+      "view": {
+        "dictionary_id": "sentiment"
+      },
+      "multiple": false,
+      "source": false
+    },
+    "keywords": {
+      "type": "string",
+      "display_names": {
+        "en": "keywords",
+        "ru": "Ключевые слова"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": false,
+        "highlight": false,
+        "script_input_schema": true
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": true,
+      "source": false
+    },
+    "language": {
+      "type": "string",
+      "display_names": {
+        "en": "Language",
+        "ru": "Язык"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "update": true,
+        "script_input_schema": true
+      },
+      "elastic": {},
+      "view": {
+        "dictionary_id": "language"
+      },
+      "multiple": true,
+      "source": false
+    },
+    "_internal_data": {
+      "type": "object",
+      "display_names": {
+        "en": "_internal_data",
+        "ru": "_internal_data"
+      },
+      "operations": {
+        "script_input_schema": true
+      },
+      "elastic": {
+        "dynamic": true
+      },
+      "view": {}
+    },
+    "_internal_data.processed_date": {
+      "type": "date",
+      "display_names": {
+        "en": "Processed date",
+        "ru": "Дата обработки"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": true,
+        "highlight": false
+      },
+      "elastic": {},
+      "view": {
+        "fetch_results": true,
+        "fetch_details": true
+      },
+      "multiple": false,
+      "source": false
+    },
+    "_internal_data.indexed_date": {
+      "type": "date",
+      "display_names": {
+        "en": "Indexed date",
+        "ru": "Дата индексации"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": true,
+        "highlight": false
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": false,
+      "source": false
+    },
+    "_internal_data.account_id": {
+      "type": "string",
+      "display_names": {},
+      "operations": {},
+      "elastic": {},
+      "view": {},
+      "multiple": false,
+      "source": false
+    },
+    "_internal_data.id": {
+      "type": "string",
+      "display_names": {},
+      "operations": {},
+      "elastic": {},
+      "view": {},
+      "multiple": false,
+      "source": false
+    },
+    "_internal_data.node_ip": {
+      "type": "string",
+      "display_names": {},
+      "operations": {},
+      "elastic": {},
+      "view": {},
+      "multiple": false,
+      "source": false
+    },
+    "_internal_data.node_name": {
+      "type": "string",
+      "display_names": {},
+      "operations": {},
+      "elastic": {},
+      "view": {},
+      "multiple": false,
+      "source": false
+    },
+    "_internal_data.project_id": {
+      "type": "string",
+      "display_names": {
+        "en": "Project",
+        "ru": "Проект"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": true
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": false,
+      "source": false
+    },
+    "title": {
+      "type": "string",
+      "display_names": {
+        "en": "Title",
+        "ru": "Заголовок"
+      },
+      "operations": {
+        "fetch": true,
+        "aggregate": false,
+        "sort": false,
+        "exists": true,
+        "contains": true,
+        "highlight": false,
+        "script_input_schema": true
+      },
+      "elastic": {},
+      "view": {
+        "title": true
+      },
+      "multiple": false,
+      "source": false
+    },
+    "media_type": {
+      "type": "string",
+      "display_names": {
+        "en": "media_type",
+        "ru": "Тип медиа"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": true,
+        "script_input_schema": true
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": false,
+      "source": false
+    },
+    "text": {
+      "type": "string",
+      "display_names": {
+        "en": "Text",
+        "ru": "Текст"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "aggregate": false,
+        "sort": false,
+        "contains": true,
+        "highlight": true,
+        "highlight_key": "text",
+        "script_input_schema": true
+      },
+      "elastic": {
+        "term_vector": "with_positions_offsets"
+      },
+      "view": {},
+      "multiple": false,
+      "source": false
+    },
+    "categories": {
+      "type": "nested",
+      "display_names": {
+        "en": "categories",
+        "ru": "Категории"
+      },
+      "operations": {
+        "aggregate": false,
+        "fetch": true,
+        "highlight": false,
+        "exists": false,
+        "sort": false,
+        "script_input_schema": true,
+        "weight_script_output_schema": true
+      },
+      "elastic": {
+        "include_in_parent": true
+      },
+      "view": {},
+      "multiple": true,
+      "source": true
+    },
+    "categories.owner": {
+      "type": "string",
+      "display_names": {
+        "en": "categories.owner",
+        "ru": "categories.owner"
+      },
+      "operations": {},
+      "elastic": {
+        "index": false
+      },
+      "view": {}
+    },
+    "categories.data_id": {
+      "type": "integer",
+      "display_names": {
+        "en": "categories.data_id",
+        "ru": "categories.data_id"
+      },
+      "operations": {},
+      "elastic": {
+        "index": false
+      },
+      "view": {}
+    },
+    "categories.subtype": {
+      "type": "string",
+      "display_names": {
+        "en": "categories.subtype",
+        "ru": "categories.subtype"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "categories.weight": {
+      "type": "double",
+      "display_names": {
+        "en": "categories.weight",
+        "ru": "categories.weight"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "categories.id": {
+      "type": "string",
+      "display_names": {
+        "en": "Category.ID",
+        "ru": "Категория.ID"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "suggest": {
+          "suggest_field": "categories.value.suggest",
+          "display_value_field": "categories.value"
+        }
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "categories.value": {
+      "type": "string",
+      "display_names": {
+        "en": "Category.Value",
+        "ru": "Категория.Значение"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "suggest": {
+          "suggest_field": "categories.value.suggest"
+        }
+      },
+      "elastic": {
+        "fields": {
+          "suggest": {
+            "analyzer": "standard",
+            "type": "completion"
+          }
+        }
+      },
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "keyphrases": {
+      "type": "string",
+      "display_names": {
+        "en": "Keyphrases",
+        "ru": "Ключевые фразы"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "script_input_schema": true
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": true,
+      "source": false
+    },
+    "_labels": {
+      "type": "object",
+      "display_names": {
+        "en": "_labels",
+        "ru": "_labels"
+      },
+      "operations": {
+        "update": true,
+        "dictionary_schema": true,
+        "script_input_schema": true
+      },
+      "elastic": {
+        "dynamic": true
+      },
+      "view": {}
+    },
+    "_labels.favorite": {
+      "type": "nested",
+      "display_names": {
+        "en": "Favorite",
+        "ru": "Избранное"
+      },
+      "operations": {},
+      "elastic": {
+        "dynamic": true,
+        "include_in_parent": true
+      },
+      "view": {
+        "label": "favorite"
+      },
+      "multiple": true,
+      "source": false
+    },
+    "_labels.seen": {
+      "type": "nested",
+      "display_names": {
+        "en": "Seen",
+        "ru": "Просмотрено"
+      },
+      "operations": {},
+      "elastic": {
+        "dynamic": true,
+        "include_in_parent": true
+      },
+      "view": {
+        "label": "seen"
+      },
+      "multiple": true,
+      "source": false
+    },
+    "document_type": {
+      "type": "string",
+      "display_names": {
+        "en": "document_type",
+        "ru": "document_type"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": true,
+        "script_input_schema": true
+      },
+      "elastic": {},
+      "view": {}
+    },
+    "highlight_info": {
+      "type": "object",
+      "display_names": {
+        "en": "highlight_info",
+        "ru": "highlight_info"
+      },
+      "operations": {},
+      "elastic": {
+        "enabled": false
+      },
+      "view": {},
+      "multiple": false,
+      "source": true
+    },
+    "url": {
+      "type": "string",
+      "display_names": {
+        "en": "URL",
+        "ru": "Ссылка"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "script_input_schema": true
+      },
+      "elastic": {},
+      "view": {
+        "url": true
+      },
+      "multiple": false,
+      "source": false
+    },
+    "labels": {
+      "type": "string",
+      "display_names": {
+        "en": "Labels",
+        "ru": "Метки"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": true,
+        "update": true,
+        "dictionary_schema": true,
+        "weight_script_reprocess": true,
+        "script_input_schema": true
+      },
+      "elastic": {},
+      "view": {
+        "fetch_results": true,
+        "fetch_details": true
+      },
+      "multiple": true,
+      "source": false
+    },
+    "entities": {
+      "type": "nested",
+      "display_names": {
+        "en": "entities",
+        "ru": "entities"
+      },
+      "operations": {
+        "fetch": true,
+        "script_input_schema": true
+      },
+      "elastic": {
+        "include_in_parent": true
+      },
+      "view": {},
+      "multiple": true,
+      "source": true
+    },
+    "entities.sentiment": {
+      "type": "object",
+      "display_names": {
+        "en": "entities.sentiment",
+        "ru": "entities.sentiment"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {},
+      "multiple": false,
+      "source": true
+    },
+    "entities.sentiment.details": {
+      "type": "object",
+      "display_names": {
+        "en": "entities.sentiment.details",
+        "ru": "entities.sentiment.details"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "entities.sentiment.details.negative": {
+      "type": "integer",
+      "display_names": {
+        "en": "entities.sentiment.details.negative",
+        "ru": "entities.sentiment.details.negative"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "entities.sentiment.details.neutral": {
+      "type": "integer",
+      "display_names": {
+        "en": "entities.sentiment.details.neutral",
+        "ru": "entities.sentiment.details.neutral"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "entities.sentiment.details.positive": {
+      "type": "integer",
+      "display_names": {
+        "en": "entities.sentiment.details.positive",
+        "ru": "entities.sentiment.details.positive"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "entities.sentiment.value": {
+      "type": "string",
+      "display_names": {
+        "en": "Entity.Sentiment",
+        "ru": "Сущность.Тональность"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true
+      },
+      "elastic": {},
+      "view": {
+        "dictionary_id": "sentiment"
+      },
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "entities.extract_type": {
+      "type": "string",
+      "display_names": {
+        "en": "entities.extract_type",
+        "ru": "entities.extract_type"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "entities.cuid": {
+      "type": "string",
+      "display_names": {
+        "en": "Entity.CUID",
+        "ru": "Сущность.CUID"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "entities.data_id": {
+      "type": "integer",
+      "display_names": {
+        "en": "entities.data_id",
+        "ru": "entities.data_id"
+      },
+      "operations": {},
+      "elastic": {
+        "index": false
+      },
+      "view": {}
+    },
+    "entities.subtype": {
+      "type": "string",
+      "display_names": {
+        "en": "entities.subtype",
+        "ru": "entities.subtype"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "entities.count": {
+      "type": "integer",
+      "display_names": {
+        "en": "Entity.Count",
+        "ru": "Сущность.Количество"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "entities.id": {
+      "type": "string",
+      "display_names": {
+        "en": "Entity.ID",
+        "ru": "Сущность.ID"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "entities.type": {
+      "type": "string",
+      "display_names": {
+        "en": "Entity.Type",
+        "ru": "Сущность.Тип"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "entities.value": {
+      "type": "string",
+      "display_names": {
+        "en": "Entity.Value",
+        "ru": "Сущность.Значение"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true
+      },
+      "elastic": {},
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "created_date": {
+      "type": "date",
+      "display_names": {
+        "en": "Publication date",
+        "ru": "Дата публикации"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "sort": true,
+        "script_input_schema": true
+      },
+      "elastic": {},
+      "view": {
+        "fetch_results": true,
+        "fetch_details": true
+      },
+      "multiple": false,
+      "source": false
+    },
+    "_score": {
+      "operations": {
+        "sort": true
+      },
+      "display_names": {
+        "en": "Score",
+        "ru": "Релевантность"
+      },
+      "view": {},
+      "multiple": false,
+      "type": "double",
+      "source": false
+    },
+    "_id": {
+      "operations": {},
+      "display_names": {
+        "en": "_id",
+        "ru": "_id"
+      },
+      "view": {
+        "id": true
+      },
+      "multiple": false,
+      "type": "string",
+      "source": false
+    },
+    "processing_errors": {
+      "type": "object",
+      "display_names": {
+        "en": "processing_errors",
+        "ru": "processing_errors"
+      },
+      "operations": {
+        "script_input_schema": true
+      },
+      "elastic": {
+        "dynamic": true
+      },
+      "multiple": true,
+      "view": {}
+    },
+    "processing_errors.error": {
+      "type": "string",
+      "display_names": {
+        "en": "processing_errors.error",
+        "ru": "processing_errors.error"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "processing_errors.module_id": {
+      "type": "string",
+      "display_names": {
+        "en": "processing_errors.module_id",
+        "ru": "processing_errors.module_id"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "processing_errors.module_name": {
+      "type": "string",
+      "display_names": {
+        "en": "processing_errors.module_name",
+        "ru": "processing_errors.module_name"
+      },
+      "operations": {},
+      "elastic": {},
+      "view": {}
+    },
+    "_labels.hidden": {
+      "type": "nested",
+      "display_names": {
+        "en": "Hidden",
+        "ru": "Скрытий"
+      },
+      "operations": {},
+      "elastic": {
+        "dynamic": true,
+        "include_in_parent": true
+      },
+      "view": {
+        "label": "hidden"
+      },
+      "multiple": true,
+      "source": false
+    },
+    "_labels.exported": {
+      "type": "nested",
+      "display_names": {
+        "en": "Exported",
+        "ru": "Экспортированный"
+      },
+      "operations": {},
+      "elastic": {
+        "dynamic": true,
+        "include_in_parent": true
+      },
+      "view": {
+        "label": "exported"
+      },
+      "multiple": true,
+      "source": false
+    },
+    "_categories.added_ids": {
+      "type": "string",
+      "display_names": {
+        "en": "Categories.Added_ids",
+        "ru": "Идентификаторы изменённых вручную категорий"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true
+      },
+      "multiple": true,
+      "source": false,
+      "view": {}
+    },
+    "_categories.deleted_ids": {
+      "type": "string",
+      "display_names": {
+        "en": "Categories.Deleted_ids",
+        "ru": "Идентификаторы удалённых вручную категорий"
+      },
+      "operations": {},
+      "multiple": true,
+      "source": false,
+      "view": {}
+    },
+    "_categories.na_ids": {
+      "type": "string",
+      "display_names": {
+        "en": "Categories.Na_ids",
+        "ru": "Идентификаторы не анализируемых категорий"
+      },
+      "operations": {},
+      "multiple": true,
+      "source": false,
+      "view": {}
+    },
+    "_categories.revert": {
+      "type": "object",
+      "display_names": {
+        "en": "_categories.revert",
+        "ru": "_categories.revert"
+      },
+      "operations": {},
+      "multiple": true,
+      "source": true,
+      "view": {}
+    },
+    "_categories.revert.id": {
+      "type": "string",
+      "display_names": {
+        "en": "_categories.revert.id",
+        "ru": "_categories.revert.id"
+      },
+      "operations": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "view": {}
+    },
+    "_categories.revert.data_id": {
+      "type": "integer",
+      "display_names": {
+        "en": "_categories.revert.data_id",
+        "ru": "_categories.revert.data_id"
+      },
+      "operations": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "view": {}
+    },
+    "_categories.revert.count": {
+      "type": "integer",
+      "display_names": {
+        "en": "_categories.revert.count",
+        "ru": "_categories.revert.count"
+      },
+      "operations": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "view": {}
+    },
+    "_categories.manual": {
+      "type": "boolean",
+      "display_names": {
+        "en": "Categories.Manual",
+        "ru": "Категории изменены"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "sort": true
+      },
+      "multiple": false,
+      "source": false,
+      "view": {}
+    },
+    "comments": {
+      "type": "nested",
+      "display_names": {
+        "en": "Comments",
+        "ru": "Комментарии"
+      },
+      "operations": {
+        "aggregate": false,
+        "fetch": true,
+        "highlight": false,
+        "exists": false,
+        "sort": false,
+        "dictionary_schema": true
+      },
+      "multiple": true,
+      "source": true,
+      "elastic": {
+        "include_in_parent": true
+      },
+      "view": {
+        "format": "comment"
+      }
+    },
+    "comments.tags": {
+      "type": "string",
+      "display_names": {
+        "en": "Comments.Tags",
+        "ru": "Комментарий.Тэги"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true
+      },
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "comments.links": {
+      "type": "string",
+      "display_names": {
+        "en": "Comments.Links",
+        "ru": "Комментарий.Ссылки"
+      },
+      "operations": {},
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "comments.text": {
+      "type": "string",
+      "display_names": {
+        "en": "Comments.Text",
+        "ru": "Комментарии.Тексты"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "contains": true,
+        "aggregate": true
+      },
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false,
+      "elastic": {
+        "term_vector": "with_positions_offsets"
+      }
+    },
+    "comments.id": {
+      "type": "integer",
+      "display_names": {
+        "en": "comments.id",
+        "ru": "comments.id"
+      },
+      "operations": {},
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "comments.created_date": {
+      "type": "date",
+      "display_names": {
+        "en": "comments.created_date",
+        "ru": "comments.created_date"
+      },
+      "operations": {},
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "comments.user_id": {
+      "type": "string",
+      "display_names": {
+        "en": "comments.user_id",
+        "ru": "comments.user_id"
+      },
+      "operations": {},
+      "view": {},
+      "multiple": true,
+      "dpp_multiple": false,
+      "source": false
+    },
+    "comments_count": {
+      "type": "integer",
+      "display_names": {
+        "en": "Comments count",
+        "ru": "Количество комментариев"
+      },
+      "operations": {
+        "sort": true,
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true,
+        "dictionary_schema": true
+      },
+      "multiple": false,
+      "source": false,
+      "view": {}
+    },
+    "_external_data": {
+      "type": "object",
+      "display_names": {
+        "en": "_external_data",
+        "ru": "_external_data"
+      },
+      "operations": {
+        "dictionary_schema": true,
+        "script_input_schema": true,
+        "update": true
+      },
+      "multiple": false,
+      "source": true,
+      "view": {}
+    },
+    "_external_data.comment": {
+      "type": "string",
+      "display_names": {
+        "en": "_external_data.comment",
+        "ru": "Текст первого комментария"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true
+      },
+      "view": {},
+      "multiple": false,
+      "source": false
+    },
+    "_categories": {
+      "type": "object",
+      "display_names": {
+        "en": "_categories",
+        "ru": "_categories"
+      },
+      "operations": {
+        "dictionary_schema": true,
+        "script_input_schema": true,
+        "weight_script_output_schema": true
+      },
+      "multiple": false,
+      "source": true,
+      "view": {}
+    },
+    "common_comment": {
+      "type": "object",
+      "display_names": {
+        "en": "Comment",
+        "ru": "Комментарий"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "dictionary_schema": true,
+        "script_input_schema": true
+      },
+      "multiple": false,
+      "source": true,
+      "view": {}
+    },
+    "common_comment.text": {
+      "type": "string",
+      "display_names": {
+        "en": "common_comment.text",
+        "ru": "Комментарий.Текст"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "contains": true
+      },
+      "multiple": false,
+      "source": false,
+      "elastic": {
+        "term_vector": "with_positions_offsets"
+      },
+      "view": {}
+    },
+    "common_comment.user_id": {
+      "type": "string",
+      "display_names": {
+        "en": "common_comment.user_id",
+        "ru": "common_comment.user_id"
+      },
+      "operations": {},
+      "multiple": false,
+      "source": false,
+      "view": {}
+    },
+    "common_comment.created_date": {
+      "type": "date",
+      "display_names": {
+        "en": "common_comment.created_date",
+        "ru": "Дата комментария"
+      },
+      "operations": {},
+      "multiple": false,
+      "source": false,
+      "view": {}
+    }
+  },
+  "dynamic_templates": [
+    {
+      "additional_weights_fields": {
+        "match": "*",
+        "path_match": "additional_weights.*",
+        "match_mapping_type": "long",
+        "mapping": {
+          "store": true,
+          "type": "double"
+        }
+      }
+    },
+    {
+      "weights_fields": {
+        "path_match": "weights.*",
+        "mapping": {
+          "store": true,
+          "type": "double"
+        },
+        "match_mapping_type": "long",
+        "match": "*"
+      }
+    },
+    {
+      "default_objects": {
+        "mapping": {
+          "type": "object"
+        },
+        "match_mapping_type": "object"
+      }
+    },
+    {
+      "default_date_fields": {
+        "mapping": {
+          "store": true,
+          "type": "date"
+        },
+        "match_mapping_type": "date",
+        "match": "*"
+      }
+    },
+    {
+      "default_double_fields": {
+        "mapping": {
+          "store": true,
+          "type": "double"
+        },
+        "match_mapping_type": "double",
+        "match": "*"
+      }
+    },
+    {
+      "default_long_fields": {
+        "mapping": {
+          "store": true,
+          "type": "long"
+        },
+        "match_mapping_type": "long",
+        "match": "*"
+      }
+    },
+    {
+      "default_boolean_fields": {
+        "mapping": {
+          "store": true,
+          "type": "boolean"
+        },
+        "match_mapping_type": "boolean",
+        "match": "*"
+      }
+    },
+    {
+      "default_keyword_fields": {
+        "mapping": {
+          "store": true,
+          "type": "keyword"
+        },
+        "match_mapping_type": "string",
+        "match": "*"
+      }
+    },
+    {
+      "private_label_user_fields": {
+        "path_match": "_labels.*.user_id",
+        "mapping": {
+          "store": true,
+          "type": "keyword"
+        },
+        "match_mapping_type": "string",
+        "match": "*"
+      }
+    },
+    {
+      "private_label_date_fields": {
+        "path_match": "_labels.*.date",
+        "mapping": {
+          "store": true,
+          "type": "date"
+        },
+        "match_mapping_type": "date",
+        "match": "*"
+      }
+    },
+    {
+      "private_label_date_fields": {
+        "path_match": "_labels.*.process_duration",
+        "mapping": {
+          "store": true,
+          "type": "integer"
+        },
+        "match_mapping_type": "long",
+        "match": "*"
+      }
+    }
+  ],
+  "display_names": {
+    "ru": "Тип по умолчанию",
+    "en": "Defaults"
+  },
+  "default": true
+}

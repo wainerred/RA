@@ -1,0 +1,28 @@
+---
+- name: Set global vars
+  import_role:
+    name: set-global-vars
+  tags:
+    always
+
+- name: "Set role vars"
+  include: set-vars.yml
+  tags:
+    always
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: "Install nvidia docker"
+  include: nvidia_docker.yml
+  when: triton_type == 'gpu'
+
+- name: "Install service"
+  include: install_triton.yml
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start

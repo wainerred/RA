@@ -1,0 +1,8 @@
+---
+# vars file for dpp-proxy
+service_name: "{{ dictionary_hosts.dpp_proxy.name }}"
+service_img: "{{ dictionary_hosts.dpp_proxy.img }}"
+service_tag: "{{ dictionary_hosts.dpp_proxy.tag }}"
+service_repo: "{{ dictionary_hosts.dpp_proxy.repo }}"
+service_mnt_dir_loc: "{{ docker_mounts_root }}/{{ dictionary_hosts.dpp_proxy.name }}"
+service_compose_dir: "{{ docker_compose_root }}/{{ dictionary_hosts.dpp_proxy.name }}"

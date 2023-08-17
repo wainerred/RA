@@ -1,0 +1,3 @@
+---
+elasticsearch_mem_limit: false
+es_component_template_number_of_shards: 2

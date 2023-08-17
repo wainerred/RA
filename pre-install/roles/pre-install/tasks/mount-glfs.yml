@@ -1,0 +1,145 @@
+---
+# tasks file for pre-install
+- name: ADD glfs server to hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ hostvars[hyper].ansible_host }} {{ hostvars[hyper].inventory_hostname }}.local {{ hostvars[hyper].inventory_hostname }}"
+  with_items:
+    - "{{ groups['glfs'] }}"
+  tags:
+    - never
+    - mount-glfs
+    - mount-glfs-hosts
+  loop_control:
+    loop_var: hyper
+
+- name: "Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+    mode: 0644
+  with_items:
+    - "{{ item.mount_point }}"
+    - "/mnt-temp"
+  loop_control:
+    loop_var: dir_item
+  tags:
+    - never
+    - mount-glfs
+
+- name: "Mount --bind {{ item.mount_point | dirname }} /mnt-temp"
+  shell: "mount --bind {{ item.mount_point | dirname }} /mnt-temp"
+  args:
+    warn: false # set warn=false to prevent warning
+  tags:
+    - never
+    - mount-glfs
+
+- name: "Set attrs to {{ item.mount_point }}"
+  file:
+    path: "/mnt-temp/{{ item.mount_point | basename }}"
+    attributes: i
+    recurse: true
+    state: directory
+  tags:
+    - never
+    - mount-glfs
+
+- name: "Umount --bind {{ item.mount_point | dirname }} /mnt-temp"
+  mount:
+    state: unmounted
+    path: "/mnt-temp"
+  tags:
+    - never
+    - mount-glfs
+
+- name: "Delete directory '/mnt-temp/'"
+  file:
+    path: "/mnt-temp"
+    state: absent
+  tags:
+    - never
+    - mount-glfs
+
+- name: "Set glusterfs_fstab_string"
+  set_fact:
+    glusterfs_fstab_string: defaults,_netdev,backupvolfile-server={{ hostvars[groups['glfs'][1]].ansible_host }},noauto,x-systemd.automount
+  when: groups['glfs'][1] is defined
+  tags:
+    - never
+    - mount-glfs
+
+- name: "Set glusterfs_fstab_string"
+  set_fact:
+    glusterfs_fstab_string: defaults,_netdev,noauto,x-systemd.automount
+  when: groups['glfs'][1] is not defined
+  tags:
+    - never
+    - mount-glfs
+
+- name: Fix fstab line break
+  lineinfile:
+    path: /etc/fstab
+    regexp: '^(.*[^\n])$'
+    line: '\1\n'
+    backrefs: true
+  tags:
+    - never
+    - mount-glfs
+
+- name: Ensure Gluster volume is mounted
+  mount:
+    path: "{{ item.mount_point }}"
+    src: "{{ hostvars[groups['glfs'][0]].ansible_host }}:/{{ item.volume }}"
+    fstype: glusterfs
+    opts: "{{ glusterfs_fstab_string }}"
+    state: present
+  tags:
+    - never
+    - mount-glfs
+
+- name: "Start mnt-{{ item.mount_point | basename }}.automount"
+  systemd:
+    state: started
+    daemon_reload: true
+    name: mnt-{{ item.mount_point | basename }}.automount
+  register: result
+  ignore_errors: true
+  tags:
+    - never
+    - mount-glfs
+
+- name: "Umount {{ item.mount_point }}" 
+  shell: "umount -l {{ item.mount_point }}"
+  when: result is failed
+  tags:
+    - never
+    - mount-glfs
+
+- name: "Start mnt-{{ item.mount_point | basename }}.automount"
+  systemd:
+    state: started
+    daemon_reload: true
+    name: mnt-{{ item.mount_point | basename }}.automount
+  when: result is failed
+  tags:
+    - never
+    - mount-glfs
+
+- name: "Copy check-glfs-mount.sh.j2"
+  template:
+    src: "check-glfs-mount.sh.j2"
+    mode: "u+x"
+    dest: "/etc/check-glfs-mount-{{ item.mount_point | basename }}.sh"
+  tags:
+    - never
+    - mount-glfs
+
+- name: "Adding check-glfs-mount.sh.j2 to CronTab"
+  cron:
+    name: "Check glfs mount {{ item.mount_point | basename }}"
+    job: "/etc/check-glfs-mount-{{ item.mount_point | basename }}.sh"
+  tags:
+    - never
+    - mount-glfs
+    - mount-glfs-crontab

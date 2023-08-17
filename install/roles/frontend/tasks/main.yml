@@ -1,0 +1,38 @@
+---
+
+- block:
+  - name: Print message
+    debug:
+      msg: |
+        Please set path to certificates
+        -e cert_path=/path/to/fullchain.pem
+        -e cert_key_path=/path/to/privkey.pem
+    tags: certs
+  - name: Stop run playbook
+    meta: end_play
+    tags: certs
+  when: not frontend_certbot and frontend_https_enabled and (cert_key_path is not defined or cert_path is not defined)
+
+- name: Set global vars
+  import_role:
+    name: set-global-vars
+  tags:
+    - always
+
+- name: "Set role vars"
+  include_vars: main.yml
+  tags:
+    - always
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: Preparing frontend
+  include: install-frontend.yml
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start

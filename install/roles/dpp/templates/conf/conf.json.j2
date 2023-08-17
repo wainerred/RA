@@ -1,0 +1,54 @@
+{
+    "dpp_node": {
+        "port": {{ ports.dpp_main }},
+        "roles": [
+            "master",
+            "worker"
+        ],
+        "tags": [],
+        "worker_threads": {{ worker_threads }},
+        "node_id": "{{ internal_host if internal_host else ansible_host }}",
+        "node_ip": "{{ internal_host if internal_host else ansible_host }}"
+    },
+    "redis": {
+        "endpoints": [
+{%- set redis_addr = [] -%}
+{%- for addr in hosts.redis_dpp -%}
+{%- for port in range(1, redis_dpp_nodes+1) -%}
+{{ redis_addr.append(addr+":"+((ports.redis_dpp_main | int + port) | string))}}
+{%- endfor -%}
+{%- endfor -%}
+"{{ redis_addr | join("\",\"") }}"],
+        "cluster": true
+    },
+    "log": {
+        "level": "debug"
+    },
+    "modules": {
+        "max_batch_size": {{ dpp_max_batch_size }},
+        "max_queue_size": {{ dpp_max_queue_size }},
+        "max_cache_size" : {{ dpp_max_cache_size }}
+    },
+    "archiver": {
+        "datetime_field" : "created_date",
+        "language_field": "language",
+        "grpc_urls": [
+{% for adr in hosts.dpp_archiver %}
+            "{{ adr }}:{{ ports.dpp_archiver_grpc }}"{% if not loop.last %}, 
+{% endif %}
+{% endfor %}
+
+        ],
+        "http_urls": [
+{% for adr in hosts.dpp_archiver %}
+            "{{ adr }}:{{ ports.dpp_archiver_http }}"{% if not loop.last %}, 
+{% endif %}
+{% endfor %}
+
+        ]
+    },
+{% if versions.dpp is version('1.7.0', '>=') %}
+    "max_stream_pending" : {{ dpp_max_stream_pending }},
+{% endif %}
+    "max_node_messages" : {{ dpp_max_node_messages }}
+}

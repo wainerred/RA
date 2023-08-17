@@ -1,0 +1,8 @@
+---
+
+# Install file-service
+- name: "Install 'file-service'"
+  hosts:
+    - file_service
+  roles:
+    - file-service

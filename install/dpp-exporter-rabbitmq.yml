@@ -1,0 +1,6 @@
+---
+- name: "Install exporter-rabbitmq"
+  hosts:
+    - dpp_exporter_rabbitmq
+  roles:
+    - dpp-exporter-rabbitmq

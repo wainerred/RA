@@ -1,0 +1,154 @@
+{
+  "server_settings": {
+{% if asr_stats %}
+    "port": {{ ports.iii_speech_service_asr | int + 100 }},
+    "action_threads": 16,
+{% endif %}
+{% if grpc_enabled %}
+    "threads": {
+      "sd": {{ sd_threads }},
+      "asr": {{ asr_threads }},
+      "gender_id": {{ gender_threads }},
+      "file_converter": {{ file_converter_threads }}
+    },
+{% endif %}
+    "stream": {
+      "max_doc_queue_size": 10,
+      "batch_accumulation_timeout": 10000,
+      "reader_delay": 200,
+      "priority": {
+        "high": 15,
+        "low": 5,
+        "normal": 10
+      }
+    },
+    "grpc_addresses": {
+{% if sd_model is defined %}
+      "sd": "0.0.0.0:{{ ports.iii_speech_service_sd | int + (10 * (asr_number | int - 1)) }}",
+{% endif %}
+{% if langid_model is defined %}
+      "language_identification": "0.0.0.0:{{ ports.iii_speech_service_langid | int + (10 * (asr_number | int - 1)) }}",
+{% endif %}
+{% if gender_model is defined %}
+      "gender_id": "0.0.0.0:{{ ports.iii_speech_service_gender | int + (10 * (asr_number | int - 1)) }}",
+{% endif %}
+{% if file_converter %}
+      "file_converter": "0.0.0.0:{{ ports.iii_speech_service_file_converter | int + (10 * (asr_number | int - 1)) }}",
+{% endif %}
+{% if speaker_generator %}
+      "speaker_generator": "0.0.0.0:{{ ports.iii_speech_service_speaker_generator | int + (10 * (asr_number | int - 1)) }}",
+{% endif %}
+{% if speaker_model is defined %}
+      "speaker_id": "0.0.0.0:{{ ports.iii_speech_service_speaker | int + (10 * (asr_number | int - 1)) }}",
+      "speaker_id_feature": "0.0.0.0:{{ ports.iii_speech_service_speaker_feature | int + (10 * (asr_number | int - 1)) }}"
+{% endif %}
+      "asr": "0.0.0.0:{{ ports.iii_speech_service_asr | int + (10 * (asr_number | int - 1)) }}"
+    }
+  },
+  "asr_server": {
+    "host": "{{ hosts[grpc_service_name][groups[current_group_name].index(inventory_hostname)] }}",
+    "port": {{ ports[grpc_service_name + '_asr_main'] | int + (asr_number | int) - 1 }}
+  },
+{% if sentiments_acoustic is defined %}
+  "acoustic_sentiments_server": {
+    "host": "{{ hosts[grpc_service_name][groups[current_group_name].index(inventory_hostname)] }}",
+    "port": {{ ports[grpc_service_name + '_asr_main'] | int + (asr_number | int) - 1 }}
+  },
+{% endif %}
+{% if sentiments_text is defined %}
+  "text_sentiments_server": {
+    "host": "{{ hosts[grpc_service_name][groups[current_group_name].index(inventory_hostname)] }}",
+    "port": {{ ports[grpc_service_name + '_asr_main'] | int + (asr_number | int) - 1 }}
+  },
+{% endif %}
+{% if nlp_model is defined %}
+  "nlp_server": {
+    "host": "{{ hosts[grpc_service_name][groups[current_group_name].index(inventory_hostname)] }}",
+    "port": {{ ports[grpc_service_name + '_asr_main'] | int + (asr_number | int) - 1 }}
+  },
+{% endif %}
+{% if sd_model is defined %}  
+  "sd_server": {
+    "host": "{{ hosts[grpc_service_name][groups[current_group_name].index(inventory_hostname)] }}",
+    "port": {{ (ports[grpc_service_name + '_sd'] if ports[grpc_service_name + '_sd'] is defined else ports[grpc_service_name + '_asr_main']) | int + (asr_number | int) - 1 }}
+  },
+{% endif %}
+{% if langid_model is defined %}
+  "language_identification_server" : {
+    "host": "{{ hosts[grpc_service_name][groups[current_group_name].index(inventory_hostname)] }}",
+    "port": {{ (ports[grpc_service_name + '_lid'] if ports[grpc_service_name + '_lid'] is defined else ports[grpc_service_name + '_asr_main']) | int + (asr_number | int) - 1 }}
+  },
+{% endif %}
+{% if gender_model is defined %}
+  "gender_id_server" : {
+    "host": "{{ hosts[grpc_service_name][groups[current_group_name].index(inventory_hostname)] }}",
+    "port": {{ (ports[grpc_service_name + '_sd'] if ports[grpc_service_name + '_sd'] is defined else ports[grpc_service_name + '_asr_main']) | int + (asr_number | int) - 1 }}
+  },
+{% endif %}
+{% if speaker_model is defined %}
+  "speaker_id_server": {
+    "host": "{{ hosts[grpc_service_name][groups[current_group_name].index(inventory_hostname)] }}",
+    "port": {{ (ports[grpc_service_name + '_lid'] if ports[grpc_service_name + '_lid'] is defined else ports[grpc_service_name + '_asr_main']) | int + (asr_number | int) - 1 }}
+  },
+{% endif %}
+{% if diarization_id is defined %}
+  "diarization_server": {
+{% if diarization_id.startswith('diarization_v2') %}
+    "features": "{{ host.diarization_features }}:{{ ports.diarization_features_main }}",
+{% endif %}
+    "host": "{{ hosts[grpc_service_name][groups[current_group_name].index(inventory_hostname)] }}",
+    "port": {{ ports[grpc_service_name + '_asr_main'] | int + (asr_number | int) - 1 }}
+  },
+{% endif %}
+{% if stream_enable %}
+  "stream_server_settings": {
+    "server_addresses": "0.0.0.0:{{ ports.iii_speech_service_stream }}",
+    "stream_threads": 6,
+    "stream_min_ms_num": 350,
+    "save_wavs" : true
+  },
+{% endif %}
+  "working_directories": {
+{% if sd_model is defined %}  
+    "speech_detector_model_directory":"/3i-speech/sd_conf",
+{% endif %}
+{% if langid_model is defined %}
+    "language_identification_directory" : "/3i-speech/lang_id",
+{% endif %}
+{% if gender_model is defined %}
+    "gender_id_directory" : "/3i-speech/gender_id",
+{% endif %}
+{% if diarization_id is defined %}
+    "diarization_directory": "/3i-speech/diarization_id",
+{% endif %}
+{% if speaker_model is defined %}
+    "speaker_id_directory": "/3i-speech/speaker_id",
+    "speaker_models_directory": "/3i-speech/speaker_models",
+    "speaker_models_directory_v2": "/3i-speech/speaker_models_v2",
+{% endif %}
+{% if nlp_model is defined %}
+    "nlp_model_directory" : "/3i-speech/nlp",
+{% endif %}
+{% if sentiments_acoustic is defined %}
+    "acoustic_sentiments_directory" : "/3i-speech/sentiments_acoustic",
+{% endif %}
+{% if sentiments_text is defined %}
+    "text_sentiments_directory" : "/3i-speech/sentiments_text",
+{% endif %}
+    "models_directory": "/3i-speech/models"
+
+  },
+  "ffmpeg_settings": {
+    "file_params_for_ext": [
+      {
+        "extension": "pcm",
+        "regex": "(^|\\/)[Ss][A-z0-9-_]+\\.pcm$",
+        "file_params": "-f alaw -ar 8000 -ac 2"
+      },
+      {
+        "regex": "(^|\\/)[^Ss][A-z0-9-_]+\\.pcm$",
+        "file_params": "-f alaw -ar 8000 -ac 1"
+      }
+    ]
+  }
+}

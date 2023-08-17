@@ -1,0 +1,10 @@
+---
+
+# Install DB backend
+- name: "Install postgre 'backend'"
+  hosts:
+    - postgres_backend
+  roles:
+    - postgresql
+  vars:
+    service: "postgres_backend"

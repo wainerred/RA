@@ -1,0 +1,25 @@
+---
+# tasks file for registry
+- name: set var
+  set_fact:
+    service_path_data: "{{ docker_mounts_root }}/utlis-docker-registry"
+    service_path_compose: "{{ docker_compose_root }}/utlis-docker-registry"
+
+- name: Create directoris 
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items: 
+    - "{{ service_path_data }}/data"
+    - "{{ service_path_compose }}"
+
+- name: Generate compose
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ service_path_compose }}/docker-compose.yml"
+
+- name: Start docker registry
+  docker_compose:
+    project_src: "{{ service_path_compose }}"
+    state: present
+    

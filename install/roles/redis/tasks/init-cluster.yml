@@ -1,0 +1,26 @@
+---
+- name: Check Redis Cluster exists or not
+  command: "{{ redis_command }} cluster nodes"  
+  register: redis_cluster_exist
+    
+- name: Create redis command for cluster
+  ansible.builtin.set_fact:
+    redis_cluster_command: >
+      {{ redis_command }} --cluster create 
+      {%- set redis_addr = [] -%}
+      {% for addr in hosts.redis_dpp -%}
+      {% for port in range(1, redis_dpp_nodes + 1) -%}
+      {{ redis_addr.append(addr+":"+((ports.redis_dpp_main | int + port) | string))}}
+      {%- endfor -%}
+      {%- endfor %}
+      {{ redis_addr | join(" ") }}
+      --cluster-yes
+  when: 
+    redis_cluster_exist.stdout_lines|length < (groups['redis_dpp']|length * redis_dpp_nodes)
+
+- name: Create Redis cluster
+  command: "{{redis_cluster_command }}"
+  # args:
+  #   stdin: yes
+  when: 
+    redis_cluster_exist.stdout_lines|length < (groups['redis_dpp']|length * redis_dpp_nodes)

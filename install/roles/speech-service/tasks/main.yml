@@ -1,0 +1,33 @@
+---
+- name: Set global vars
+  import_role:
+    name: set-global-vars
+  tags: always
+
+- name: "Set role vars"
+  include_vars: main.yml
+  tags: always
+
+- name: "Define grpc-service"
+  set_fact:
+    grpc_service_name: "{{ 'triton' if (dictionary_hosts.triton is defined) else 'tensorflow' }}"
+  tags: always
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: Download models
+  include: download-models.yml
+
+- name: "Install service"
+  include: install-speech-service.yml
+  with_sequence: count={{ videocard_count }}
+  loop_control:
+    loop_var: asr_number
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start

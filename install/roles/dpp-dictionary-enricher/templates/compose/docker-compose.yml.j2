@@ -1,0 +1,20 @@
+version: '2.4'
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: always
+{% if dpp_dictionary_enricher_mem_limit %}
+    mem_limit: {{ dpp_dictionary_enricher_mem_limit }}
+{% endif %}
+    network_mode: {{ docker_network_mode }}
+    ports:
+      - {{ ports.dpp_dictionary_enricher_grpc }}:{{ ports.dpp_dictionary_enricher_grpc }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - "{{ service_mnt_dir_loc }}/conf:/app/conf"
+      - "{{ service_mnt_dir_loc }}/logs:/app/logs"
+

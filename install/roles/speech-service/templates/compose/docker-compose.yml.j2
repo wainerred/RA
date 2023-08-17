@@ -1,0 +1,120 @@
+version: '2.4'
+
+services:
+{% for asr_number in range(1, (videocard_count | int + 1)) %}
+  {{ service_name }}-asr-0{{ asr_number }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}-asr-0{{ asr_number }}
+    restart: always
+{% if iii_speech_service_mem_limit %}
+    mem_limit: {{ iii_speech_service_mem_limit }}
+{% endif %}
+    network_mode: {{ docker_network_mode }}
+{% if cpuset is defined and cpuset != "" %}
+    cpuset: {{ cpuset }}
+{% endif %}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    ulimits:
+      core:
+        hard: 0
+        soft: 0
+    ports:
+{% if sd_model is defined %}
+      - {{ ports.iii_speech_service_sd | int + (10 * (asr_number | int - 1)) }}:{{ ports.iii_speech_service_sd | int + (10 * (asr_number | int - 1)) }}
+{% endif %}
+{% if langid_model is defined %}
+      - {{ ports.iii_speech_service_langid | int + (10 * (asr_number | int - 1)) }}:{{ ports.iii_speech_service_langid | int + (10 * (asr_number | int - 1)) }}
+{% endif %}
+{% if gender_model is defined %}
+      - {{ ports.iii_speech_service_gender | int + (10 * (asr_number | int - 1)) }}:{{ ports.iii_speech_service_gender | int + (10 * (asr_number | int - 1)) }}
+{% endif %}
+{% if file_converter %}
+      - {{ ports.iii_speech_service_file_converter | int + (10 * (asr_number | int - 1)) }}:{{ ports.iii_speech_service_file_converter | int + (10 * (asr_number | int - 1)) }}
+{% endif %}
+{% if speaker_generator %}
+      - {{ ports.iii_speech_service_speaker_generator | int + (10 * (asr_number | int - 1)) }}:{{ ports.iii_speech_service_speaker_generator | int + (10 * (asr_number | int - 1)) }}
+{% endif %}
+{% if speaker_model is defined %}
+      - {{ ports.iii_speech_service_speaker | int + (10 * (asr_number | int - 1)) }}:{{ ports.iii_speech_service_speaker | int + (10 * (asr_number | int - 1)) }}
+      - {{ ports.iii_speech_service_speaker_id_feature | int + (10 * (asr_number | int - 1)) }}:{{ ports.iii_speech_service_speaker_id_feature | int + (10 * (asr_number | int - 1)) }}
+{% endif %}
+      - {{ ports.iii_speech_service_asr | int + (10 * (asr_number | int - 1)) }}:{{ ports.iii_speech_service_asr | int + (10 * (asr_number | int - 1)) }}
+{% if asr_stats %}
+      - {{ ports.iii_speech_service_asr | int + 100 }}:{{ ports.iii_speech_service_asr | int + 100 }}
+{% endif %}
+{% if stream_enable %}
+      - {{ ports.iii_speech_service_stream }}:{{ ports.iii_speech_service_stream }}
+{% endif %}
+    volumes:
+      - "{{ service_mnt_dir_loc }}-0{{ asr_number }}/logs:/3i-speech/logs"
+      - "{{ service_mnt_dir_loc }}-0{{ asr_number }}/conf:/3i-speech/conf:ro"
+      - "{{ service_models_path }}/lm_models:/3i-speech/models:ro"
+{% if speaker_model is defined %}
+      - "{{ service_models_path }}/speaker_id/{{ speaker_model }}:/3i-speech/speaker_id:ro"
+      - "{{ service_models_path }}/speaker_models:/3i-speech/speaker_models"
+      - "{{ service_models_path }}/speaker_models_v2:/3i-speech/speaker_models_v2"
+{% endif %}
+{% if sentiments_acoustic is defined %}
+{% if grpc_service_name == 'triton' %}
+      - "{{ service_models_path }}/sentiments-acoustic/{{ sentiments_acoustic | basename }}:/3i-speech/sentiments_acoustic"
+{% else %}
+      - "{{ service_models_path }}/sentiments-acoustic/{{ sentiments_acoustic | basename }}:/3i-speech/sentiments_acoustic"
+{% endif %}
+{% endif %}
+{% if sentiments_text is defined %}
+{% if grpc_service_name == 'triton' %}
+      - "{{ service_models_path }}/sentiments-text/{{ sentiments_text | basename }}:/3i-speech/sentiments_text"
+{% else %}
+      - "{{ service_models_path }}/sentiments-text/{{ sentiments_text | basename }}:/3i-speech/sentiments_text"
+{% endif %}
+{% endif %}
+{% if diarization_id is defined %}
+      - "{{ service_models_path }}/diarization_id/{{ diarization_id | basename }}:/3i-speech/diarization_id"
+{% endif %}
+{% if gender_model is defined %}
+      - "{{ service_models_path }}/gender_id/{{ gender_model | basename }}:/3i-speech/gender_id:ro"
+{% endif %}
+{% if sd_model is defined %}
+      - "{{ service_models_path }}/speech_detector/{{ sd_model | basename }}:/3i-speech/sd_conf:ro"
+{% endif %}
+{% if langid_model is defined %}
+      - "{{ service_models_path }}/lang_id:/3i-speech/lang_id:ro"
+{% endif %}
+{% if sentiments_model is defined %}
+      - "{{ service_models_path }}/sentiments/{{ sentiments_model | basename }}:/3i-speech/sentiments:ro"
+{% endif %}
+{% if nlp_model is defined %}
+      - "{{ service_models_path }}/nlp/{{ nlp_model | basename }}:/3i-speech/nlp"
+{% endif %}
+    command: >-
+      --grpc=true
+      --master=false 
+{% if gender_model is defined %}
+      --gender=true
+{% endif %}
+{% if sd_model is defined %}
+      --sd=true
+{% endif %}
+{% if langid_model is defined %}
+      --langId=true
+{% endif %}
+{% if file_converter %}
+      --file_converter=true
+{% else %}
+      --file_converter=false
+{% endif %}
+{% if diarization_id is defined %}
+      --diarization=true
+{% endif %}
+{% if speaker_model is defined %}
+      --speaker=true
+      --speaker_id_feature=true
+{% endif %}
+      --asr_threads={{ asr_threads }}
+{% if asr_stats %}
+      --stats=true
+{% endif %}
+{% endfor %}

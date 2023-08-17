@@ -1,0 +1,6 @@
+---
+- name: install dpp-front
+  hosts:
+    - dpp[0]
+  roles:
+    - dpp-front

@@ -1,0 +1,10 @@
+---
+
+- name: "Set local vars"
+  set_fact:
+    service_name:         "{{ dictionary_hosts.dpp.name }}"
+    service_img:          "{{ dictionary_hosts.dpp.img }}"
+    service_tag:          "{{ dictionary_hosts.dpp.tag }}"
+    service_repo:         "{{ dictionary_hosts.dpp.repo }}"
+    service_mnt_dir_loc:   "{{ docker_mounts_root }}/{{ dictionary_hosts.dpp.name }}"
+    service_compose_dir:   "{{ docker_compose_root }}/{{ dictionary_hosts.dpp.name }}"

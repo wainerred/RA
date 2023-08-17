@@ -1,0 +1,26 @@
+version: '2.4'
+
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: always
+{% if notification_service_mem_limit%}    
+    mem_limit: {{ notification_service_mem_limit }}
+{% endif %}
+    network_mode: {{ docker_network_mode }}
+    ports:
+      - {{ ports.notification_service_main }}:{{ ports.notification_service_main }}
+    environment:
+      OPTS: >-
+        -XX:ErrorFile=/kes/logs/java_error%p.log
+      HEAP_OPTS: >-
+        -Xmx{{ notification_service_mem_limit | regex_search('^[0-9]+') | int * 75 // 100 | int }}{{ notification_service_mem_limit | regex_search('\\w$') }}
+        -Xms{{ notification_service_mem_limit | regex_search('^[0-9]+') | int * 75 // 100 | int }}{{ notification_service_mem_limit | regex_search('\\w$') }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - "{{ service_mnt_dir_loc }}/logs:/kes/log"
+      - "{{ service_mnt_dir_loc }}/conf/:/kes/configs"

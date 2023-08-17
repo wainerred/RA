@@ -1,0 +1,11 @@
+{
+    "name": "NLP",
+    "kind": "grpc",
+    "type": "processor",
+    "urls": [
+{% for adr in hosts.dpp_nlp_service %}
+        "{{ adr }}:{{ ports.dpp_nlp_service_grpc }}"{% if not loop.last %}, 
+{% endif %}
+{% endfor %}
+    ]
+}

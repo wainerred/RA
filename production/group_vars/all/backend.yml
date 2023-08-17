@@ -1,0 +1,31 @@
+backend_principal_name_transforms:
+ - {type: lowercase}
+ - {type: domain-replace, domain: esplus.ru}
+
+backend_orgstruct: true
+backend_category_multi_column: true
+backend_additional_weight: true
+backend_kerberos: true
+backend_ldap_user_sync: true
+backend_modules_ldap: true
+backend_document_task: true
+backend_commnet_group: true
+backend_mail: true
+backend_modules_journal: true
+backend_modules_stats: true
+
+mail_server_host: mail.tplusgroup.ru
+mail_server_port: 25
+mail_server_user: speechanalytics@esplus.ru
+mail_server_pass: Q1w2e3R4t5y_123
+
+backend_exporter_rabbitmq_conection_string: amqp://ra:GBa9ZOgW@msk-ish-gw01.ad.ies-holding.com:5672
+
+backend_default_authority_field: file.properties.operator_login
+backend_default_authority_name_field: file.properties.operator
+backend_document_task_manager_interval_sec: 3600
+
+additional_weights_header_template: \"<category_name>\" / Конечная оценка при калибровке
+additional_weights_modify_header_template: \"<category_name>\" / Наличие ручных изменений при калибровке
+additional_weights_diff_header_template: \"<category_name>\" / Разница в оценке при калибровке
+modified_category_header_template: \"<category_name>\" / Наличие ручных изменений

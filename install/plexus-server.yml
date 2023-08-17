@@ -1,0 +1,10 @@
+---
+
+# Install plexus-server
+- name: "Install plexus-server"
+  hosts:
+    - plexus_server
+  roles:
+    - backend
+  vars:
+    service: plexus_server

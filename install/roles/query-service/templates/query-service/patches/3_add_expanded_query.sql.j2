@@ -1,0 +1,3 @@
+BEGIN;
+ALTER TABLE queries ADD COLUMN IF NOT EXISTS expanded_query text;
+COMMIT;

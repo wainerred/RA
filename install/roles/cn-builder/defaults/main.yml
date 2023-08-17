@@ -1,0 +1,3 @@
+---
+# defaults file for cn-builder
+cn_builder_mem_limit:     2048M
