@@ -1,0 +1,10 @@
+---
+frontend_type: touchpoint
+frontend_https_enabled: false
+frontend_main_html: index.html
+frontend_ico_path: /icons/touchpoint/favicon.ico
+frontend_root_dir: /usr/share/nginx/html
+frontend_imeges: false
+frontend_debug_mode: false
+frontend_mem_limit: false
+frontend_scheme: "{{ 'https' if frontend_https_enabled else 'http' }}"

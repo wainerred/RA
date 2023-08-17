@@ -1,0 +1,50 @@
+---
+# tasks file for dpp-spell-checker
+
+- name: "Set global vars"
+  import_role:
+    name: set-global-vars
+  tags:
+    - always
+
+- name: "Set local vars"
+  include_vars: main.yml
+  tags:
+    - always
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: "Install spell-checker"
+  include: "install-spell-checker.yml"
+
+- name: "Check exists template"
+  uri:
+    url: "http://{{ host.elasticsearch_spell_checker }}:{{ ports.elasticsearch_spell_checker_main }}/_index_template/{{ spell_checker_index_pattern }}"
+    validate_certs: false
+    return_content: true
+    status_code:
+      - 200
+      - 404
+  register: result_templates
+  tags: put-templates
+
+- name: "PUT templates"
+  run_once: true
+  import_tasks: put-template.yml
+  when: result_templates.status == 404
+  tags: put-templates
+
+- name: Load dump indices
+  import_tasks: dump-indices.yml
+  run_once: true
+  tags:
+    - never
+    - load-indices
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start

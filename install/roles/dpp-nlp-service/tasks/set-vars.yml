@@ -1,0 +1,9 @@
+---
+
+- set_fact:
+    service_name:         "{{ dictionary_hosts.dpp_nlp_service.name }}"
+    service_img:          "{{ dictionary_hosts.dpp_nlp_service.img }}"
+    service_tag:          "{{ dictionary_hosts.dpp_nlp_service.tag }}"
+    service_repo:         "{{ dictionary_hosts.dpp_nlp_service.repo }}"
+    service_mnt_dir_loc:   "{{ docker_mounts_root }}/{{ dictionary_hosts.dpp_nlp_service.name }}"
+    service_compose_dir:   "{{ docker_compose_root }}/{{ dictionary_hosts.dpp_nlp_service.name }}"

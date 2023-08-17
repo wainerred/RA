@@ -1,0 +1,225 @@
+version: '2.4'
+
+services:
+{% if service == 'plexus_server' %}
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: unless-stopped
+    mem_limit: {{ plexus_server_mem_limit }}
+    environment:
+      ANSIBLE_CONFIG: /plexus/ansible/ansible.cfg
+      JAVA_OPTS: >-
+       -Xmx{{ plexus_server_mem_limit | regex_search('^[0-9]+') | int * 75 // 100 }}{{ plexus_server_mem_limit | regex_search('\\w$') }}
+       -server
+       -Dconfig.resource=backend.conf
+       -Dlogger.resource=logback-docker.xml
+       -Dplay.http.secret.key={{ backend_secret_key }}
+       -Dplay.server.pidfile.path=/dev/null
+       -Duser.timezone=UTC
+       -Djava.net.preferIPv4Stack=true
+      CLUSTER_IP: {{ host.plexus_server }}
+      CLUSTER_PORT: {{ ports.plexus_server_cluster }}
+      HTTP_PORT: {{ ports.plexus_server_main }}
+{% if backend_extra_hosts %}
+    extra_hosts:
+{% for extra_host in backend_extra_hosts %}
+      - {{ extra_host }}
+{% endfor %}
+{% endif %}
+    ports:
+      - {{ ports.plexus_server_main }}:{{ ports.plexus_server_main }}
+      - {{ ports.plexus_server_cluster }}:{{ ports.plexus_server_cluster }}
+    network_mode: {{ docker_network_mode }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - {{ service_mnt_dir_loc }}/conf/backend.conf:/plexus/conf/backend.conf:ro
+      - {{ service_mnt_dir_loc }}/conf/backend-resource.conf:/plexus/conf/backend-resource.conf:ro
+      - {{ service_mnt_dir_loc }}/conf/init.json:/plexus/conf/init.json:ro
+{% if versions.plexus_server is version('3.25.0', '<') %}
+      - {{ service_mnt_dir_loc }}/conf/notification_email_template:/plexus/conf/notification_email_template:ro
+{% endif %}
+      - {{ service_mnt_dir_loc }}/conf/zabbix_filters.json:/plexus/conf/zabbix_filters.json:ro
+      - {{ service_mnt_dir_loc }}/conf/logback-docker.xml:/plexus/conf/logback-docker.xml:ro
+      - {{ service_mnt_dir_loc }}/conf/external_sources.json:/plexus/conf/external_sources.json:ro
+      - {{ service_mnt_dir_loc }}/conf/rt-agg-part:/plexus/conf/rt-agg-part:ro
+      - {{ service_mnt_dir_loc }}/conf/dictionaries.json:/plexus/conf/dictionaries.json:ro
+      - {{ service_mnt_dir_loc }}/conf/base-spell-checker-settings.json:/plexus/conf/base-spell-checker-settings.json:ro
+      - {{ service_mnt_dir_loc }}/conf/default-fcr-elastic-exporter-settings.json:/plexus/conf/default-fcr-elastic-exporter-settings.json:ro
+      - {{ service_mnt_dir_loc }}/conf/file-cutter-settings.json:/plexus/conf/file-cutter-settings.json:ro
+{% if backend_modules_badges %}
+      - {{ service_mnt_dir_loc }}/conf/base-badge-splitter-settings.json:/plexus/conf/base-badge-splitter-settings.json:ro
+      - {{ service_mnt_dir_loc }}/conf/elastic-type-filters.json:/plexus/conf/elastic-type-filters.json.json:ro
+{% endif %}
+      - {{ service_mnt_dir_loc }}/logs:/plexus/logs
+      - {{ service_mnt_dir_loc }}/tmp:/tmp
+{% if backend_modules_journal %}
+      - {{ service_mnt_dir_loc }}/conf/journal-component-template.json:/plexus/conf/journal-component-template.json:ro
+      - {{ service_mnt_dir_loc }}/conf/journal-index-template.json:/plexus/conf/journal-index-template.json:ro
+      - {{ service_mnt_dir_loc }}/conf/user-action-type.json:/plexus/conf/user-action-type.json:ro
+{% endif %}
+{% if backend_custom_email %}
+{% if versions.plexus_server is version('3.25.0', '>=') %}
+      - {{ service_mnt_dir_loc }}/conf/notification_email_static:/plexus/conf/notification_email_static:ro
+{% endif %}
+      - {{ service_mnt_dir_loc }}/conf/v15_notification_email_index.html.mustache:/plexus/conf/v15_notification_email_index.html.mustache:ro
+{% endif %}
+{% endif %}
+{% if service == 'plexus_resource' %}
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: unless-stopped
+    mem_limit: {{ plexus_resource_mem_limit }}
+    environment:
+      JAVA_OPTS: >- 
+        -Xmx{{ plexus_resource_mem_limit | regex_search('^[0-9]+') | int * 75 // 100 }}{{ plexus_resource_mem_limit | regex_search('\\w$') }}
+        -server 
+        -Dconfig.resource=backend-resource.conf 
+        -Dlogger.resource=logback-docker.xml 
+        -Dplay.http.secret.key={{ backend_secret_key }} 
+        -Dplay.server.pidfile.path=/dev/null 
+        -Duser.timezone=UTC 
+        -Djava.net.preferIPv4Stack=true
+      CLUSTER_IP: {{ host.plexus_resource }}
+      CLUSTER_PORT: {{ ports.plexus_resource_cluster }}
+      HTTP_PORT: {{ ports.plexus_resource_main }}
+    ports:
+      - {{ ports.plexus_resource_main }}:{{ ports.plexus_resource_main }}
+      - {{ ports.plexus_resource_cluster }}:{{ ports.plexus_resource_cluster }}
+    network_mode: {{ docker_network_mode }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - {{ service_mnt_dir_loc }}/conf/backend.conf:/plexus/conf/backend.conf:ro
+      - {{ service_mnt_dir_loc }}/conf/backend-resource.conf:/plexus/conf/backend-resource.conf:ro
+      - {{ service_mnt_dir_loc }}/conf/logback-docker.xml:/plexus/conf/logback-docker.xml:ro
+      - {{ service_mnt_dir_loc }}/conf/external_sources.json:/plexus/conf/external_sources.json:ro
+      - {{ service_mnt_dir_loc }}/conf/rt-agg-part:/plexus/conf/rt-agg-part:ro
+      - {{ service_mnt_dir_loc }}/conf/dictionaries.json:/plexus/conf/dictionaries.json:ro
+      - {{ service_mnt_dir_loc }}/conf/base-spell-checker-settings.json:/plexus/conf/base-spell-checker-settings.json:ro
+      - {{ service_mnt_dir_loc }}/conf/default-fcr-elastic-exporter-settings.json:/plexus/conf/default-fcr-elastic-exporter-settings.json:ro
+      - {{ service_mnt_dir_loc }}/conf/file-cutter-settings.json:/plexus/conf/file-cutter-settings.json:ro
+{% if backend_modules_badges %}
+      - {{ service_mnt_dir_loc }}/conf/base-badge-splitter-settings.json:/plexus/conf/base-badge-splitter-settings.json:ro
+      - {{ service_mnt_dir_loc }}/conf/elastic-type-filters.json:/plexus/conf/elastic-type-filters.json.json:ro
+{% endif %}
+      - {{ service_mnt_dir_loc }}/logs:/plexus/logs
+      - {{ service_mnt_dir_loc }}/tmp:/tmp
+{% endif %}
+{% if service == 'plexus_auth' %}
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: unless-stopped
+    mem_limit: {{ plexus_auth_mem_limit }}
+    environment:
+      JAVA_OPTS: >-
+        -Xmx{{ plexus_auth_mem_limit | regex_search('^[0-9]+') | int * 75 // 100 }}{{ plexus_auth_mem_limit | regex_search('\\w$') }}
+        -server 
+        -Dconfig.resource=auth.conf 
+        -Dlogger.resource=logback-docker.xml 
+        -Dplay.http.secret.key={{ backend_secret_key }} 
+        -Dplay.server.pidfile.path=/dev/null 
+        -Duser.timezone=UTC 
+        -Djava.net.preferIPv4Stack=true
+{% if versions.plexus_auth is version('3.13.0', '>=') and backend_kerberos %}
+        -Djava.security.krb5.conf=conf/krb5.conf
+        -Djavax.security.auth.useSubjectCredsOnly=false
+        -Djava.security.auth.login.config=conf/jaas.conf
+        -Dsun.security.krb5.debug=true
+{% endif %}
+      HTTP_PORT: {{ ports.plexus_auth_main }}
+    ports:
+      - {{ ports.plexus_auth_main }}:{{ ports.plexus_auth_main }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    network_mode: {{ docker_network_mode }}
+    volumes:
+      - {{ service_mnt_dir_loc }}/conf/auth.conf:/plexus/conf/auth.conf:ro
+      - {{ service_mnt_dir_loc }}/conf/logback-docker.xml:/plexus/conf/logback-docker.xml:ro
+      - {{ service_mnt_dir_loc }}/logs:/plexus/logs
+      - {{ service_mnt_dir_loc }}/tmp:/tmp
+{% if backend_modules_journal %}
+      - {{ service_mnt_dir_loc }}/conf/journal-component-template.json:/plexus/conf/journal-component-template.json:ro
+      - {{ service_mnt_dir_loc }}/conf/journal-index-template.json:/plexus/conf/journal-index-template.json:ro
+{% endif %}
+{% if versions.plexus_auth is version('3.13.0', '>=') and backend_kerberos %}
+      - {{ service_mnt_dir_loc }}/conf/krb5.conf:/plexus/conf/krb5.conf
+      - {{ service_mnt_dir_loc }}/conf/jaas.conf:/plexus/conf/jaas.conf
+      - {{ service_mnt_dir_loc }}/conf/keytab.keytab:/plexus/conf/keytab.keytab
+{% endif %}
+{% endif %}
+{% if service == 'plexus_rsyslog' %}
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: unless-stopped
+    mem_limit: {{ plexus_rsyslog_mem_limit }}
+    environment:
+      DB_SERVER: {{ host.postgres_backend }}
+      DB_PORT: {{ ports.postgres_backend_main }}
+      DB_USER: postgres
+      DB_PASSWORD: {{ postgres_back_password }}
+      DB_NAME: plexus_journal
+    network_mode: {{ docker_network_mode }}
+    volumes:
+      - {{ plexus_server_log_dir }}/logs:/plexus-server/logs
+      - {{ plexus_resource_log_dir }}/logs:/plexus-resource/logs
+      - {{ plexus_auth_log_dir }}/logs:/plexus-auth/logs
+{% endif %}
+{% if service == 'plexus_reports' %}
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: unless-stopped
+{% if plexus_reports_mem_limit %}
+    mem_limit: {{ plexus_reports_mem_limit }}
+{% endif %}
+    ports:
+      - {{ ports.plexus_reports_main }}:{{ ports.plexus_reports_main }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    network_mode: {{ docker_network_mode }}
+    volumes:
+      - {{ service_mnt_dir_loc }}/tmp:/tmp
+      - {{ service_mnt_dir_loc }}/conf/config.js:/app/dist/config.js
+
+{% endif %}
+{% if service == 'plexus_api_swagger' %}
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: unless-stopped
+{% if plexus_api_swagger_mem_limit %}
+    mem_limit: {{ plexus_api_swagger_mem_limit }}
+{% endif %}
+    environment:
+      PORT: {{ ports.plexus_api_swagger_main }}
+{% if frontend_type == 'default' %}
+      RESOURCE_SERVER_URL: https://{{ frontend_domain[0] }}/api/v1
+      TOKEN_URL: https://{{ frontend_domain[0] }}/auth/token/
+      APP_URL: https://{{ frontend_domain[0] }}
+{% else %}
+      RESOURCE_SERVER_URL: https://api.{{ frontend_domain[0] }}/v1
+      TOKEN_URL: https://oauth.{{ frontend_domain[0] }}/token/
+      APP_URL: https://app.{{ frontend_domain[0] }}
+{% endif %}
+      BASE_URL: /swagger
+    ports:
+      - {{ ports.plexus_api_swagger_main }}:{{ ports.plexus_api_swagger_main }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    network_mode: {{ docker_network_mode }}
+{% endif %}

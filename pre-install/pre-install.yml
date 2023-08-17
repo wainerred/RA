@@ -1,0 +1,6 @@
+---
+- name: Pre-install
+  hosts: servers
+  roles:
+    - pre-install
+  environment: "{{ proxy_env | default('') }}"

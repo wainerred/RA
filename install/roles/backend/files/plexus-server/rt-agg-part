@@ -1,0 +1,95 @@
+"{{ type }}_{{ datetime_from }}_{{ datetime_to }}": {
+  "filter": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "{{ field_end }}": {
+              "gte": {{ datetime_from }}
+            }
+          }
+        },
+        {
+          "range": {
+            "{{ field_begin }}": {
+              "lt": {{ datetime_to }}
+            }
+          }
+        }
+      ]
+    }
+  },
+  "aggs": {
+    "full": {
+      "filter": {
+        "bool": {
+          "must": [
+            {
+              "range": {
+                "{{ field_begin }}": {
+                  "gte": {{ datetime_from }}
+                }
+              }
+            },
+            {
+              "range": {
+                "{{ field_end }}": {
+                  "lt": {{ datetime_to }}
+                }
+              }
+            }
+          ]
+        }
+      },
+      "aggs": {
+        "duration": {
+          "sum": {
+            "field": "duration"
+          }
+        }
+      }
+    },
+    "crop_left": {
+      "filter": {
+        "range": {
+          "{{ field_begin }}": {
+            "lt": {{ datetime_from }}
+          }
+        }
+      },
+      "aggs": {
+        "duration": {
+          "sum": {
+            "script": {
+              "source": "(double)(doc['{{ field_end }}'].value.toInstant().toEpochMilli() - params['date']) / (double)(doc['{{ field_end }}'].value.toInstant().toEpochMilli() - doc['{{ field_begin }}'].value.toInstant().toEpochMilli()) * (double)doc['duration'].value",
+              "params": {
+                "date": {{ datetime_from }}
+              }
+            }
+          }
+        }
+      }
+    },
+    "crop_right": {
+      "filter": {
+        "range": {
+          "{{ field_end }}": {
+            "gte": {{ datetime_to }}
+          }
+        }
+      },
+      "aggs": {
+        "duration": {
+          "sum": {
+            "script": {
+              "source": "(double)(params['date'] - doc['{{ field_begin }}'].value.toInstant().toEpochMilli()) / (double)(doc['{{ field_end }}'].value.toInstant().toEpochMilli() - doc['{{ field_begin }}'].value.toInstant().toEpochMilli()) * (double)doc['duration'].value",
+              "params": {
+                "date": {{ datetime_to }}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

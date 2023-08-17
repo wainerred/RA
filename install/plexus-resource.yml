@@ -1,0 +1,11 @@
+---
+
+# Install plexus-resource
+- name: "Install plexus-resource"
+  hosts:
+    - plexus_resource
+  roles:
+    - backend
+  vars:
+    service: plexus_resource
+  gather_facts: false

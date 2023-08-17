@@ -1,0 +1,8 @@
+{
+  "priority" : 1,
+  "template": {
+    "settings" : {
+      "number_of_shards" : 2
+    }
+  }
+}

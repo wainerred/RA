@@ -1,0 +1,66 @@
+[default]
+tmp_path=./tmp/dss/calls
+timezone={{ time_zone }}
+sleep=120
+okk=/app/excel/ОКК.xlsx
+ffmpeg=ffmpeg
+test=1
+# call_managers=aako056,aale256,abak056,admin@touchpoint,aelc001,agri256,aism056,aker056,alak056,alyt056,anastasiya.vorobeva@esplus.ru,anna.bakhteeva@esplus.ru,apan156,atas056,avor008,azol056,dkov004,dpog002,eali056,ebra002,edav001,edav056,efof003,ekis156,eknya056,ekol156,ekop056,esin002,gkov156,gyuma056,idom056,ikhal056,imal056,ipop010,kkav056,kkuz056,llav056,lleu001,lmor056,lopa001,lvak056,mber056,mchu009,merm005,mgra003,mlya001,mzyk002,nbor056,nfit056,ngil056,nmor056,nneb056,nnes156,npin056,npot056,okk@esplus,operator@esplus,opli056,osal056,otet003,ozol056,pban056,pbor002,rmuz056,rrya056,rsuya056,sbog001,spav011,super@esplus,Test@esplus.ru,test_otet@touchpoint,tkan003,tmak056,tmis056,tsuz056,vbal056,vgub156,vgub,vkho005,vobe001,v-orn-ddus056,yashi056,ykop056,ykor056,yugab056,zelsh056,vkor256,aima056,dnik056,uche056,ebud056,efri056,apro256,opan256,edan056,agru056,dkol156,kmal056,vgor056,disa056,evas056,akon056,akha256,aper056,ofed256,nost056,ogol156,mfom056,mmor056,dsid056,evol007,velf056,dgim056,vilyu056,ssir056,tera056,ybal056,ilyk056,lizv056,ilog156,aisha056,anur056,nbur056,akom056,ipor056,oyug056,estu056,ilyt056,ygor056,dibr056,ezhe056,yupash056,ozel056,ekuc056,tmau056,mkra056,snab056,rfat056,apla056,apet156,ekon056,mbus056,sfed056,ashi024,abat003,ysmi003,mgog001,mtru004,oser009,akha029,emus005,azue002,elek001,eara002,mpom001,aovs005,nsal007,aiva023,asha011,evas016,mlap003,dpot004,ypop001,eshe008,ishi005,dkos010,azyk004
+categories=/app/excel/categories-mapping.csv
+reindex=1
+
+[sqlite]
+path=./db/es.db
+
+[logging]
+name=records-chats
+path=/app/logs
+
+[touchpoint]
+auth_url=https://{{ frontend_domain[0] }}/auth/token/
+api_url=https://{{ frontend_domain[0] }}/api/v1/
+client_id=736368855554723840
+;735706945721208832
+username=admin@touchpoint
+password=Wainerred!#13
+collection.calls=752752319740776448
+collection.chats=735722514688249856
+
+[rabbitmq.qa]
+host=msk-ish-tsgw.ad.ies-holding.com
+port=5672
+username=ra
+password=hUpvw1jN
+queue_chat=speechAnalytics.out.chat
+queue_emplyee=speechAnalytics.out.reference
+queue_voice=speechAnalytics.out.voice
+
+[rabbitmq]
+host=msk-ish-gw01.ad.ies-holding.com
+port=5672
+username=ra
+password=GBa9ZOgW
+queue_chat=speechAnalytics.out.chat
+queue_emplyee=speechAnalytics.out.reference
+queue_voice=speechAnalytics.out.voice
+
+
+[audio]
+url_download=http://10.5.67.34:8080/api/v2/callrecord/download
+username=wsrest
+password=123
+
+[playgrounds]
+1=1. Оренбургская площадка!
+2=2. Кировская площадка!
+4=4. Дебиторская задолженность
+
+[bots]
+1=1
+2=1
+4=0
+
+[collections]
+1=752752319740776448
+2=752752319740776448
+4=803455560757284864

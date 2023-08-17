@@ -1,0 +1,34 @@
+[default]
+tmp_path=./tmp/dss/queue
+timezone={{ time_zone }}
+sleep=3600
+ffmpeg=ffmpeg
+process=queue
+depth=10
+test=1
+mono=0
+
+[logging]
+name=microphones
+path=/app/logs
+
+[api]
+api_url=http://10.5.3.50:82/api/1/
+ws_url=ws://10.5.3.50:83/
+file_url=http://10.5.3.50:82/recordFile/get/
+
+[sqlite]
+path=./db/es_queue.db
+
+[touchpoint]
+auth_url=https://{{ frontend_domain[0] }}/auth/token/
+api_url=https://{{ frontend_domain[0] }}/api/v1/
+client_id=736368855554723840
+username=admin@touchpoint
+password=Wainerred!#13
+collection=761418834442719232
+
+[servers]
+1=96ae38d0-f9df-d037-bc40-c8190c1686cd
+2=9fd0bab3-a056-37f3-1e06-78d1576f6262
+3=372f2d63-7d7f-842a-7b76-646728e21a04

@@ -1,0 +1,10 @@
+---
+
+- name: "set local vars"
+  set_fact:
+    service_name:         "{{ dictionary_hosts.dpp_painless_processor.name }}"
+    service_img:          "{{ dictionary_hosts.dpp_painless_processor.img }}"
+    service_tag:          "{{ dictionary_hosts.dpp_painless_processor.tag }}"
+    service_repo:         "{{ dictionary_hosts.dpp_painless_processor.repo }}"
+    service_mnt_dir_loc:   "{{ docker_mounts_root }}/{{ dictionary_hosts.dpp_painless_processor.name }}"
+    service_compose_dir:   "{{ docker_compose_root }}/{{ dictionary_hosts.dpp_painless_processor.name }}"

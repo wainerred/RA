@@ -1,0 +1,29 @@
+---
+- name: "Set tmp dir"
+  set_fact:
+    tmp_dir: "/tmp/notification"
+
+- name: "Create tmp dir {{ tmp_dir }}"
+  file:
+    path: "{{ tmp_dir }}"
+    state: directory
+    mode: 0644
+
+- name: "Copy init script"
+  template:
+    src: "init/pastgres.sql.j2"
+    dest: "{{ tmp_dir }}/pastgres.sql"
+    mode: 0644
+
+- name: "Run init script"
+  shell: "docker run -it --rm \
+  --net host \
+  -e PGPASSWORD={{ postgres_dpp_password }} \
+  -v {{ tmp_dir }}:/patches \
+  {{ dictionary_hosts.postgres_dpp.repo }}/{{ dictionary_hosts.postgres_dpp.img }}:{{ dictionary_hosts.postgres_dpp.tag }} \
+  bash -c 'psql -h {{ host.postgres_dpp }} -p {{ ports.postgres_dpp_main }} -U postgres -a -f /patches/pastgres.sql'"
+
+- name: "Remove tmp dir {{ tmp_dir }}"
+  file:
+    path: "{{ tmp_dir }}"
+    state: absent

@@ -1,0 +1,6 @@
+---
+- name: "Set Variables"
+  set_fact:
+    service_img: "{{ dictionary_hosts[service].img }}"
+    service_tag: "{{ dictionary_hosts[service].tag }}"
+    service_repo: "{{ dictionary_hosts[service].repo }}"

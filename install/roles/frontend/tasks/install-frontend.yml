@@ -1,0 +1,105 @@
+---
+
+- name: "Remove directories"
+  file:
+    path: "{{ dir_item }}"
+    state: absent
+  with_items:
+    - "{{ service_mnt_dir_loc }}/conf"
+    - "{{ service_mnt_dir_loc }}/certs"
+    - "{{ service_mnt_dir_loc }}/custom_logo"
+    - "{{ service_mnt_dir_loc }}/sites-enabled"
+  loop_control:
+    loop_var: dir_item
+  tags:
+    - never
+    - remove
+
+- name: "Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ service_mnt_dir_loc }}/conf"
+    - "{{ service_mnt_dir_loc }}/logs"
+    - "{{ service_mnt_dir_loc }}/certs"
+    - "{{ service_mnt_dir_loc }}/custom_logo"
+    - "{{ service_mnt_dir_loc }}/sites-enabled"
+    - "{{ letsencrypt_dir_path }}"
+  loop_control:
+    loop_var: dir_item
+
+- name: "Generate config"
+  template:
+    src: "{{ conf_item }}"
+    dest: "{{ service_mnt_dir_loc }}/conf/{{ conf_item | basename | regex_replace('.j2', '') }}"
+    mode: 0755
+  with_fileglob:
+    - "templates/frontend/conf/*.j2"
+  loop_control:
+    loop_var: conf_item
+
+- name: "Copy custom_logo"
+  copy:
+    src: "{{ conf_item }}"
+    dest: "{{ service_mnt_dir_loc }}/custom_logo/{{ conf_item | basename }}"
+    mode: 0755
+  with_fileglob:
+    - "files/custom_logo/*"
+  loop_control:
+    loop_var: conf_item
+  when: frontend_custom_logo | default(False)
+
+- name: "Generate sites-enabled"
+  template:
+    src: "{{ conf_item }}"
+    dest: "{{ service_mnt_dir_loc }}/sites-enabled/{{ conf_item | basename | regex_replace('.j2', '') }}"
+    mode: 0755
+  with_fileglob:
+    - "templates/frontend/sites-enabled-touchpoint/*{{ frontend_type }}*.j2"
+  loop_control:
+    loop_var: conf_item
+  tags: sites
+
+- name: "Generate sites-enabled"
+  template:
+    src: "{{ conf_item }}"
+    dest: "{{ service_mnt_dir_loc }}/sites-enabled/{{ conf_item | basename | regex_replace('.j2', '') }}"
+    mode: 0755
+  with_fileglob:
+    - "../../../../external-frontend-sites/{{ ansible_inventory_sources[0].split('/')[-1] }}/*.j2"
+  loop_control:
+    loop_var: conf_item
+  when: frontend_external_sites
+  tags: sites
+
+- name: Copy letencrypt.conf
+  copy:
+    src: letsencrypt/letsencrypt.conf
+    dest: "{{ service_mnt_dir_loc }}/conf/letsencrypt.conf"
+    mode: 0755
+  when: frontend_certbot
+
+- name: "Zip externalSettings.js"
+  archive:
+    path: "{{ service_mnt_dir_loc }}/conf/externalSettings.js"
+    dest: "{{ service_mnt_dir_loc }}/conf/externalSettings.js.gz"
+    mode: 0755
+    format: gz
+
+- name: "Copy certificates (key)"
+  copy:
+    src: "{{ cert_key_path }}"
+    dest: "{{ service_mnt_dir_loc }}/certs/privkey.pem"
+    mode: 0755
+  when: not frontend_certbot and frontend_https_enabled
+  tags: certs
+
+- name: "Copy certificates (open)"
+  copy:
+    src: "{{ cert_path }}"
+    dest: "{{ service_mnt_dir_loc }}/certs/fullchain.pem"
+    mode: 0755
+  when: not frontend_certbot and frontend_https_enabled
+  tags: certs

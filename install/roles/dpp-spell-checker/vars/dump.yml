@@ -1,0 +1,5 @@
+---
+dump_repo: "{{ dictionary_hosts.elasticsearch_dump.repo }}"
+dump_img: "{{ dictionary_hosts.elasticsearch_dump.img }}"
+dump_tag: "{{ dictionary_hosts.elasticsearch_dump.tag }}"
+tmp_dir: /tmp/specll-checker-dump

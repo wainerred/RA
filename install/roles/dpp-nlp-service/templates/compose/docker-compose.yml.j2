@@ -1,0 +1,22 @@
+version: '2.4'
+
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: always
+{% if dpp_nlp_service_mem_limit %}    
+    mem_limit: {{ dpp_nlp_service_mem_limit }}
+{% endif %}
+    network_mode: {{ docker_network_mode }}
+    ports:
+      - {{ ports.dpp_nlp_service_grpc }}:{{  ports.dpp_nlp_service_grpc }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 256M
+    volumes:
+      - "{{ service_mnt_dir_loc }}/elastic_dump:/app/elastic_dump"
+      - "{{ service_mnt_dir_loc }}/tomita_dumps:/app/tomita_dumps"
+      - "{{ service_mnt_dir_loc }}/conf:/app/config"
+      - "{{ service_mnt_dir_loc }}/logs:/app/log"

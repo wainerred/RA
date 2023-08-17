@@ -1,0 +1,46 @@
+include "application.conf"
+
+service {
+  api.service {
+    bind {
+      address = 0.0.0.0
+      port = {{ ports.query_service_main }}
+    }
+  }
+}
+
+clients {
+  synonym-service {
+{% if host.cross_language is defined %}
+    base-url = "http://{{ host.cross_language }}:{{ ports.cross_language_main }}"
+{% else %}
+    base-url = "http://127.0.0.1:8080"
+{% endif %}
+    synonym-fields = [
+      "text",
+      "title",
+      "client.transcript",
+      "operator.transcript"
+    ]
+    translit-langpairs = {
+      ru = "en"
+    }
+    http-connection-pool {
+      max-connections = 1
+      idle-timeout = 600s
+      max-open-requests = 128
+      max-queue-size = 10000
+    }
+  }
+}
+
+database {
+  db {
+    url = "jdbc:postgresql://{{ host.postgres_dpp }}:{{ ports.postgres_dpp_main }}/{{ database_queries }}"
+    user = "postgres"
+    password = "{{ postgres_dpp_password }}"
+    }
+}
+
+
+

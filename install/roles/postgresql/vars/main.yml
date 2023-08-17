@@ -1,0 +1,8 @@
+---
+service_name: "{{ dictionary_hosts[service]['name'] }}"
+service_img: "{{ dictionary_hosts[service]['img'] }}"
+service_tag: "{{ dictionary_hosts[service]['tag'] }}"
+service_repo: "{{ dictionary_hosts[service]['repo'] }}"
+service_compose_dir: "{{ docker_compose_root }}/{{ dictionary_hosts[service]['name'] }}"
+service_mnt_dir: "{{ docker_mounts_root }}/{{ dictionary_hosts[service]['name'] }}"
+docker_compose_path: "{{ service }}/compose/docker-compose.yml.j2"

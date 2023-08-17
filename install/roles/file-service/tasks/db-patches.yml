@@ -1,0 +1,45 @@
+---
+
+- set_fact:
+    docker_pg_repo: "{{ dictionary_hosts.postgres_file_service.repo }}"
+    docker_pg_img:  "{{ dictionary_hosts.postgres_file_service.img }}"
+    docker_pg_tag:  "{{ dictionary_hosts.postgres_file_service.tag }}"
+
+- name: "Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+    mode: 0644
+  with_items:
+    - "/tmp/db-file-patches/"
+  loop_control:
+    loop_var: dir_item
+
+- name: "Download patches"
+  template:
+    src: "{{ conf_item }}"
+    dest: "/tmp/db-file-patches/{{ conf_item | basename | regex_replace('.j2', '') }}"
+    mode: 0644
+  with_fileglob:
+    - "templates/init-table/*.j2"
+  loop_control:
+    loop_var: conf_item
+
+- name: "DB init 'accounts'"
+  shell: "docker run -it --rm \
+  --net host \
+  -e PGPASSWORD={{ postgres_file_password }} \
+  -v /tmp/db-file-patches:/patches \
+  {{ docker_pg_repo }}/{{ docker_pg_img }}:{{ docker_pg_tag }} \
+   bash -c 'psql -h {{ host.postgres_file_service }} \ 
+   -p {{ ports.postgres_file_service_main }} \
+   -U postgres -a -f /patches/file_service.sql'"
+
+- name: "Delete directories"
+  file:
+    path: "{{ dir_item }}"
+    state: absent
+  with_items:
+    - "/tmp/db-file-patches/"
+  loop_control:
+    loop_var: dir_item

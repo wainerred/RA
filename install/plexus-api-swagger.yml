@@ -1,0 +1,11 @@
+---
+
+# Install plexus-api-swagger
+- name: "Install plexus-api-swagger"
+  hosts:
+    - plexus_api_swagger
+  roles:
+    - backend
+  vars:
+    service: plexus_api_swagger
+  gather_facts: false

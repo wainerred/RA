@@ -1,0 +1,17 @@
+[libdefaults]
+kdc_realm = AD.IES-HOLDING.COM
+default_realm = AD.IES-HOLDING.COM
+rdns = false
+udp_preference_limit = 1
+allow_weak_crypto = true
+forwardable = true
+
+[realms]
+AD.IES-HOLDING.COM  = {
+	kdc = msk-ad04-dc01.ad.ies-holding.com 
+	kdc = msk-ad01-dc03.ad.ies-holding.com
+}
+ 
+[domain_realm]
+	.ad.ies-holding.com = AD.IES-HOLDING.COM
+	ad.ies-holding.com = AD.IES-HOLDING.COM

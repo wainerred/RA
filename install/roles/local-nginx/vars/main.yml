@@ -1,0 +1,7 @@
+---
+service_name: "{{ dictionary_hosts.local_nginx.name }}"
+service_img: "{{ dictionary_hosts.local_nginx.img }}"
+service_tag: "{{ dictionary_hosts.local_nginx.tag }}"
+service_repo: "{{ dictionary_hosts.local_nginx.repo }}"
+service_mnt_dir_loc: "{{ docker_mounts_root }}/{{ dictionary_hosts.local_nginx.name }}"
+service_compose_dir: "{{ docker_compose_root }}/{{ dictionary_hosts.local_nginx.name }}"

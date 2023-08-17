@@ -1,0 +1,4 @@
+{
+  "update_script": "if (ctx._source.fcr.version < params.fcr.min_version) { throw new Exception('Min version error!'); } if (ctx._source.fcr.version < params.fcr.version) { params.fcr.remove('min_version'); ctx._source.fcr = params.fcr; ctx._source._internal_data.indexed_date = params._internal_data.indexed_date; } else { ctx.op = 'none'; }",
+  "update_wait": 1800
+}

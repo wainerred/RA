@@ -1,0 +1,6 @@
+    service_name:         "{{ dictionary_hosts.dpp_dictionary_enricher.name }}"
+    service_img:          "{{ dictionary_hosts.dpp_dictionary_enricher.img }}"
+    service_tag:          "{{ dictionary_hosts.dpp_dictionary_enricher.tag }}"
+    service_repo:         "{{ dictionary_hosts.dpp_dictionary_enricher.repo }}"
+    service_mnt_dir_loc:   "{{ docker_mounts_root }}/{{ dictionary_hosts.dpp_dictionary_enricher.name }}"
+    service_compose_dir:   "{{ docker_compose_root }}/{{ dictionary_hosts.dpp_dictionary_enricher.name }}"

@@ -1,0 +1,4 @@
+BEGIN;
+ALTER TABLE queries ADD COLUMN IF NOT EXISTS filters jsonb;
+ALTER TABLE queries ADD COLUMN IF NOT EXISTS filters_view jsonb;
+COMMIT;

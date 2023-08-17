@@ -1,0 +1,39 @@
+version: '2.4'
+
+services:
+{% for card in triton_videocards %}
+  {{ service_name }}-asr-0{{ loop.index0 | int + 1 }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}-asr-0{{ loop.index0 | int + 1 }}
+    hostname: {{ service_img }}-asr-0{{ loop.index0 | int + 1 }}
+    restart: always
+{% if cpuset is defined and cpuset != "" %}
+    cpuset: {{ cpuset }}
+{% endif %}
+{% if triton_mem_limit %}
+    mem_limit: {{ triton_mem_limit }}
+{% endif %}
+{% if triton_type and triton_type == "gpu" %}
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES={{ card }}
+{% endif %}
+    network_mode: {{ docker_network_mode }}
+{% if docker_network_mode == "bridge" %}
+    ports:
+      - {{ ports.triton_asr_main | int + loop.index0 }}:{{ ports.triton_asr_main | int + loop.index0 }}
+      - {{ ports.triton_sd | int + loop.index0 }}:{{ ports.triton_asr_main | int + loop.index0 }}
+      - {{ ports.triton_lid | int + loop.index0 }}:{{ ports.triton_asr_main | int + loop.index0 }}
+      - {{ ports.triton_http | int + loop.index0 }}:{{ ports.triton_http | int + loop.index0 }}
+      - {{ ports.triton_metrics | int + loop.index0 }}:{{ ports.triton_metrics | int + loop.index0 }}
+{% endif %}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+{% for item in triton_models %}
+      - "{{ service_mnt_dir_loc }}/triton_models/{{ item | dirname | replace('/', '_') }}/{{ item | basename }}:/models/{{ item | dirname | replace('/', '_') }}:ro"
+{% endfor %}
+    command: tritonserver --model-repository=/models --grpc-port {{ ports.triton_asr_main | int + loop.index0 }} --metrics-port {{ ports.triton_metrics | int + loop.index0 }} --http-port {{ ports.triton_http | int + loop.index0 }} --backend-config=tensorflow,version=2
+{% endfor %}

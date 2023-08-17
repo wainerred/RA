@@ -1,0 +1,26 @@
+---
+
+- name: "Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+    mode: 0644
+  with_items:
+    - "{{ service_mnt_dir_loc }}/log"
+    - "{{ service_mnt_dir_loc }}/nginx/conf.d"
+  loop_control:
+    loop_var: dir_item
+
+- name: "Copy main conf"
+  template:
+    src: "conf/nginx.conf.j2"
+    dest: "{{ service_mnt_dir_loc }}/nginx/nginx.conf"
+    mode: 0644
+
+- name: "Copy conf.d"
+  template:
+    src: "conf.d/{{ item }}"
+    dest: "{{ service_mnt_dir_loc }}/nginx/conf.d/{{ item | replace('.j2', '') }}"
+    mode: 0644
+  with_items:
+    - "{{ local_nginx_conf_d }}"

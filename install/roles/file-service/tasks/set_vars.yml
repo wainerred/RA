@@ -1,0 +1,23 @@
+---
+
+- name: "Set Variables"
+  set_fact:
+    service_compose_dir:   "{{ docker_compose_root }}/{{ dictionary_hosts.file_service.name }}"
+
+- name: "{{ dictionary_hosts.file_service.name }} : Set Variables"
+  set_fact:
+    file_service:
+      service_name:         "{{ dictionary_hosts.file_service.name }}"
+      service_img:          "{{ dictionary_hosts.file_service.img }}"
+      service_tag:          "{{ dictionary_hosts.file_service.tag }}"
+      service_repo:         "{{ dictionary_hosts.file_service.repo }}"
+      service_mnt_dir_loc:  "{{ docker_mounts_root }}/{{ dictionary_hosts.file_service.name }}"
+      service_mnt_dir_glfs: "{{ file_service_data_dir }}"
+      
+    file_service_cleaner:
+      service_name:         "{{ dictionary_hosts.file_service_cleaner.name }}"
+      service_img:          "{{ dictionary_hosts.file_service_cleaner.img }}"
+      service_tag:          "{{ dictionary_hosts.file_service_cleaner.tag }}"
+      service_repo:         "{{ dictionary_hosts.file_service_cleaner.repo }}"
+      service_mnt_dir_loc:  "{{ docker_mounts_root }}/{{ dictionary_hosts.file_service_cleaner.name }}"
+      service_mnt_dir_glfs: "{{ file_service_data_dir }}"

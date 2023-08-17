@@ -1,0 +1,39 @@
+service {
+  actor-system.name = "cn-builder-system"
+  api.service {
+    bind {
+      address = 0.0.0.0
+      port = {{ ports.cn_builder_main }}
+      timeout = 10sec
+    }
+    internal-ask-timeout = 30min
+    internal-actor-termination-time = 10min
+  }
+  zip-service {
+    queue {
+      queue-size = 100
+      overflow-strategy = "backpressure"
+      parallelism = 5
+    }
+    limits {
+      file-size = 536870912 // 512 Mb
+    }
+    // ATTENTION: This directory will be cleanup on start time
+    base-path = "/cn-tmp"
+    shell-command = "bash -c"
+    command-template = "/usr/bin/ffmpeg -i \"{input}\" -filter_complex \"[0:a]channelsplit=channel_layout=stereo[-1][1]\" -map \"[-1]\" \"{-1}\" -map \"[1]\" \"{1}\""
+    shell-timeout = 5min
+  }
+}
+
+dispatchers {
+  blocking-dispatcher {
+    type = Dispatcher
+    executor = "thread-pool-executor"
+    thread-pool-executor {
+      // or in Akka 2.4.2+
+      fixed-pool-size = 5
+    }
+    throughput = 1
+  }
+}

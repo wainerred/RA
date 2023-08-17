@@ -1,0 +1,9 @@
+---
+- name: "{{ dictionary_hosts.triton.name }} : Set Variables"
+  set_fact:
+    service_name:         "{{ dictionary_hosts.triton.name }}"
+    service_img:          "{{ dictionary_hosts.triton.img }}"
+    service_tag:          "{{ dictionary_hosts.triton.tag }}"
+    service_repo:         "{{ dictionary_hosts.triton.repo }}"
+    service_mnt_dir_loc:   "{{ docker_mounts_root }}/{{ dictionary_hosts.triton.name }}"
+    service_compose_dir:   "{{ docker_compose_root }}/{{ dictionary_hosts.triton.name }}"

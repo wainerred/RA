@@ -1,0 +1,10 @@
+---
+
+# Install DB file-service
+- name: "Install postgre 'file-service'"
+  hosts:
+    - postgres_file_service
+  roles:
+    - postgresql
+  vars:
+    service: "postgres_file_service"

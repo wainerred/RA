@@ -1,0 +1,61 @@
+---
+- name: "Set full type_path "
+  set_fact:
+    type_path: "{{ 'templates/types/'+type_name }}"
+  tags:
+    - put-types
+    - check-types
+
+- name: Set vars
+  set_fact:
+    type_content: "{{ lookup('template', type_path) }}"
+    type_id: "{{ type_name | basename }}"
+  tags:
+    - put-types
+    - check-types
+
+- name: GET type from backend {{ type_id }}
+  uri:
+    url: "http://{{ host.plexus_server }}:{{ ports.plexus_server_main }}/types/{{ type_id.split('.')[0] }}?with_display=true"
+    method: "GET"
+    validate_certs: false
+    return_content: true
+    headers:
+      Cookie: "{{ login.set_cookie }}"
+    status_code:
+      - 200
+      - 404
+  register: result_get_type
+  tags:
+    - put-types
+    - check-types
+
+- name: Remove keys in result
+  set_fact:
+    getted_type: "{{ result_get_type.content | from_json | ansible.utils.remove_keys(target=['id']) }}"
+  tags:
+    - put-types
+    - check-types
+
+- name: diff module {{ type_id }}
+  ansible.utils.fact_diff:
+    before: "{{ getted_type | to_nice_yaml(sort_keys=True) }}"
+    after: "{{ type_content | to_nice_yaml(sort_keys=True) }}"
+  register: diff_type
+  tags:
+    - put-types
+    - check-types
+
+- name: "PUT {{ type_id }}"
+  uri:
+    url: "http://{{ host.plexus_server }}:{{ ports.plexus_server_main }}/types/{{ type_id.split('.')[0] }}"
+    method: "PUT"
+    body_format: "json"
+    body: "{{ type_content }}"
+    validate_certs: false
+    status_code: 200
+    return_content: true
+    headers:
+      Cookie: "{{ login.set_cookie }}"
+  tags:
+    - put-types

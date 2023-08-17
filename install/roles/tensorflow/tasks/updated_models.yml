@@ -1,0 +1,40 @@
+---
+- name: Set empty list for installed models
+  set_fact:
+    folders_list: []
+
+- name: 'Print list model with current models'
+  debug:
+    var: models
+
+- name: 'Get installed models'
+  find:
+    file_type: directory
+    paths: '{{ dest_path }}'
+  register: tmp_folders_list
+
+- name: Filling 'folders_list'
+  set_fact:
+    folders_list: '{{ folders_list }} + ["{{ item.path | regex_search("[^\/]+$") }}"]'
+  with_items:
+    - '{{ tmp_folders_list.files }}'
+
+- name: Set models for delete
+  set_fact:
+    folders_list: '{{ folders_list | difference(models)}}'
+
+- name: Delete old models
+  file:
+    state: absent
+    path: '{{ dest_path }}/{{ item }}'
+  with_items:
+    - '{{ folders_list }}'
+
+- name: Updade models
+  synchronize:
+    src: "roles/tensorflow/tasks/files/{{ item }}"
+    dest: "{{ dest_path }}/"
+    delete: yes
+    recursive: true
+  with_items:
+  - '{{ models }}'

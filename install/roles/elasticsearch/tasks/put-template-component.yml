@@ -1,0 +1,22 @@
+---
+
+- set_fact:
+    template_content: "{{ lookup('template', template_name) }}"
+    template_id: "{{ template_name | basename | replace('.j2', '') }}"
+    ignore_errors: yes
+  tags: 
+    - mapping
+    - component-templates
+
+- name: "PUT {{ template_id }}"
+  uri:
+    url: "http://{{ host.elasticsearch }}:{{ ports.elasticsearch_main }}/_component_template/{{ template_id }}"
+    method: "PUT"
+    body_format: "json"
+    body: "{{ template_content }}"
+    validate_certs: false
+    status_code: 200
+    return_content: yes
+  tags: 
+    - mapping
+    - component-templates

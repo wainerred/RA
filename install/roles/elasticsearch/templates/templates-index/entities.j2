@@ -1,0 +1,108 @@
+{
+    "index_patterns": [
+        "entities*"
+    ],
+    "template": {
+        "settings": {
+            "index": {
+                "number_of_shards": "1"
+            }
+        },
+        "mappings": {
+            "dynamic": "strict",
+            "properties": {
+                "bucket": {
+                    "type": "integer",
+                    "store": true
+                },
+                "context_query": {
+                    "type": "keyword",
+                    "store": true
+                },
+                "description": {
+                    "type": "keyword",
+                    "store": true
+                },
+                "geo": {
+                    "properties": {
+                        "country": {
+                            "type": "keyword",
+                            "store": true
+                        },
+                        "location": {
+                            "type": "geo_point",
+                            "store": true
+                        },
+                        "unit": {
+                            "type": "keyword",
+                            "store": true
+                        }
+                    }
+                },
+                "id": {
+                    "type": "keyword",
+                    "store": true
+                },
+                "owner_id": {
+                    "type": "keyword",
+                    "store": true
+                },
+                "rule": {
+                    "properties": {
+                        "group": {
+                            "type": "keyword",
+                            "store": true
+                        },
+                        "key": {
+                            "type": "keyword",
+                            "store": true
+                        },
+                        "values": {
+                            "properties": {
+                                "language": {
+                                    "type": "keyword",
+                                    "store": true
+                                },
+                                "options": {
+                                    "properties": {
+                                        "name": {
+                                            "type": "keyword",
+                                            "store": true
+                                        },
+                                        "value": {
+                                            "type": "keyword",
+                                            "store": true
+                                        }
+                                    }
+                                },
+                                "value": {
+                                    "type": "keyword",
+                                    "store": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "suggest": {
+                    "type": "completion",
+                    "analyzer": "standard",
+                    "preserve_separators": true,
+                    "preserve_position_increments": true,
+                    "max_input_length": 50,
+                    "contexts": [
+                        {
+                            "name": "entity_type",
+                            "type": "CATEGORY"
+                        }
+                    ]
+                },
+                "type": {
+                    "type": "integer",
+                    "store": true
+                }
+            }
+        }
+    },
+    "composed_of": [],
+    "priority": 100
+}

@@ -1,0 +1,5 @@
+---
+nginx_file_service_mem_limit: false
+file_service_data_dir: "{{ docker_mounts_root }}/{{ dictionary_hosts.file_service.name }}/data"
+nginx_file_service_external_url: false
+nginx_file_service_logging_max_size: 64M

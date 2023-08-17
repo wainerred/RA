@@ -1,0 +1,27 @@
+---
+- name: "remove directories"
+  file:
+    path: "{{ dir_item }}"
+    state: absent
+  with_items:
+    - "{{ service_mnt_dir_loc }}"
+    - "{{ service_compose_dir }}"
+  loop_control:
+    loop_var: dir_item
+  tags: 
+    - never
+    - remove
+
+- name: "Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+  with_items:
+    - "{{ service_mnt_dir_loc }}/data"
+    - "{{ service_mnt_dir_loc }}/logs"
+  loop_control:
+    loop_var: dir_item
+  tags: 
+    - install 

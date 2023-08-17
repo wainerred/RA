@@ -1,0 +1,60 @@
+---
+- name: Set empty list for installed models
+  set_fact:
+    folders_list: []
+    new_models: []
+
+- name: Set new_models
+  set_fact:
+    new_models: '{{ new_models + [item | regex_search("[^\/]+$")] }}'
+  with_items:
+    - '{{ models }}'
+
+- name: 'Print list model with current models'
+  debug:
+    var: new_models
+
+- name: 'Get installed models'
+  find:
+    file_type: directory
+    paths: '{{ dest_path }}'
+  register: tmp_folders_list
+
+- name: Filling 'folders_list'
+  set_fact:
+    folders_list: '{{ folders_list + [item.path | regex_search("[^\/]+$")] }}'
+  with_items:
+    - '{{ tmp_folders_list.files }}'
+
+- name: Set models for delete
+  set_fact:
+    folders_list: '{{ folders_list | difference(new_models) }}'
+
+- name: Delete old models
+  file:
+    state: absent
+    path: '{{ dest_path }}/{{ item }}'
+  with_items:
+    - '{{ folders_list }}'
+
+- name: Update models
+  synchronize:
+    src: "roles/speech-service/tasks/files/{{ sub_dir }}/{{ item.split('/')[-1] }}"
+    dest: "{{ dest_path }}/"
+    delete: true
+    recursive: true
+  when: not speech_service_pull_external_model
+  with_items:
+    - '{{ models }}'
+
+- name: Update models
+  synchronize:
+    src: "rsync://{{ host.distrib }}/distrib{{ src_path }}/{{ item }}"
+    dest: "{{ dest_path }}/"
+    delete: true
+    recursive: true
+    mode: pull
+  when: speech_service_pull_external_model
+  delegate_to: "{{ ansible_host }}"
+  with_items:
+    - '{{ models }}'

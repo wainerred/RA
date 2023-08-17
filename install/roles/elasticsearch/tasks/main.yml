@@ -1,0 +1,57 @@
+---
+- name: Set global vars
+  import_role:
+    name: set-global-vars
+  tags: always
+
+- name: "Set role vars"
+  include: set_vars.yml
+  tags: always
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: "Install Elasticsearch"
+  include: install_elasticsearch.yml
+  
+- name: "Set vm.max_map_count"
+  include: max_map_count.yml
+  tags:
+    - install
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start
+
+- name: "Wait es"
+  uri:
+    url: "http://{{ host.elasticsearch }}:{{ ports.elasticsearch_main }}"
+    status_code: 200
+  register: result_es
+  until: result_es.status == 200
+  retries: 60
+  delay: 1
+  run_once: yes
+  tags: 
+    # - never
+    - mapping
+    - component-templates
+
+- name: "PUT put-template-index"    
+  run_once: yes
+  include: put-template-index.yml
+  with_fileglob:
+    - "templates/templates-index/*.j2"
+  loop_control:
+    loop_var: template_name
+
+- name: "PUT put-template-component"    
+  run_once: yes
+  include: put-template-component.yml
+  with_fileglob:
+    - "templates/templates-component/*.j2"
+  loop_control:
+    loop_var: template_name

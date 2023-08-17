@@ -1,0 +1,15 @@
+{
+  "grpc": {
+    "address": "0.0.0.0:{{ ports.dpp_speaker_role_detector_grpc }}"
+  },
+  "elastic": [
+    {
+      "host": "{{ internal_host if internal_host else ansible_host }}", 
+      "port": {{ ports.local_nginx_es }}
+    }
+  ],
+  "category_index": "category_server_data",
+  "max_batch_size": 83886,
+  "max_batch_count": 500,
+  "log_level" : "trace"
+}

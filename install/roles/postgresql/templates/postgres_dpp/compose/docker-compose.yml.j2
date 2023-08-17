@@ -1,0 +1,32 @@
+version: '2.4'
+
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: always
+{% if postgres_dpp_mem_limit %}
+    mem_limit: {{ postgres_dpp_mem_limit }}
+{% endif %}
+    network_mode: {{ docker_network_mode }}
+    environment:
+      - POSTGRES_PASSWORD={{ postgres_dpp_password }}
+    command: >-
+      -p {{ ports.postgres_dpp_main }}
+      -c 'shared_buffers={{ shared_buffers }}' 
+      -c 'max_connections={{ max_connections }}' 
+      -c 'effective_cache_size={{ effective_cache_size }}'
+      -c 'work_mem={{ work_mem }}'
+      -c 'maintenance_work_mem={{ maintenance_work_mem }}'
+      -c 'logging_collector=on' 
+      -c 'log_destination=stderr'
+    ports:
+      - "{{ ports.postgres_dpp_main }}:{{ ports.postgres_dpp_main }}"
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - {{ service_mnt_dir }}/data:/var/lib/postgresql/data
+      - {{ service_mnt_dir }}/backups:/backups
+      

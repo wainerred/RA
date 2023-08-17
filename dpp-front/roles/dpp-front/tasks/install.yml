@@ -1,0 +1,29 @@
+---
+
+- name: "Remove directory"
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ service_mnt_dir_loc }}"
+    - "{{ service_compose_dir }}"
+  tags:
+    - never
+    - remove
+
+- name: "Create directory"
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ service_mnt_dir_loc }}/sites-enabled"
+    - "{{ service_mnt_dir_loc }}/logs"
+
+- name: "Generate nginx sites-enabled"
+  template:
+    dest: "{{ service_mnt_dir_loc }}/sites-enabled/{{ item | basename | regex_replace('.j2', '') }}"
+    src: "{{ item }}"
+    mode: 0755
+  with_fileglob:
+    - "templates/sites-enabled/*.j2"

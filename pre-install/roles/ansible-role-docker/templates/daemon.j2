@@ -1,0 +1,6 @@
+{
+{% if docker_insecure_registries %}
+  "insecure-registries" : {{ docker_insecure_registries }},
+{% endif %}  
+  "bip": "{{ docker_default_bridge_network }}"
+}

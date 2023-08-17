@@ -1,0 +1,15 @@
+{
+    "grpc": {
+        "address": "0.0.0.0:{{ ports.dpp_elastic_exporter_grpc }}"
+    },
+    "elastic": [
+        {
+            "host": "{{ internal_host if internal_host else ansible_host }}",
+            "port": {{ ports.local_nginx_es }},
+            "max_connections" : 1
+        }
+    ],
+    "max_batch_size": 83886080,
+    "max_batch_count": 500,
+    "log_level" : "{{ export_log_level }}"
+}

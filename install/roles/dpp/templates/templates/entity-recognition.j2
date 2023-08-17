@@ -1,0 +1,11 @@
+{
+    "name": "Entity recognition",
+    "kind": "grpc",
+    "type": "processor",
+    "urls": [
+{% for adr in hosts.dpp_entity_recognition %}
+        "{{ adr }}:{{ ports.dpp_entity_recognition_grpc }}"{% if not loop.last %}, 
+{% endif %}
+{% endfor %}
+    ]
+}

@@ -1,0 +1,8 @@
+---
+
+# Install file-service-nginx
+- name: "Install 'file-service-nginx'"
+  hosts:
+    - file_service
+  roles:
+    - nginx-file-service

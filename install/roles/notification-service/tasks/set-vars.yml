@@ -1,0 +1,10 @@
+---
+
+- name: "Set vars"
+  set_fact:
+    service_name:         "{{ dictionary_hosts.notification_service.name }}"
+    service_img:          "{{ dictionary_hosts.notification_service.img }}"
+    service_tag:          "{{ dictionary_hosts.notification_service.tag }}"
+    service_repo:         "{{ dictionary_hosts.notification_service.repo }}"
+    service_mnt_dir_loc:   "{{ docker_mounts_root }}/{{ dictionary_hosts.notification_service.name }}"
+    service_compose_dir:   "{{ docker_compose_root }}/{{ dictionary_hosts.notification_service.name }}"

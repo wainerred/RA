@@ -1,0 +1,41 @@
+---
+- name: "Remove directories"
+  file:
+    path: "{{ dir_item }}"
+    state: absent
+  with_items:
+    - "{{ service_mnt_dir_loc }}"
+  loop_control:
+    loop_var: dir_item
+  tags:
+    - never
+    - remove
+
+- name: "Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+    mode: "644"
+  with_items:
+    - "{{ service_mnt_dir_loc }}/models"
+    - "{{ service_mnt_dir_loc }}/configs"
+  loop_control:
+    loop_var: dir_item
+
+- name: "Download models"
+  import_tasks:
+    file: updated_models.yml
+  vars:
+    src_path: /spacy_nlp_models/models
+    dest_path: '{{ service_mnt_dir_loc }}/models'
+    models: '{{ dpp_entity_recognition_models }}'
+  tags:
+    - models
+
+- name: "Generate configs"
+  template:
+    dest: "{{ service_mnt_dir_loc }}/configs/{{ item | basename | regex_replace('.j2', '') }}"
+    src: "{{ item }}"
+    mode: "644"
+  with_fileglob:
+    - "templates/configs/*.j2"

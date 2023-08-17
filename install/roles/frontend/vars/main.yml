@@ -1,0 +1,19 @@
+---
+service_name: "{{ dictionary_hosts.frontend.name }}"
+service_img: "{{ dictionary_hosts.frontend.img }}"
+service_tag: "{{ dictionary_hosts.frontend.tag }}"
+service_repo: "{{ dictionary_hosts.frontend.repo }}"
+service_mnt_dir_loc: "{{ docker_mounts_root }}/{{ dictionary_hosts.frontend.name }}"
+service_compose_dir: "{{ docker_compose_root }}/{{ dictionary_hosts.frontend.name }}"
+service_domain: "{{ frontend_domain }}"
+service_vhost: >-
+  {% for subdomain in frontend_virtual_hosts -%}
+  {% for domain in frontend_domain -%}
+  {{ subdomain + domain }}
+  {% endfor -%}
+  {% endfor -%}
+  {% for subdomain in frontend_virtual_hosts_external -%}
+  {% for domain in frontend_domain_external -%}
+  {{ subdomain + domain }}
+  {% endfor -%}
+  {% endfor -%}

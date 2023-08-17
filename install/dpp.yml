@@ -1,0 +1,7 @@
+---
+- name: "Install DPP nodes"
+  hosts:
+    - dpp
+  roles:
+    - dpp
+  gather_facts: false

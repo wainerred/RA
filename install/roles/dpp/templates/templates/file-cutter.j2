@@ -1,0 +1,11 @@
+{
+    "name": "File cutter",
+    "kind": "grpc",
+    "type": "processor",
+    "urls": [
+{% for adr in hosts.dpp_file_cutter %}
+        "{{ adr }}:{{ ports.dpp_file_cutter_grpc }}"{% if not loop.last %},
+{% endif %}
+{% endfor %}
+    ]
+}

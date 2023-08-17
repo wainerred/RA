@@ -1,0 +1,241 @@
+{
+  "id": "user-action",
+  "fields": {
+    "action_type": {
+      "type": "string",
+      "display_names": {
+        "en": "Action type",
+        "ru": "Тип действия"
+      },
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "view": {
+        "dictionary_id": "action_type"
+      }
+    },
+    "account_id": {
+      "type": "string",
+      "display_names": {
+        "en": "Account id",
+        "ru": "Идентификатор аккаунта"
+      },
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      }
+    },
+    "user_id": {
+      "type": "string",
+      "display_names": {
+        "en": "User id",
+        "ru": "Идентификатор пользователя"
+      },
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      }
+    },
+    "username": {
+      "type": "string",
+      "display_names": {
+        "en": "Username",
+        "ru": "Логин пользователя"
+      },
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      }
+    },
+    "actual_username": {
+      "type": "string",
+      "display_names": {
+        "en": "Actual username",
+        "ru": "Актаульный логин пользователя"
+      },
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      }
+    },
+    "ip": {
+      "type": "string",
+      "display_names": {
+        "en": "IP",
+        "ru": "IP"
+      },
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      }
+    },
+    "created_date": {
+      "type": "date",
+      "display_names": {
+        "en": "Created date",
+        "ru": "Дата запроса"
+      },
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      }
+    },
+    "resources": {
+      "type": "nested",
+      "display_names": {
+        "en": "Resources",
+        "ru": "Ресурсы"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true
+      },
+      "multiple": true
+    },
+    "resources.type": {
+      "type": "string",
+      "display_names": {
+        "en": "Resources.Type",
+        "ru": "Ресурсы.Типы"
+      },
+      "operations": {
+        "fetch": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "view": {
+        "dictionary_id": "resource_type"
+      },
+      "multiple": true
+    },
+    "resources.id": {
+      "type": "string",
+      "display_names": {
+        "en": "Resources.ID",
+        "ru": "Ресурсы.ID"
+      },
+      "operations": {
+        "fetch": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "multiple": true
+    },
+    "resources.name": {
+      "type": "string",
+      "display_names": {
+        "en": "Resources.Name",
+        "ru": "Ресурсы.Название"
+      },
+      "operations": {
+        "fetch": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      },
+      "multiple": true
+    },
+    "errors": {
+      "type": "object",
+      "display_names": {
+        "en": "Errors",
+        "ru": "Ошибки"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true
+      },
+      "multiple": true
+    },
+    "errors.code": {
+      "type": "integer",
+      "display_names": {
+        "en": "Errors.Code",
+        "ru": "Ошибки.Коды"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true
+      },
+      "view": {
+        "dictionary_id": "plexus.error"
+      },
+      "multiple": true
+    },
+    "request": {
+      "type": "object",
+      "display_names": {
+        "en": "Request",
+        "ru": "Запрос"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true
+      },
+      "dynamic": true
+    },
+    "request.search_documents.query": {
+      "type": "string",
+      "display_names": {
+        "en": "Search request",
+        "ru": "Поисковый запрос"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "contains": true
+      }
+    },
+    "response": {
+      "type": "object",
+      "display_names": {
+        "en": "Response",
+        "ru": "Ответ"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": true
+      },
+      "dynamic": true
+    },
+    "response.search_documents.document_count": {
+      "type": "long",
+      "display_names": {
+        "en": "Search document count",
+        "ru": "Количество документов"
+      },
+      "operations": {
+        "fetch": true,
+        "sort": true,
+        "aggregate": true,
+        "exists": true,
+        "equals": true
+      }
+    }
+  }
+}

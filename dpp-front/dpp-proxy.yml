@@ -1,0 +1,6 @@
+---
+- name: install dpp-proxy
+  hosts:
+    - dpp[0]
+  roles:
+    - dpp-proxy

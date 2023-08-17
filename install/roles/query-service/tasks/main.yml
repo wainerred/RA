@@ -1,0 +1,27 @@
+---
+
+- name: Set global vars
+  import_role:
+    name: set-global-vars
+  tags: always
+
+- name: "Set role vars"
+  include: set-vars.yml
+  tags: always
+
+- name: "Patch database {{ database_queries }}"
+  include: patch-db-dpp.yml
+  delegate_to: "{{ hostvars[groups['postgres_backend'][0]].inventory_hostname }}"
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: "Install query-service"
+  include: "install-query-service.yml"
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start

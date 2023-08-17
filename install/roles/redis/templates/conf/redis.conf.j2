@@ -1,0 +1,23 @@
+protected-mode no
+
+bind 0.0.0.0
+
+port {{ redis_port }}
+
+cluster-enabled yes
+cluster-config-file /data/conf/cluster.conf
+cluster-node-timeout 15000
+
+cluster-announce-ip {{ ansible_host }}
+cluster-announce-port {{ redis_port }}
+cluster-announce-bus-port {{ redis_port | int + 10000 }}
+
+supervised no
+
+appendonly yes
+appendfilename {{ service_name }}.aof
+dir /data/backup
+
+maxclients 15000
+
+pidfile /var/run/redis-{{ redis_port }}.pid

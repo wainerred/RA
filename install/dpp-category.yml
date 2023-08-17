@@ -1,0 +1,7 @@
+---
+- name: "Install category"
+  hosts:
+    - dpp_category
+  roles:
+    - dpp-category
+  gather_facts: false

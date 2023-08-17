@@ -1,0 +1,57 @@
+---
+
+- include: install-packages.yml
+  tags:
+    - docker
+
+- name: Install docker
+  include: install-docker.yml
+  tags:
+    - docker
+
+- name: Disable firewalld
+  ansible.builtin.service:
+    name: firewalld
+    state: stopped
+    enabled: false
+  tags:
+    - never
+    - firewalld
+
+- name: Disable SElinux
+  ansible.posix.selinux:
+    state: disabled
+  tags:
+    - never
+    - selinux
+
+- name: Remove firewalld
+  ansible.builtin.yum:
+    name:
+      - firewalld
+    state: absent
+  tags:
+    - never
+    - remove-firewalld
+
+# - name: Preparing common variables
+#   include: set-vars.yml
+
+- name: install glusterfs-client
+  ansible.builtin.include_tasks: install-glfs.yml
+
+- name: Mount glfs
+  ansible.builtin.include_tasks: mount-glfs.yml
+  with_items:
+    - "{{ glfs_mount_rules }}"
+  tags:
+    - never
+    - mount-glfs
+    - mount-glfs-crontab
+    - mount-glfs-hosts
+
+- name: Install nvidia docker
+  include: nvidia_docker.yml
+  tags:
+    - never
+    - nvidia

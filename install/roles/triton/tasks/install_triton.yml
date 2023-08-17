@@ -1,0 +1,50 @@
+---
+- name: "{{ service_name }} : Remove directories"
+  file:
+    path: "{{ dir_item }}"
+    state: absent
+  with_items:
+    - "{{ service_mnt_dir_loc }}"
+  loop_control:
+    loop_var: dir_item
+  tags:
+    - never
+    - remove
+
+- name: "{{ service_name }} : Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+  with_items:
+    - "{{ service_mnt_dir_loc }}"
+  loop_control:
+    loop_var: dir_item
+
+- name: "Download {{ triton_models }}"
+  include: updated_models.yml
+  vars:
+    src_path: /mediaserver-resources/triton/models
+    dest_path: '{{ service_mnt_dir_loc }}/triton_models'
+    models: '{{ triton_models }}'
+  tags:
+    - models
+
+- name: Switch models to CPU
+  when: triton_type == 'cpu'
+  block:
+    - name: Find models configs
+      find:
+        paths: '{{ service_mnt_dir_loc }}/triton_models'
+        file_type: file
+        recurse: true
+        depth: 3
+        patterns: "config.pbtxt"
+      register: configs
+
+    - name: Switch models to CPU
+      ansible.builtin.lineinfile:
+        path: "{{ item.path }}"
+        regexp: '^([ ]*kind:[ ]*)KIND_GPU'
+        line: '\g<1>KIND_CPU'
+        backrefs: true
+      with_items: '{{ configs.files }}'

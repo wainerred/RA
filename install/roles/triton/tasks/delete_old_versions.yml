@@ -1,0 +1,32 @@
+---
+- name: "{{ model_item | dirname | replace('/', '_') }} : Set empty lists for installed versions"
+  set_fact:
+    versions_list: []
+    delete_list: []
+
+- name: "{{ model_item | dirname | replace('/', '_') }} : Get installed versions"
+  find:
+    file_type: directory
+    paths: "{{ dest_path }}/{{ model_item | dirname | replace('/', '_') }}"
+  register: tmp_installed_versions
+
+- name: "{{ model_item | dirname | replace('/', '_') }} : Filling 'versions_list'"
+  set_fact:
+    versions_list: "{{ versions_list + [item.path | basename] }}"
+  with_items:
+    - '{{ tmp_installed_versions.files }}'
+
+- name: "{{ model_item | dirname | replace('/', '_') }} : Print list model with current versions"
+  debug:
+    var: versions_list
+
+- name: "{{ model_item | dirname | replace('/', '_') }} : Filling 'delete_list'"
+  set_fact:
+    delete_list: "{{ versions_list | difference((versions_list | community.general.version_sort | reverse | list)[0:version_history_length]) }}"
+
+- name: "{{ model_item | dirname | replace('/', '_') }} : Delete old versions"
+  file:
+    state: absent
+    path: "{{ dest_path }}/{{ model_item | dirname | replace('/', '_') }}/{{ item }}"
+  with_items:
+    - '{{ delete_list }}'

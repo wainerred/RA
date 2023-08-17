@@ -1,0 +1,27 @@
+version: '2.4'
+
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: always
+    network_mode: {{ docker_network_mode }}
+{% if redis_mem_limit %}
+    mem_limit: {{ redis_mem_limit }}
+{% endif %}
+{% if cpuset is defined and cpuset != "" %}
+    cpuset: {{ cpuset }}
+{% endif %}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    ports:
+      - {{ redis_port }}:{{ redis_port }}
+      - {{ redis_port | int + 10000 }}:{{ redis_port | int + 10000 }}
+    volumes:
+      - "{{ service_mnt_dir_loc }}/conf:/data/conf:rw"
+      - "{{ service_mnt_dir_loc }}/data:/data:rw"
+      - "{{ service_mnt_dir_loc }}/backup:/data/backup:rw"
+    command: >-
+      /data/conf/redis.conf

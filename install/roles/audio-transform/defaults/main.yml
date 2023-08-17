@@ -1,0 +1,3 @@
+---
+# defaults file for audio-transform
+audio_transform_mem_limit: 1024M

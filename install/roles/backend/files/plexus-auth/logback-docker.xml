@@ -1,0 +1,175 @@
+<!-- https://www.playframework.com/documentation/latest/SettingsLogger -->
+<configuration>
+    <property name="LOG_PATH" value="/plexus/logs"/>
+    <conversionRule conversionWord="coloredLevel" converterClass="play.api.libs.logback.ColoredLevel" />
+
+    <appender name="APP_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/application.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>30</maxHistory>
+            <!-- keep 1GB of total history -->
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{HH:mm:ss.SSS} %level from %logger in %.15thread - %message%n%xException</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="REQUEST_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/requests.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/requests.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>30</maxHistory>
+            <!-- keep 1GB of total history -->
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{HH:mm:ss.SSS} %level from %logger in %.15thread - %message%n%xException</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="USER_ACTIONS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/user_actions.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/user_actions.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>30</maxHistory>
+            <!-- keep 1GB of total history -->
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%message%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="DB_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/db.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/db.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>30</maxHistory>
+            <!-- keep 1GB of total history -->
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{HH:mm:ss.SSS} %level from %logger in %.15thread - %message%n%xException</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{HH:mm:ss.SSS} %coloredLevel from %logger{15} in %.15thread - %message%n%xException{10}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="APP_ASYNCFILE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="APP_FILE" />
+    </appender>
+    <appender name="REQUEST_ASYNCFILE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="REQUEST_FILE" />
+    </appender>
+    <appender name="USER_ACTIONS_ASYNCFILE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="USER_ACTIONS_FILE" />
+    </appender>
+    <appender name="DB_ASYNCFILE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="DB_FILE" />
+    </appender>
+    <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="STDOUT" />
+    </appender>
+
+    <logger name="play" level="INFO" />
+    <logger name="application" level="INFO" />
+    <logger name="akka" level="INFO"/>
+
+    <!-- Off these ones as they are annoying, and anyway we manage configuration ourselves -->
+    <logger name="com.avaje.ebean.config.PropertyMapLoader" level="OFF" />
+    <logger name="com.avaje.ebeaninternal.server.core.XmlConfigLoader" level="OFF" />
+    <logger name="com.avaje.ebeaninternal.server.lib.BackgroundThread" level="OFF" />
+    <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
+    <!-- Plexus service logging -->
+    <logger name="ru.dsslab.plexus" level="INFO" />
+    <!-- Elasticsearch request logging -->
+    <logger name="com.sksamuel.elastic4s.http.ElasticsearchJavaRestClient" level="INFO" />
+    <!-- Elasticsearch response logging -->
+    <logger name="com.sksamuel.elastic4s.http.ResponseHandler" level="INFO" />
+    <!-- Dpp api service logging -->
+    <logger name="ru.dsslab.plexus.services.DppServiceImpl" level="INFO" />
+    <!-- Entities service logging -->
+    <logger name="ru.dsslab.plexus.modules.entity.clients.EntityClientImpl" level="INFO" />
+    <!-- Cluster service logging -->
+    <logger name="ru.dsslab.plexus.services.ClusterServiceImpl" level="INFO" />
+    <!-- Categories service logging -->
+    <logger name="ru.dsslab.plexus.services.CategoryServiceImpl" level="INFO" />
+    <!-- Filter service logging -->
+    <logger name="ru.dsslab.plexus.services.FilterServiceImpl" level="INFO" />
+    <!-- Notification service logging -->
+    <logger name="ru.dsslab.plexus.services.AlertServiceImpl" level="INFO" />
+    <!-- File service logging -->
+    <logger name="ru.dsslab.plexus.services.FileServiceImpl" level="INFO" />
+    <!-- Collection service logging -->
+    <logger name="ru.dsslab.plexus.services.ExternalCollectionServiceImpl" level="INFO" />
+    <!-- Highlight service logging -->
+    <logger name="ru.dsslab.plexus.services.HighlightServiceImpl" level="INFO" />
+    <!-- Query and synonyms service logging -->
+    <logger name="ru.dsslab.plexus.modules.query" level="INFO" />
+    <!-- S2t service logging -->
+    <logger name="ru.dsslab.plexus.services.S2tServiceImpl" level="INFO" />
+    <!-- Trello service logging -->
+    <logger name="ru.dsslab.plexus.services.TrelloServiceImpl" level="INFO" />
+    <!-- Translate service logging -->
+    <logger name="ru.dsslab.plexus.services.TranslateServiceImpl" level="INFO" />
+    <!-- Report service service logging -->
+    <logger name="ru.dsslab.plexus.services.report.ExternalRender" level="INFO" />
+    <!-- Dictionary client logging -->
+    <logger name="ru.dsslab.plexus.modules.dictionary.clients.DictionaryExternalClientImpl" level="INFO" />
+    <!-- Crawler client logging -->
+    <logger name="ru.dsslab.plexus.modules.crawler.clients.CrawlerClientImpl" level="INFO" />
+    <!-- Autocategory client logging -->
+    <logger name="ru.dsslab.plexus.modules.autocategory.clients.ModelClientImpl" level="INFO" />
+    <!-- Bot client logging -->
+    <logger name="ru.dsslab.plexus.modules.bot.clients.BotClientImpl" level="DEBUG" />
+    <!-- Avatar logging -->
+    <logger name="ru.dsslab.plexus.modules.avatar" level="DEBUG" />
+    <logger name="ru.dsslab.plexus.modules.bot.clients.BotClientImpl" level="INFO" />
+    <logger name="ru.dsslab.plexus.modules.alert" level="INFO" />
+    <logger name="ru.dsslab.plexus.modules.event" level="INFO" />
+    <logger name="ru.dsslab.plexus.modules.pushnotification" level="INFO" />
+    <logger name="ru.dsslab.plexus.modules.journal" level="INFO" />
+    <logger name="akka.kafka" level="DEBUG" />
+    <logger name="RequestHandler" level="DEBUG" additivity="false">
+        <appender-ref ref="REQUEST_ASYNCFILE" />
+    </logger>
+    <logger name="ru.dsslab.plexus.journal.JournalUtils"  level="INFO" additivity="false">
+        <appender-ref ref="USER_ACTIONS_ASYNCFILE" />
+    </logger>
+    <logger name="slick.jdbc.JdbcBackend.benchmark"  level="DEBUG" additivity="false">
+        <appender-ref ref="DB_ASYNCFILE" />
+    </logger>
+
+    <root level="WARN">
+        <appender-ref ref="APP_ASYNCFILE"/>
+        <appender-ref ref="ASYNCSTDOUT"/>
+    </root>
+
+</configuration>

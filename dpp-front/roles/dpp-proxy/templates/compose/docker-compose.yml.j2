@@ -1,0 +1,19 @@
+version: '2.4'
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: always
+{% if dpp_proxy_mem_limit %}
+    mem_limit: {{ dpp_proxy_mem_limit }}
+{% endif %}
+    network_mode: {{ docker_network_mode }}
+    ports:
+      - {{ ports.dpp_proxy_main }}:{{ ports.dpp_proxy_main }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - "{{ service_mnt_dir_loc }}/conf/proxyServerConfig.js:/app/proxyServerConfig.js"
+

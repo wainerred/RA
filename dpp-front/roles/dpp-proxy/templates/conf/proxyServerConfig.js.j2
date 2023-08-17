@@ -1,0 +1,9 @@
+const config = {
+    port: {{ ports.dpp_proxy_main }},
+    api: 'http://{{ host.dpp }}:{{ ports.dpp_main }}',
+    host: '0.0.0.0'
+};
+
+module.exports = {
+    config
+};

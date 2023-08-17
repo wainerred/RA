@@ -1,0 +1,101 @@
+---
+
+- set_fact:
+    docker_db_repo: "{{ dictionary_hosts.postgres_backend.repo }}"
+    docker_db_img:  "{{ dictionary_hosts.postgres_backend.img }}"
+    docker_db_tag:  "{{ dictionary_hosts.postgres_backend.tag }}"
+
+- name: Get exists Database
+  shell: docker exec {{ dictionary_hosts['postgres_backend']['name'] }} \
+    bash -c 'psql -U postgres -p {{ ports.postgres_backend_main }} -c "SELECT datname FROM pg_database;"'
+  register: db_list
+
+- name: Create Backup Databases
+  shell: docker exec {{ dictionary_hosts['postgres_backend']['name'] }} \
+    bash -c 'pg_dump -U postgres -p {{ ports.postgres_backend_main }} {{ item }} > 
+    /backups/{{ item }}-backup-{{ ansible_date_time.iso8601 }}.sql'
+  when: item in db_list.stdout
+  with_items:
+    - accounts
+     #- plexus_journal
+  tags: backup
+
+- name: "Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+    mode: 0644
+  with_items:
+    - "/tmp/db-backend-patches/"
+    - "/tmp/db-backend-patches/accounts"
+    - "/tmp/db-backend-patches/journal"
+  loop_control:
+    loop_var: dir_item
+
+- name: "Copy 'accounts-schema.sql' script"
+  copy:
+    src: "accounts-schema.sql"
+    dest: "/tmp/db-backend-patches/accounts-schema.sql"
+
+- name: "Copy 'journal-schema.sql' script"
+  copy:
+    src: "journal-schema.sql"
+    dest: "/tmp/db-backend-patches/journal-schema.sql"
+
+- name: "Download db-accounts-patches"
+  unarchive:
+    src: "db-accounts-patches.tar.gz"
+    dest: "/tmp/db-backend-patches/accounts"
+
+- name: "Download db-journal-patches"
+  unarchive:
+    src: "db-journal-patches.tar.gz"
+    dest: "/tmp/db-backend-patches/journal"
+
+- set_fact:
+    command_patch_1: ""
+    command_patch_2: ""
+
+- name: "Generate command #1 'accounts'"
+  find:
+    paths: "/tmp/db-backend-patches/accounts"
+    patterns: "*.sql"
+  register: journal_glob
+
+- name: "Generate command #2 'accounts'"
+  set_fact:
+    command_patch_1: "{{ command_patch_1 }}psql -h {{ host.postgres_backend }} -p {{ ports.postgres_backend_main }} \
+     -U postgres -d accounts -a -f /patches/accounts/{{ item.path | basename }} ; "
+  with_items:
+    - "{{ journal_glob.files | sort(attribute='path') }}"
+
+- name: "Generate command #1 'journal'"
+  find:
+    paths: "/tmp/db-backend-patches/journal"
+    patterns: "*.sql"
+  register: journal_glob
+
+- name: "Generate command #2 'journal'"
+  set_fact:
+    command_patch_2: "{{ command_patch_2 }}psql -h {{ host.postgres_backend }} -p {{ ports.postgres_backend_main }} \
+     -U postgres -d plexus_journal -a -f /patches/journal/{{ item.path | basename }} ; "
+  with_items:
+    - "{{ journal_glob.files | sort(attribute='path') }}"
+
+- name: "DB init 'accounts'"
+  shell: "docker run -it --rm \
+  --net host \
+  -e PGPASSWORD={{ postgres_back_password }} \
+  -v /tmp/db-backend-patches:/patches \
+  {{ docker_db_repo }}/{{ docker_db_img }}:{{ docker_db_tag }} \
+   bash -c 'psql -h {{ host.postgres_backend }} -p {{ ports.postgres_backend_main }} \
+   -U postgres -a -f /patches/accounts-schema.sql ; \
+  psql -h {{ host.postgres_backend }} -p {{ ports.postgres_backend_main }} \
+   -U postgres -a -f /patches/journal-schema.sql ; \
+  {{ command_patch_1 }} \
+  {{ command_patch_2 }}' "
+
+- name: "Remove directory/tmp/db-backend-patches/"
+  file:
+    path: "/tmp/db-backend-patches/"
+    state: absent

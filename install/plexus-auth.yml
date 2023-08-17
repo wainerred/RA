@@ -1,0 +1,11 @@
+---
+
+# Install plexus-auth
+- name: "Install plexus-auth"
+  hosts:
+    - plexus_auth
+  roles:
+    - backend
+  vars:
+    service: plexus_auth
+  gather_facts: false

@@ -1,0 +1,20 @@
+---
+
+- name: "{{ service_name }} : Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+  with_items:
+    - "{{ service_mnt_dir_loc }}/logs"
+    - "{{ service_mnt_dir_loc }}/conf"
+  loop_control:
+    loop_var: dir_item
+
+- name: "{{ service_name }} : Generate config"
+  template:
+    src: "{{ conf_item }}"
+    dest: "{{ service_mnt_dir_loc }}/conf/{{ conf_item | basename | regex_replace('.j2', '') }}"
+  with_fileglob:
+    - "templates/conf/*.j2"
+  loop_control:
+    loop_var: conf_item

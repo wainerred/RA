@@ -1,0 +1,8 @@
+---
+- name: Install records-pusher energosbt
+  hosts:
+    - records_pusher
+  roles:
+    - energosbt
+  vars:
+    service: microphones

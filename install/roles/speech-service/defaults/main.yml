@@ -1,0 +1,14 @@
+---
+grpc_enabled: true
+file_converter: true
+stream_enable: false
+speaker_generator: false
+iii_speech_service_mem_limit: false
+asr_stats: false
+asr_threads: 1
+sd_threads: 1
+gender_threads: 8
+file_converter_threads: 5
+videocard_count: 1
+
+speech_service_pull_external_model: false

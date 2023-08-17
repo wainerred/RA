@@ -1,0 +1,78 @@
+---
+
+##########################################################################################
+
+- name: Set internal_host if exists
+  set_fact:
+    internal_host: "{{ hostvars[inventory_hostname].internal_host if hostvars[inventory_hostname].internal_host is defined else false }}"
+
+- name: "Set global host"
+  set_fact:
+    host: |
+      {% set result = {} -%}
+      {% for service in dictionary_hosts.keys() -%}
+        {% if 'host' in dictionary_hosts[service] -%}
+          {% set _ = result.update({"{}".format(service): dictionary_hosts[service]['host'] }) -%}
+        {% endif -%}
+      {% endfor -%}
+      {{ result }}
+
+- name: "Set global hosts"
+  set_fact:
+    hosts: |
+      {% set result = {} -%}
+      {% for service in dictionary_hosts.keys() -%}
+        {% if 'hosts' in dictionary_hosts[service] -%}
+          {% set _ = result.update({"{}".format(service): dictionary_hosts[service]['hosts'] }) -%}
+        {% endif -%}
+      {% endfor -%}
+      {{ result }}
+
+- name: "Set global swarm host"
+  set_fact:
+    swarm_host: |
+      {% set result = {} -%}
+      {% for service in dictionary_hosts.keys() -%}
+        {% set _ = result.update({"{}".format(service): service }) -%}
+      {% endfor -%}
+      {{ result }}
+
+- name: "Set global vpn host"
+  set_fact:
+    vpn_host: |
+      {% set result = {} -%}
+      {% for service in dictionary_hosts.keys() -%}
+        {% if 'vpn_host' in dictionary_hosts[service] -%}
+          {% set _ = result.update({"{}".format(service): dictionary_hosts[service]['vpn_host'] }) -%}
+        {% endif -%}
+      {% endfor -%}
+      {{ result }}
+
+##########################################################################################
+
+- name: "Set global ports"
+  set_fact:
+    ports: |
+      {% set result = {} -%}
+      {% for service in dictionary_hosts.keys() -%}
+        {% if 'ports' in dictionary_hosts[service].keys() -%}
+          {% for port_name, port_number in dictionary_hosts[service]['ports'].items() -%}
+            {% set _ = result.update({"{}_{}".format(service, port_name): port_number}) -%}
+          {% endfor -%}
+        {% endif -%}
+      {% endfor -%}
+      {{ result }}
+
+- name: "Set versions"
+  set_fact:
+    versions: |
+      {% set result = {} -%}
+      {% for service in dictionary_hosts.keys() -%}
+        {% if 'tag' in dictionary_hosts[service].keys() -%}
+          {% set tag = (dictionary_hosts[service]['tag'] | string | regex_findall('\d+\.\d+\.\d+')) -%}
+          {% if tag | length > 0 -%}
+            {% set _ = result.update({service: tag[0]}) -%}
+          {% endif -%}
+        {% endif -%}
+      {% endfor -%}
+      {{ result }}

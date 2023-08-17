@@ -1,0 +1,9 @@
+---
+# Install notification-service
+- name: "Install notification-service"
+  hosts:
+    - notification_service
+  roles:
+    - notification-service
+  vars:
+    service: "notification-service"

@@ -1,0 +1,1590 @@
+include "application.conf"
+
+play {
+
+  http {
+    session {
+      cookieName = "TP15_SESSION"
+    }
+  }
+
+{% if versions.plexus_server is version('3.29.0', '>=') and backend_modules_chat_splitter %}
+  modules.disabled += "ru.dsslab.plexus.modules.chatsplitter.StubChatSplitterModule"
+  modules.enabled += "ru.dsslab.plexus.modules.chatsplitter.ChatSplitterModule"
+{% endif %}
+
+{% if DEBUG_MOD_QA %}
+{% if versions.plexus_server is version('3.25.0', '>=') %}
+  modules.disabled += "ru.dsslab.plexus.modules.testhtmlmail.StubTestHtmlMailModule"
+  modules.enabled += "ru.dsslab.plexus.modules.testhtmlmail.TestHtmlMailModule"
+
+  {% if service == 'plexus_server' -%}
+  modules.disabled += "ru.dsslab.plexus.modules.alert.StubTestMailAlertSenderModule"
+  modules.enabled += "ru.dsslab.plexus.modules.alert.TestMailAlertSenderModule"
+  {% endif %}
+{% endif %}
+
+  {% if backend_billing and versions.plexus_server is version('3.27.0', '>=') -%}
+  modules.disabled += "ru.dsslab.plexus.modules.billing.StubBillingModule"
+  modules.enabled += "ru.dsslab.plexus.modules.billing.BillingModule"
+  {% endif %}
+{% endif %}
+
+{% if backend_ldap_user_sync and backend_modules_ldap and versions.plexus_server is version('3.14.0', '>=') and service == 'plexus_server' %}
+  modules.enabled += "ru.dsslab.plexus.modules.ldapsynchronizer.LdapUserSynchronizerModule"
+{% endif %}
+
+{% if backend_project_aggregate and versions.plexus_server is version('3.14.0', '>=') and service == 'plexus_server' %}
+  modules.enabled += "ru.dsslab.plexus.modules.projectsynchronizer.ProjectAggregateSynchronizerModule" 
+{% endif %}
+
+{% if backend_slow_request_log and versions.plexus_server is version('3.14.0', '>=') %}
+  modules.disabled += "ru.dsslab.plexus.logging.LoggingStubModule"
+  modules.enabled += "ru.dsslab.plexus.logging.LoggingModule"
+{% endif %}
+
+{% if hosts.zabbix is not defined %}
+  modules.disabled += "ru.dsslab.plexus.modules.monitoring.AkkaMonitoringModule"
+{% endif %}
+
+{% if host.notification_service and service == 'plexus_server' %}
+{% if backend_mail and versions.plexus_server is version('3.17.0', '>=') %}
+  modules.enabled += "ru.dsslab.plexus.modules.alert.MailAlertSenderModule" 
+{% endif %}
+{% if notification_que_type == "kafka" %}
+  modules.enabled += "ru.dsslab.plexus.modules.alert.ProjectAlertImporterModule"
+  modules.enabled += "ru.dsslab.plexus.modules.dictionary.DictionaryAlertImporterModule"
+{% endif %}
+
+{% if notification_que_type == "redis" %}
+  modules.enabled += "ru.dsslab.plexus.modules.alert.ProjectAlertRedisClusterImporterModule"
+{% if versions.plexus_server is version('3.17.0', '>=') %}
+  modules.enabled += "ru.dsslab.plexus.modules.alert.BaseProjectAlertImporterModule"
+{% endif %}
+{% endif %}
+{% endif %}
+
+{% if backend_modules_translate %}
+  modules.disabled += "ru.dsslab.plexus.modules.TranslateStubModule"
+  modules.enabled  += "ru.dsslab.plexus.modules.TranslateModule"
+{% endif %}
+
+{% if backend_modules_ldap and versions.plexus_server is version('3.14.0', '>=') and service == 'plexus_server' %}
+  modules.disabled += "ru.dsslab.plexus.modules.ldap.StubLdapModule"
+  modules.enabled += "ru.dsslab.plexus.modules.ldap.LdapModule"
+{% endif %}
+
+{% if backend_document_task and versions.plexus_server is version('3.15.0', '>=') %}
+  modules.disabled += "ru.dsslab.plexus.modules.documenttask.StubDocumentTaskModule"
+  modules.enabled += "ru.dsslab.plexus.modules.documenttask.DocumentTaskModule"
+{% if versions.plexus_server is version('3.17.0', '>=') and service == 'plexus_server' %}
+  modules.enabled += "ru.dsslab.plexus.modules.documenttask.DocumentTaskGenerateManagerModule"
+{% endif %}
+{% endif %}
+
+{% if backend_modules_stats %}
+  modules.disabled += "ru.dsslab.plexus.modules.statistics.StatisticsMockModule"
+  modules.enabled  += "ru.dsslab.plexus.modules.statistics.StatisticsModule"
+{% endif %}
+
+{% if backend_modules_reset_pass %}
+  modules.disabled += "ru.dsslab.plexus.modules.user.ResetUserPasswordMockModule"
+  modules.enabled  += "ru.dsslab.plexus.modules.user.ResetUserPasswordModule"
+{% endif %}
+
+{% if host.crosslanguage is defined and host.crosslanguage != '' %}
+ modules.disabled += "ru.dsslab.plexus.modules.SynonymServiceMockModule"
+ modules.enabled  += "ru.dsslab.plexus.modules.SynonymServiceModule"
+{% endif %}
+
+  modules.disabled += "ru.dsslab.plexus.modules.monitoring.MonitoringClientModule"
+  modules.enabled += "ru.dsslab.plexus.modules.monitoring.MonitoringCachedClientModule"
+
+  modules.disabled += "ru.dsslab.plexus.modules.journal.MockAkkaJournalModule"
+  modules.enabled += "ru.dsslab.plexus.modules.journal.AkkaJournalModule"
+
+{% if backend_mail and backend_feedback_extended %}
+  modules.disabled += "ru.dsslab.plexus.modules.FeedbackMockModule"
+  modules.enabled += "ru.dsslab.plexus.modules.FeedbackMailModule"
+{% endif %}
+
+  modules.enabled += "ru.dsslab.plexus.modules.s2t.TrainProjectInitializationModule"
+
+{% if backend_modules_journal %}
+  modules.disabled += "ru.dsslab.plexus.modules.journalv2.MockJournalModule"
+  modules.disabled += "ru.dsslab.plexus.journalv2.MockJournalFlushModule"
+  modules.enabled += "ru.dsslab.plexus.modules.journalv2.JournalModule"
+  modules.enabled += "ru.dsslab.plexus.journalv2.ElasticJournalFlushModule"
+{% endif %}
+
+{% if backend_feedback_extended and backend_mail and backend_mattermost %}
+  modules.disabled += "ru.dsslab.plexus.modules.feedback.EmptyFeedbackSendersModule"
+  modules.enabled += "ru.dsslab.plexus.modules.feedback.MailMattermostFeedbackSendersModule"
+{% elif backend_feedback_extended and backend_mail %}
+  modules.disabled += "ru.dsslab.plexus.modules.feedback.EmptyFeedbackSendersModule"
+  modules.enabled += "ru.dsslab.plexus.modules.feedback.MailFeedbackSendersModule"
+{% endif %}
+
+{% if backend_mail %}
+  modules.enabled += "ru.dsslab.plexus.modules.mail.MailModule"
+{% endif %}
+
+{% if backend_mattermost %}
+  modules.enabled += "ru.dsslab.plexus.modules.mattermost.MattermostModule"
+{% endif %}
+
+{% if backend_spell_checker %}
+  modules.disabled += "ru.dsslab.plexus.modules.spellchecker.MockSpellCheckerModule"
+  modules.enabled += "ru.dsslab.plexus.modules.spellchecker.SpellCheckerModule"
+{% endif %}
+
+{% if versions.plexus_reports is version('0.0.1', '>=') and versions.plexus_server is version('3.16.0', '>=') %}
+  # если необходимо включить фронтовые отчёты 
+  modules.disabled += "ru.dsslab.plexus.modules.frontendreport.StubAkkaFrontendReportModule"
+  modules.enabled += "ru.dsslab.plexus.modules.frontendreport.AkkaFrontendReportModule"
+
+{% if backend_mail and versions.plexus_server is version('3.16.0', '>=') and versions.plexus_reports is version('0.0.1', '>=') %}
+  # если необходимо включить фронтовые отчёты и если необходимо включить отправку фронтовых отчётов по почте
+  modules.disabled += "ru.dsslab.plexus.modules.frontendreport.StubMailFrontendReportModule"
+  modules.enabled += "ru.dsslab.plexus.modules.frontendreport.MailFrontendReportModule"
+{% endif %}
+{% endif %}
+
+{% if backend_category_multi_column and versions.plexus_server is version('3.16.0', '>=') %}
+  # если необходимо выводить каждую категорию в отдельном столбце при выгрузке в csv 
+  modules.disabled += "ru.dsslab.plexus.modules.category.CategoryCsvOneColumnModule"
+  modules.enabled += "ru.dsslab.plexus.modules.category.CategoryCsvMultiColumnModule"
+{% endif %}
+
+{% if backend_additional_weight and versions.plexus_server is version('3.16.0', '>=') %}
+  # если необходимо добавить дополнительную оценку документа (калибровку) 
+  modules.disabled += "ru.dsslab.plexus.modules.additionalweight.StubAdditionalWeightModule"
+  modules.enabled += "ru.dsslab.plexus.modules.additionalweight.AdditionalWeightModule"
+{% endif %}
+
+{% if versions.plexus_server is version('3.26.0', '>=') %}
+  modules.disabled += "ru.dsslab.plexus.modules.dialogfield.StubDialogFieldModule"
+  modules.enabled += "ru.dsslab.plexus.modules.dialogfield.DialogFieldModule"
+{% endif %}
+
+  ws {
+    timeout {
+      # If non null, the connection timeout, this is how long to wait for a TCP connection to be made
+      connection = 2 minutes
+
+      # If non null, the idle timeout, this is how long to wait for any IO activity from the remote host
+      # while making a request
+      idle = 2 minutes
+
+      # If non null, the request timeout, this is the maximum amount of time to wait for the whole request
+      request = 2 minutes
+    }
+  }
+  server {
+    akka {
+      requestTimeout = 21600 seconds
+    }
+    http {
+      idleTimeout = 375 seconds
+    }
+  }
+
+{% if backend_mail %}
+    mailer {
+      host = {{ mail_server_host }}
+      port = {{ mail_server_port }}
+      user = "{{ mail_server_user }}"
+      password = "{{ mail_server_pass }}"
+      tls = {{ 'true' if mail_server_tls else 'false' }}
+    }
+{% endif %}
+
+  i18n {
+    langs = ["ru", "en", "fr", "es"]  
+    langCookieName = "TP15_LANG"
+  }
+
+}
+
+
+{% if backend_modules_stats %}
+statistics {
+
+{% if host.s2t_rabbitmq is defined and host.s2t_rabbitmq != '' %}
+  asr-rabbit {
+    base-url = "http://{{ host.s2t_rabbitmq }}:{{ s2t_rabbitmq_monitor_port }}/api"
+    username = "guest"
+    password = "guest"
+    asr-queues = [ # названия очередей преобразования речи в текст (достаточно взять только medium)
+      {{ iii_rbt_asr_queues }}
+    ]
+    lang-queues = [ #название очередей определения языка
+      {{ iii_rbt_lang_queues }}
+    ]
+  }
+{% endif %}
+
+  asr-elastic4s {
+    max-url-size = 4000
+    hosts = [
+{% for adr in hosts.elasticsearch %}
+      "{{ adr }}:{{ ports.elasticsearch_main }}"{% if not loop.last %}, 
+{% endif %}
+{% endfor %}
+    ]
+    agg-offset = "0m"
+    durations = {{ backend_asr_metric_durations | to_json }}
+  }
+
+{% if backend_stats_ocr %}
+  tika-ocr {
+    base-url = "http://{{ host.ocr_service }}:{{ ocr_service_port }}"
+  }
+{% endif %}
+
+}
+{% endif %}
+
+
+plexus {
+  worker.id = {{ backend_worker_id }}
+  global {
+    account = {{ backend_account_id }}
+    admin-username = "{{ backend_default_user }}"
+    timezone = "+03:00"
+    project-role {
+      admin = 4
+      user = 5
+    }
+  }
+
+{% if versions.plexus_server is version('3.29.0', '>=') %}
+  account-limits {
+    default = {
+      "document_types" = ["ingest", "chat"]
+    }
+  }
+{% endif %}
+
+{% if versions.plexus_server is version('3.7.0', '>=') %}
+  storages {
+{% if plexus_external_file_service %}
+    transformed-file {
+      client = external-storage
+    }
+{% endif %}
+  }
+  aggregate-storages {
+    file {
+{% if plexus_external_file_service %}
+      clients = [external-storage, storage]
+{% else %} 
+      clients = [storage]
+{% endif %}
+    }
+  }
+  file-owner-filter {
+    account-owner-templates = [
+      "{{ '{{ partition }}' }}",
+      "{{ '{{ partition }}' }}_d",
+      "{{ '{{ partition }}' }}_s",
+      "{{ '{{ partition }}' }}_t",
+    ]
+    user-owner-templates = [
+      "{{ '{{ partition }}' }}_d",
+    ]
+  }
+{% endif %}
+
+{% if backend_mail %}
+    email.from = "{{ mail_server_user }}"
+{% endif %}    
+
+  document-compressed-audio-service {
+    filename-filed = "file.name"
+    compressed-url-filed = "media_compressed_url"
+  }
+
+  document-common-comment-handler {
+    comment-field = "common_comment"
+  }
+  elastic {
+    created-date-filter = false
+  }
+  docx-handler {
+{% if frontend_images_url is defined and frontend_images_path is not defined %}
+    base-images-path = "{{ frontend_images_url }}"
+{% elif frontend_images_url is not defined and frontend_images_path is defined %}
+    base-images-path = "{{ frontend_images_path }}"
+{% endif %}
+    speakers {
+      "operator.transcript" {
+        name = "Оператор"
+      }
+      "client.transcript" {
+        name = "Клиент"
+      }
+    }
+  }
+  zip-cn {
+    speakers {
+      "operator.transcript" = "Оператор" // скопировать из plexys.docx-handler.speakers.<doc-path>.name
+      "client.transcript" = "Клиент" // скопировать из plexys.docx-handler.speakers.<doc-path>.name
+    }
+    duration = "s2t.meta_information.duration"
+  }
+  timeout = "2 min"
+  project-root-filter {
+    project-id-field = "_internal_data.project_id"
+  }
+  project-file-service {
+    default-languages = [
+      "ru"
+    ]
+    field-processors = [
+      {
+        source-field = "file.properties._categories"
+        target-field = "_categories"
+      },
+      {
+        source-field = "file.properties.record_start_time"
+        target-field = "created_date"
+      },
+      {
+        source-field = "file.properties.is_mixed_languages"
+        target-field = "is_mixed_languages"
+      },
+      {
+        source-field = "file.properties.language"
+        target-field = "language"
+      }
+    ]
+  }
+  document-comment-handler {
+    comments-field = "comments"
+    comments-count-field = "comments_count"
+    first-comment-field = "_external_data.comment"
+  }
+  retry-number = 3
+
+  default-site-url = "https://app.{{ frontend_domain[0] }}/"
+
+  user-service {
+    token-length = 64
+    password-length = 8
+  }
+
+  username-suggest {
+    search-last-months = 2
+    cache-ttl = "5 min"
+    sort {
+        field = "created_date"
+        order = "desc"
+    }
+  }
+  account-limits-blacklist = [
+    collect_object,
+    objects,
+    s2t_ttl,
+    object_types,
+    collections,
+    speakers,
+    trello,
+    bots,
+    dictionaries,
+    autocategories,
+    multiproject_type,
+    subject_dictionary
+  ]
+  project-language-service {
+    cache-ttl = "5 min"
+  }
+  train-project {
+    project-id = "amphrasegen"
+    languages = [
+      "ru"
+    ]
+    language-condition-pattern = "exists(\"language\") and \"{{ "{{ lang }}" }}\" in language"
+    file-cutter-settings-path = "conf/file-cutter-settings.json"
+    tags-field = "file.tags"
+    properties-field = "file.properties"
+  }
+  train-project-initialization-manager {
+    retry-interval = "1 min"
+  }
+  train-project-initialization-service {
+    storage-limit = 10737418240
+  }
+
+{% if backend_modules_journal %}
+  journal-flush-manager {
+    flush-interval-seconds = 30
+    buffer-capacity = 1000
+  }
+  journal-search {
+    user-action-type = "conf/user-action-type.json"
+    default-date-interval-days = 30
+    default-sort {
+      field = "_id"
+      order = "desc"
+    }
+    user-exclude-fields = [ "<account_id>" ]
+  }
+{% endif %}
+  message-dictionaries {
+    filtered-dictionaries = [
+      "plexus.error"
+    ]
+  }
+  project-internal-settings-factory {
+    device-category-project-types = [
+      "device_audio"
+    ]
+  }
+  type-filter-handler {
+    filters-path = "conf/elastic-type-filters.json"
+  }
+  document-manual-dialog-service {
+    manual-dialogs-field = "manual_dialogs"
+    dialog-parent-id-field = "dialog.parent_id"
+    dialog-begin-time-field = "dialog.begin_time"
+    dialog-end-time-field = "dialog.end_time"
+  }
+  update-category-service {
+    // override document source data of selected field with actual data
+    override-fields = [
+      "weights"
+    ]
+  }
+  event-handler {
+    // event handler will send to web socket heartbeat message
+    // if heartbeat interval equals or less then 0 heartbeats messages do not send
+    // default: 0
+    heartbeat-interval-seconds = 30
+  }
+  cached-session-service {
+    ttl = "1 min"
+  }
+  cached-account-authority-service {
+    ttl = "1 min"
+  }
+{% if versions.plexus_server is version('3.9.0', '>=') %}
+  storage-manager {
+    
+    storage-settings {
+      // allowed keys: file, transformed-file, account, user, speaker, speech
+      // values: file settings content
+      file {
+        file_source_watermark = {{ backend_file_source_watermark }}
+      }
+    }
+  }
+{% endif %}
+{% if versions.plexus_server is version('3.10.0', '>=') %}
+  internal-project-monitoring-service {
+    stream-filtered-fields = [
+{% if versions.plexus_server is version('3.11.0', '>=') %}      
+      "total_received_messages",
+{% endif %}
+      "pending_messages",
+      "queue_size",
+      "status",
+      "total_processed_messages"
+    ]
+    // default status: 0
+    stream-status-code-map {
+      started = 1
+    }
+  }
+{% endif %}
+
+{% if backend_slow_request_log and versions.plexus_server is version('3.14.0', '>=') %}
+  slow-request-logging {
+    // default threshold for slow requests in milliseconds
+    default-threshold = 1000
+    // threshold for action in milliseconds:
+    // format: <action> = 2000
+    action-thresholds = {
+{% if versions.plexus_server is version('3.31.0', '>=') %}
+      "search_csv_export generate" = 0
+      "search_csv_export build csv contexts" = 0
+      "search_csv_export build search contexts" = 0
+      "search_csv_export fetch first bulk" = 0
+      "search_csv_export flush" = 0
+      "search_csv_export fetch scroll" = 0
+{% endif %}
+    }
+  }
+{% endif %}
+
+  authority-synchronizer {
+    restart-policy {
+      min-backoff = "5 sec"
+      max-backoff = "5 min"
+      random-factor = 0.2
+    }
+  }
+
+{% if backend_ldap_user_sync %}
+ldap-user-synchronizer {
+    dn = "{{ backend_users_dn }}"
+    // user principal name transformers:
+    // type = lowercase: transfrom name to lower case
+    // type = domain-replace: replace domain to some value
+    // example:
+    // [
+    //   {
+    //     type = lowercase
+    //   },
+    //   {
+    //     type = domain-replace
+    //     domain = localhost.lan
+    //   }
+    // ]
+    principal-name-transforms = {{ backend_principal_name_transforms | to_nice_json }}
+    // base user data processors:
+    // type = datetime: set sync start date into the target field
+    // type = set: set value into the target field
+    // example:
+    // [
+    //   {
+    //     type = datetime
+    //     target-field = personal_settings.sync.start_date
+    //   },
+    //   {
+    //     type = set
+    //     target-field = personal_settings.sync.type
+    //     value = ldap-user
+    //   }
+    // ]
+    base-user-data-processors = [
+      {
+        type = datetime
+        target-field = personal_settings.sync.start_date
+      },
+      {
+        type = set
+        target-field = personal_settings.sync.type
+        value = ldap-user
+      }
+    ]
+  }
+{% endif %}
+{% if backend_project_aggregate and versions.plexus_server is version('3.14.0', '>=') %}
+  project-aggregate-synchronizer {
+    access-item-limit = 1000
+    default-user-access-field = "personal_settings.access_item"
+    default-document-date-field = "created_date"
+    default-document-access-item-field = "file.properties.agent_id"
+  }
+{% endif %}
+
+{% if versions.plexus_server is version('3.21.0', '>=') %}
+  manual-weight-csv-handler {
+    weight-field = "weight"
+    weights-field = "weights"
+{% if versions.plexus_server is version('3.21.1', '<') %}
+    added-ids-categories-field = "_categories.added_ids"
+    deleted-ids-categories-field = "_categories.deleted_ids"
+    na-ids-categories-field = "_categories.na_ids"
+{% endif %}
+    modified-category-header-template = "{{ modified_category_header_template }}"
+  }
+  doclib-csv-handler {
+    doclib-field = "doclib"
+    username-field = "personal_settings.name"
+    doclib-header = "Библиотека диалогов"
+    doclib-user-header = "Библиотека диалогов / Пользователь"
+    doclib-date-header = "Библиотека диалогов / Дата добавления"
+  }
+{% endif %}
+
+{% if backend_additional_weight and versions.plexus_server is version('3.16.0', '>=') %}
+{% if versions.plexus_server is version('3.21.0', '>=') %}
+  additional-weights-csv-handler {
+    weight-field = "weight"
+    weights-field = "weights"
+    additional-weights-field = "additional_weights"
+{% if versions.plexus_server is version('3.21.1', '<') %}
+    additional-weights-diff-field = "additional_weights_settings.diff_ids"
+    additional-weights-modify-field = "additional_weights_settings.modified_ids"
+{% endif %}
+{% if versions.plexus_server is version('3.23.0', '>=') %}
+    categories-field = "categories"
+{% endif %}
+    additional-weights-header-template = "{{ additional_weights_header_template }}"
+    additional-weights-modify-header-template = "{{ additional_weights_modify_header_template }}"
+    additional-weights-diff-header-template = "{{ additional_weights_diff_header_template }}"
+  }
+{% endif %}
+  # если необходимо добавить дополнительную оценку документа (калибровку)
+  additional-weight-handler {
+    additional-weights-field = "additional_weights" // json-path поля, в которое записывается дополнительная оценка
+{% if versions.plexus_server is version('3.18.0', '>=') %}
+    additional-weights-settings-field = "additional_weights_settings"
+{% endif %}
+    checklist-id-field = "_internal_data.checklist_id" // json-path поля, в которое записывается идентификатор чек-листа
+  }
+  additional-weight-service {
+{% if versions.plexus_server is version('3.20.0', '>=') %}
+    diff-ids-field = "additional_weights_settings.diff_ids"
+{% endif %}
+    source-fields = [ // json-path полей, которые нужно получить при обновлении дополнительной оценки
+{% if versions.plexus_server is version('3.20.0', '>=') %}
+      "_categories",
+      "categories",
+{% endif %}
+{% if versions.plexus_server is version('3.18.0', '>=') %}
+      "additional_weights_settings",
+{% endif %}
+      "_internal_data.checklist_id",
+      "additional_weights",
+    ]
+{% if versions.plexus_server is version('3.20.0', '>=') %}
+    diff-ids-field = "additional_weights_settings.diff_ids"
+{% endif %}
+  }
+{% endif %}
+{% if backend_commnet_group and versions.plexus_server is version('3.16.0', '>=') %}
+  comment-group-csv-handler {
+    comment-groups-field = "comment_groups" // json-path поля, в которое записываются группы комментариев
+    weights-field = "weights" // json-path поля, в которое записывются веса оценки
+    categories-field = "categories" // json-path поля, в которое записываются категории
+    category-link-prefix-template = "category:<partition_id>:<category_id>:" // шаблон ссылки на категорию в массиве ссылок комментария
+    comments-header-template = "Комментарии \"<comment_group_name>\"" // шаблон заголовка колонки группы комментариев к категории
+    comment-delimiter = "\n" // разделитель между комментариями
+    category-comments-header-template = "Комментарии \"<comment_group_name>\" к \"<category_name>\""
+  }
+{% endif %}
+{% if versions.plexus_server is version('3.16.0', '>=') %}
+  category-csv-handler {
+    categories-field = "categories" // json-path поля, в которое записываются категории
+    # если необходимо выводить каждую категорию в отдельном столбце при выгрузке в csv
+{% if backend_category_multi_column %}
+    category-header-template = "Категория \"<category_name>\"" // шаблон заголовка колонки категории
+{% else %}
+    category-delimiter = ", " // разделитель категорий, если они выводятся в одной колонке
+{% endif %}
+  }
+{% endif %}
+{% if backend_document_task and versions.plexus_server is version('3.17.0', '>=') %}
+{% if versions.plexus_server is version('3.21.0', '>=') %}
+  document-stage-csv-handler {
+    stages-field = "document_stages"
+    username-field = "personal_settings.name"
+    stage-column-header-template = "Задание \"<task_name>\" / Статус \"<stage_name>\""
+    user-column-header-template = "Задание \"<task_name>\" / Статус \"<stage_name>\" / Пользователь"
+    date-column-header-template = "Задание \"<task_name>\" / Статус \"<stage_name>\" / Дата создания"
+    random-column-header-template = "Задание \"<task_name>\" / Статус \"<stage_name>\" / Рандомный выбор документа"
+    auto-user-value = "СИСТЕМА"
+  }
+{% endif %}
+  # если необходимо включить генерацию автоматических заданий на документы (нужно пока только для энергосбыта)
+  document-task-elastic-generate-service { 
+    stages-field = "document_stages" // поле в документе, где хранится список этапов заданий
+    stage-id-field = "document_stages.id" // поле в документе, где хранится идентификатор этапа
+    scroll-limit = 1000 // сколько документов забирать при scroll-е
+    scroll-ttl-seconds = 600 // время жизни scroll-а (за это время должен успеть выполниться следующий scroll-запрос)
+  }
+  document-task-generate-manager {
+    interval-seconds = {{ backend_document_task_manager_interval_sec }} // интервал между запусками сервиса генерации автоматических этапов заданий
+    start-time = "2023-01-01T00:00:00.000+03:00" // интервал будет отсчитываться от данного времени
+  }
+{% endif %}
+{% if host.notification_service is defined and backend_mail and versions.plexus_server is version('3.17.0', '>=') %}
+  mail-alert-sender {
+    emails-field = "notification_settings.emails" // поле в сервисе уведомлений, где хранятся email-ы
+    query-field = "query" // поле в сервисе уведомлений, где хранится запрос поиска
+    email-from = ${play.mailer.user} // email отправителя (лучше не менять эту настройку)
+{% if versions.plexus_server is version('3.25.0', '<') %}
+    text-template-path = "conf/notification_email_template" // путь до файла с шаблоном тела письма
+    base-url = "https://{{ frontend_domain[0] }}" // основной url интерфейса (нужен для тела письма)
+{% endif %}
+{% if versions.plexus_server is version('3.18.3', '>=') %}
+    name-field = "name"
+    subject-template = "Touchpoint Уведомление \"{{ '{{ name }}' }}\"" // Шаблон топика письма
+{% else %}
+    subject = "Touchpoint Уведомления" // топик письма
+{% endif %}
+{% if versions.plexus_server is version('3.25.0', '>=') %}
+    subject-template-path = "conf/notification_email_subject.mustache"
+    static-attachment-dir = "conf/notification_email_static"
+    seq-delimiter = ", "
+    double-format = "#0.00"
+    datetime-formatter = "d MMMM YYYY, HH:mm:ss"
+    max-document-count = 100
+    timezone = ${plexus.global.timezone}
+    interface-version-template-settings-map {
+      "v15" = {
+{% if frontend_type == 'touchpoint' %}
+        base-url = "{{ frontend_scheme }}://app.{{ frontend_domain[0] }}"
+{% else %}
+        base-url = "{{ frontend_scheme }}://{{ frontend_domain[0] }}"
+{% endif %}
+        text-template-path = "conf/v15_notification_email_index.html.mustache"
+      }
+{% if frontend_domain_20 %}
+      "v20" = {
+{% if frontend_type == 'touchpoint' %}
+        base-url = "{{ frontend_scheme }}://app.{{ frontend_domain_20[0] }}"
+{% else %}
+        base-url = "{{ frontend_scheme }}://{{ frontend_domain_20[0] }}"
+{% endif %}
+        text-template-path = "conf/v20_notification_email_index.html.mustache"
+      }
+{% endif %}
+    }
+    default-template-settings {
+{% if frontend_type == 'touchpoint' %}
+      base-url = "{{ frontend_scheme }}://app.{{ frontend_domain[0] }}"
+{% else %}
+      base-url = "{{ frontend_scheme }}://{{ frontend_domain[0] }}"
+{% endif %}
+      text-template-path = "conf/v15_notification_email_index.html.mustache"
+    }
+{% endif %}
+  }
+{% endif %}
+
+{% if versions.plexus_server is version('3.26.0', '>=') %}
+  dialog-field-handler {
+    dialog-field = "_dialog"
+    highlight-info-field = ${plexus.elastic.fields.highlight}
+    transcript-fields = [
+      "client.transcript",
+      "operator.transcript",
+      "mono.transcript",
+      "system.transcript",
+    ]
+  }
+{% endif %}
+
+{% if backend_billing and versions.plexus_server is version('3.27.0', '>=') %}
+  billing-search-service {
+    index-template = "billing_metrics_<account_id>_<yyyy>-<MM>"
+    billing-type-path = "conf/billing-type.json"
+  }
+{% endif %}
+
+{% if versions.plexus_server is version('3.28.0', '>=') %}
+  simple-rating-aggregate-handler {
+    max-terms-size = 65000
+  }
+{% endif %}
+
+}
+
+{% if host.audio_transform is defined and versions.plexus_server is version('3.7.0', '>=') %}
+audio-transform {
+  base-url = "http://{{ host.audio_transform }}:{{ ports.audio_transform_main }}"
+}
+{% endif %}
+
+painless {
+  base-url = "http://{{ host.dpp_painless_processor }}:{{ ports.dpp_painless_processor_rest | int + 1 }}" // указать любой painless-processor
+}
+
+{% if host.cn_builder is defined %}
+zip-cn {
+  base-url = "http://{{ host.cn_builder }}:{{ ports.cn_builder_main }}"
+}
+{% endif %}
+
+dpp2 {
+  base-url = "http://{{ host.dpp }}:{{ ports.dpp_main }}"
+  default-modules {
+    phonenumber-info = phonenumber-info
+    geo-ip = local-geo-ip
+    asr = asr
+    sd = sd
+    local-exporter = local-exporter
+    local-receiver = local-receiver
+    archive-receiver = archive-receiver
+    elastic-exporter = exporter-elastic
+    s2t-result = local-s2t-result
+    file-converter = file-converter
+    highlight = local-highlight
+    postgres-exporter = exporter-posgresql
+    speaker = speaker
+    speaker-gen = speaker-gen
+    lang-id = lang-id
+    dictionary = dictionary-enricher
+    tika = tika-processor
+    text-cleaner = local-text-cleaner
+    tika-result = local-tika-result
+    spell-checker = spell-checker
+    fcr = local-first-call-resolution
+    silence = local-silence
+    first-reply = local-first-reply
+    file-cutter = file-cutter
+    badge-splitter = local-badge-splitter
+{% if versions.plexus_server is version('3.11.0', '>=') %}
+{% if backend_modules_role_detecting %}
+    role-detector = speaker-role-detector
+{% else %}
+    role-detector = null
+{% endif %}
+{% endif %}
+{% if versions.dpp is version('1.4.0', '>=') and versions.plexus_server is version('3.16.0', '>=') %}
+    local-empty = local-empty
+{% endif %}
+{% if 'local-extended-metadata' in dpp_templates %}
+    metadata = local-extended-metadata
+{% endif %}
+{% if 'exporter-rabbitmq' in dpp_templates %}
+    rabbitqm-exporter = exporter-rabbitmq
+{% endif %}
+{% if versions.plexus_server is version('3.29.0', '>=') and backend_modules_chat_splitter %}
+    chat-splitter = local-chat-splitter
+{% endif %}
+  }
+  module-base-settings {
+    asr-device_audio {
+      configuration {
+        energy_step_ms = 100
+      }
+    }
+    root-project-category-module {
+      settings {
+        max_extent_counter_filter = true
+      }
+    }
+  }
+  fields-remappings {
+{% if backend_root_categories %}
+    root-category {
+      output {
+        native_categories = "root_categories"
+        categories_highlight_info = "root_categories_highlight_info"
+      }
+    }
+{% endif %}
+  }
+{% if versions.plexus_server is version('3.6.0', '<=') %}
+  file-service-url = ${file.base-url}
+{% endif %}
+  asr-config-fields = [
+{% if sentiments_model is defined  or sentiments_acoustic is defined or sentiments_text is defined %}
+    "sentiment_analysis",
+{% endif %}
+    "process_with_sd",
+    "sentiment_types",
+    "process_as_mono",
+    "thresholds",
+    "diarization",
+    "enable_automatic_punctuation",
+    "interruption_duration_threshold",
+    "interruption_word_threshold",
+    "max_alternatives",
+    "model_id",
+    "segmentation",
+    "silence_intervals_threshold",
+    "silence_separation_threshold",
+    "word_to_number"
+  ]
+  elastic-settings {
+    index-date-field = "created_date"
+    languages = [
+      "ru",
+      "en",
+      "kk",
+      "uz"
+    ]
+  }
+  archive-settings {
+    custom-execution-id-template = "{{ '{{ 1 }}_{{ 2 }}' }}"
+    additional-fields = [
+      "s2t_highlight_info",
+      "nlp_highlight_info",
+      "text_cleaner_highlight_info",
+      "nlp_entities",
+      "audio",
+      "_source",
+      "root_categories_highlight_info"
+    ]
+  }
+  badge-settings {
+    receiver-max-batch-size = 10
+    additional-fields = [
+      "segmented_confusion_network"
+    ]
+  }
+  lang-id-config-fields = [
+    "threshold",
+    "mixed_language_ratio"
+    "model_id",
+    "languages_limit"
+  ]
+{% if host.postgres_crawler is defined %}
+  crawler-reupload-settings {
+    condition = "exists(\"download_file_error\") and download_file_error"
+    postgres-config {
+      connection = "postgresql://hostaddr={{ host.postgres_crawler }}:{{ ports.postgres_crawler_main }} dbname={{ '{{ dbname }}' }} user={{ postgres_crawler_user }} password={{ postgres_crawler_password }}"
+      batch-size = 100
+      statements = [
+        {
+          bind {
+            event_id = "/file/properties/event_id"
+            file_id = "/file/id"
+          }
+          sql = "UPDATE click_house SET file_id = :file_id, reload_time = current_timestamp WHERE event_id = :event_id"
+        }
+      ]
+    }
+  }
+{% endif %}
+  category-settings {
+    type-highlight-info-pointers {
+      ingest = "/s2t_highlight_info"
+      device_audio = "/s2t_highlight_info"
+      chat = "/text_cleaner_highlight_info"
+{% if versions.plexus_server is version('3.29.0', '>=') and backend_modules_chat_splitter %}
+      multichat = "/text_cleaner_highlight_info"
+{% endif %}
+    }
+    type-audio-roles {
+      ingest = ["client", "operator", "mono"]
+      device_audio = ["client", "operator", "mono"]
+      chat = ["client", "operator", "mono", "system"]
+{% if versions.plexus_server is version('3.29.0', '>=') and backend_modules_chat_splitter %}
+      multichat = ["client", "operator", "mono", "system"]
+{% endif %}
+    }
+    roles = ["client", "operator", "mono"]
+  }
+  text-cleaner-settings {
+    chat {
+      fields {
+        "/operator/transcript" = "/operator/transcript"
+        "/client/transcript" = "/client/transcript"
+        "/system/transcript" = "/system/transcript"
+      }
+    }
+{% if versions.plexus_server is version('3.29.0', '>=') and backend_modules_chat_splitter %}
+    multichat {
+      fields {
+        "/operator/transcript" = "/operator/transcript"
+        "/client/transcript" = "/client/transcript"
+        "/system/transcript" = "/system/transcript"
+      }
+    }
+{% endif %}
+  }
+  spell-checker-settings {
+    base-settings-path = "conf/base-spell-checker-settings.json"
+    filtered-fields = [
+      "available_languages",
+      "dictionaries",
+      "enable_alternatives",
+      "expanded_dictionary_paths",
+      "fields_to_process",
+      "language_field"
+    ]
+  }
+  fcr-settings {
+    default-fcr-elastic-exporter-settings-path = "conf/default-fcr-elastic-exporter-settings.json"
+    filtered-fields = [
+{% if versions.dpp is version('1.6.0','>=') %}
+      "external_id_field",
+{% endif %}
+      "data_paths",
+      "date_path",
+      "max_window_millis",
+      "data_paths_ex"
+    ]
+    json-pointer-fields = [
+{% if versions.dpp is version('1.6.0','>=') %}
+      "external_id_field",
+{% endif %}
+      "data_paths",
+      "date_path"
+    ]
+    document-update-condition = "$op_type == \"update\""
+  }
+
+  silence-settings {
+    filtered-fields = [
+      "duration_field",
+      "duration_threshold",
+      "place_begin_threshold",
+      "place_end_threshold"
+    ]
+    json-pointer-fields = [
+      "duration_field",
+    ]
+    type-highlight-info-pointers {
+      ingest = "/s2t_highlight_info"
+      device_audio = "/s2t_highlight_info"
+      chat = "/text_cleaner_highlight_info"
+{% if versions.plexus_server is version('3.29.0', '>=') and backend_modules_chat_splitter %}
+      multichat = "/text_cleaner_highlight_info"
+{% endif %}
+    }
+    type-duration-fields {
+      ingest = "/s2t/meta_information/duration"
+      device_audio = "/s2t/meta_information/duration"
+    }
+  }
+
+  first-reply-settings {
+    filtered-fields = [
+      "exclude_attributes",
+      "role"
+    ]
+    type-highlight-info-pointers {
+      ingest = "/s2t_highlight_info"
+      device_audio = "/s2t_highlight_info"
+      chat = "/text_cleaner_highlight_info"
+{% if versions.plexus_server is version('3.29.0', '>=') and backend_modules_chat_splitter %}
+      multichat = "/text_cleaner_highlight_info"
+{% endif %}
+    }
+  }
+
+  badge-splitter-settings {
+    base-settings-path = "conf/base-badge-splitter-settings.json"
+    filtered-fields = [
+      "min_interaction_duration",
+      "min_empty_duration",
+      "begins_threshold",
+      "ends_threshold"
+    ]
+    condition = "exists(\"dialog\") and exists(\"dialog.parent_id\")"
+  }
+
+  reimport-receiver-field-filter-settings {
+    // Map(plexus_module_key -> dpp_templates)
+    module-templates {
+      category = [
+        category
+      ]
+      entity = [
+        nlp
+      ]
+{% if versions.plexus_server is version('3.11.0', '>=') %}
+{% if backend_modules_role_detecting %}
+      role_detecting = [
+        role-detector
+      ]
+{% endif %}
+{% endif %}
+    }
+  }
+  
+  nlp-settings {
+    languages = [
+      "ru",
+      "en",
+      "any"
+    ]
+  }
+  s2t-settings {
+{% if disable_file_converter %}    
+    base-file-converter-condition = "false"
+{% else %}
+    base-file-converter-condition = "not(media_type == \"video\")"
+{% endif %}
+    inverted-base-file-converter-condition = "media_type == \"video\""
+  }
+{% if versions.plexus_server is version('3.11.0', '>=') %}
+{% if backend_modules_role_detecting %}
+  role-detector-settings {
+    base-settings {
+      audio_fields {
+        client {
+          input_highlight = "/s2t_highlight_info/client.transcript"
+          path = "/client/transcript"
+        }
+        operator {
+          input_highlight = "/s2t_highlight_info/operator.transcript"
+          path = "/operator/transcript"
+        }
+      }
+      default_role = "client"
+      detecting_role = "operator"
+    }
+    filtered-fields = ["additional_rules"]
+    json-pointer-fields = ["additional_rules.settings.data_path"]
+    condition = "file.properties.diarization == true"
+    inverted-condition = "file.properties.diarization == false"
+  }
+{% endif %}
+{% endif %}
+{% if versions.plexus_server is version('3.12.0', '>=') %}
+  module-transformation-settings {
+    field-processors = [
+      {
+        source-field = "s2t.process_as_mono",
+        target-template-id = "sd"
+        target-field = "configuration.process_as_mono"
+      }
+      {
+        source-field = "s2t.process_as_mono",
+        target-template-id = "asr"
+        target-field = "configuration.process_as_mono"
+      }
+      {
+        source-field = "s2t.process_as_mono",
+        target-template-id = "gender-id"
+        target-field = "configuration.process_as_mono"
+      }
+      {
+        source-field = "s2t.process_as_mono",
+        target-template-id = "speaker-exporter"
+        target-field = "configuration.process_as_mono"
+      }
+      {
+        source-field = "s2t.process_as_mono",
+        target-template-id = "speaker-search"
+        target-field = "configuration.process_as_mono"
+      }
+      {
+        source-field = "s2t.process_as_mono",
+        target-template-id = "speaker-feature"
+        target-field = "configuration.process_as_mono"
+      }
+    ]
+  }
+{% endif %}
+{% if versions.dpp is version('1.4.0', '>=') and versions.plexus_server is version('3.16.0', '>=') %}
+  update-document-settings {
+    condition = "$op_type == \"patch\""
+  }
+{% endif %}  
+{% if 'local-extended-metadata' in dpp_templates %}
+  # если в dpp2 есть шаблон local-extended-metadata
+  metadata-settings {
+    filtered-fields = [ // какие настройки можно пробросить через интерфейс
+      "long_phrase_duration",
+      "special_categories",
+    ]
+  }
+{% endif %}
+{% if 'exporter-rabbitmq' in dpp_templates %}
+  # если в dpp2 есть шаблон exporter-rabbitmq
+  rabbitqm-exporter-settings {
+    base-settings { // основные настройки модуля
+      connection_string = "{{ backend_exporter_rabbitmq_conection_string }}"
+      exchange_point = "{{ backend_exporter_exchange_point }}"
+      routing_key = "{{ backend_exporter_routing_key }}"
+      queue = "{{ backend_exporter_queue }}"
+      retry_count = 2
+      update_json {
+        update = true
+      }
+    }
+    filtered-fields = [ // какие настройки можно задать через интерфейс
+      "fields",
+      "queue",
+      "update_queue",
+      "exchange_point",
+      "update_exchange_point",
+      "routing_key",
+      "update_routing_key",
+    ]
+    json-pointer-fields = [ // в каких настройках нужно преобразоват json-path в json-pointer
+      "fields"
+    ]
+  }
+{% endif %}
+{% if versions.dpp is version('1.8.0', '>=') and versions.plexus_server is version('3.27.0', '>=') and throttling_timeout %}
+  throttling-timeout-settings {
+    # если необходимо включить throttling timeout для определённого типа. timeout будет включён только для realtime stream-ов рутовых проектов
+    type-timeout-map {
+      chat = 120
+    }
+  }
+{% endif %}
+{% if versions.plexus_server is version('3.29.0', '>=') and backend_modules_chat_splitter %}
+  chat-splitter-settings {
+    base-settings {}
+    filtered-fields = [
+      "process_category",
+      "child_fields",
+      "datetime_tzd",
+      "fields_paths",
+    ]
+    internal-fields = [
+      "process_category",
+    ]
+    base-condition = "exists(\"dialog\") and exists(\"dialog.parent_id\")"
+    agg-chat-splitter-condition = "exists(\"file.properties.closed\") and file.properties.closed"
+    script-template-path = "conf/chat_splitter_weight_script_template"
+    project-types = [
+      "multichat"
+    ]
+  }
+{% endif %}
+}
+
+{% if host.dpp_dictionary_service is defined and host.dpp_dictionary_service != '' %}
+dictionary.base-url = "http://{{ host.dpp_dictionary_service }}:{{ ports.dpp_dictionary_service_main }}"
+{% endif %}
+
+
+{% if host.dpp_category_api is defined and host.dpp_category_api != '' %}
+category.base-url = "http://{{ host.dpp_category_api }}:{{ ports.dpp_category_api_http }}"
+{% elif host.dpp_category is defined and host.dpp_category != '' %}
+category.base-url = "http://{{ host.dpp_category }}:{{ ports.dpp_category_http }}"
+{% endif %}
+
+highlight.base-url = "http://{{ host.highlight_server }}:{{ ports.highlight_server_main }}"
+
+{% if host.clusterization is defined and host.clusterization != '' %}
+cluster.base-url = "http://{{ host.clusterization }}:{{ ports.clusterization_main }}/clusterization"
+{% endif %}
+
+{% if host.entity_service is defined and host.entity_service != '' %}
+entity.base-url = "http://{{ host.entity_service }}:{{ ports.entity_service_main }}"
+{% endif %}
+
+{% if host.model_service is defined and host.model_service != '' %}
+autocategory.base-url = "http://{{ host.model_service }}:{{ ports.model_service_main }}"
+{% endif %}
+
+{% if host.s2t_nginx is defined and host.s2t_nginx != '' %}
+s2t.base-url = "http://{{ host.s2t_nginx }}:{{ ports.s2t_nginx_main }}"
+{% endif %}
+
+{% if host.file_service is defined and host.file_service != '' %}
+{% if versions.plexus_server is version('3.7.0', '>=') %}
+file {
+  storage {
+    base-url = "http://{{ host.file_service }}:{{ ports.file_service_main }}"
+  }
+{% if plexus_external_file_service %}
+  external-storage {
+    base-url = "http://{{ vpn_host.file_service_external }}:{{ ports.file_service_external_main }}"
+  }
+{% endif %}
+}
+
+link-resolver {
+  download-prefix = "http://{{ host.nginx_file_service }}:{{ ports.nginx_file_service_main }}"
+}
+{% else %}
+file {
+  base-url = "http://{{ host.file_service }}:{{ ports.file_service_main }}"
+  download-prefix = "http://{{ host.nginx_file_service }}:{{ ports.nginx_file_service_main }}"
+}
+{% endif %}
+{% endif %}
+
+query.base-url = "http://{{ host.query_service }}:{{ ports.query_service_main }}"
+
+{% if backend_modules_translate %}
+translate {
+  base-url = "{{ backend_translate_base_url }}",
+  token = "{{ backend_translate_token }}",
+  profile = "Универсальный",
+  priority = 10
+}
+{% endif %}
+
+{% if host.plexus_reports %}
+pdf-report {
+  default-style = {{ report_style }}
+  base-url = "http://{{ host.plexus_reports }}:{{ ports.plexus_reports_main }}"
+}
+{% endif %}
+
+{% if backend_modules_ldap and versions.plexus_server is version('3.14.0', '>=') %}
+ldap-client {
+  backoff {
+    min-backoff = "5 sec"
+    max-backoff = "60 sec"
+    random-factor = 0.2
+  }
+  page-size = 1000
+  server = "{{ backend_ldap_server }}"
+  plain-credentials {
+    user = "{{ backend_ldap_user_dn }}"
+    password = "{{ backend_ldap_pass }}"
+  }
+}
+{% endif %}
+
+elastic4s {
+  max-url-size = 4000
+  hosts = [
+{%- set es_addr = [] -%}
+{%- for addr in hosts.elasticsearch -%}
+{{ es_addr.append("{}:{}".format(addr, ports.elasticsearch_main)) }}
+{%- endfor -%}
+"{{ es_addr | join("\",\"") }}"]
+  update-refresh-policy = "immediate"
+}
+
+{% if backend_modules_journal %}
+journal-elastic4s {
+  hosts = [
+{%- set es_addr = [] -%}
+{%- for addr in hosts.elasticsearch -%}
+{{ es_addr.append("{}:{}".format(addr, ports.elasticsearch_main)) }}
+{%- endfor -%}
+"{{ es_addr | join("\",\"") }}"]
+  default-operator = "AND"
+  max-url-size = 4000
+  index-template = "journal_<account_id>_<yyyy>-<MM>"
+  // load file from resource: use file form the conf dir if it exists or load it from the plexus-common resource
+  component-template-settings = "/journal-component-template.json"
+  // load file from resource: use file form the conf dir if it exists or load it from the plexus-common resource
+  index-template-settings = "/journal-index-template.json"
+  field-pattern = "<[^<>]*>"
+}
+{% endif %}
+
+card-elastic4s {
+  max-url-size = 4000
+}
+
+akka {
+  remote {
+    artery {
+      # bind.hostname = ${plexus.clustering.ip}
+      bind.port = ${plexus.clustering.port}
+    }
+  }
+
+  loglevel = INFO
+  stdout-loglevel = INFO
+
+  cluster {
+{% if versions.plexus_server is version('3.20.0', '>=') %}
+    # ЕСЛИ ВЫ ВИДИТЕ ЭТИ ИЗМЕНЕНИЯ, ТО ПЕРЕД ИХ ПРИМЕНЕНИЕМ НЕОБХОДИМО ОСТАНОВИТЬ 
+    # plexus-server и plexus-resource
+    #
+    # останавливать ноду, если не получилось подключиться к eed-нодам в течение 60 секунд
+    shutdown-after-unsuccessful-join-seed-nodes = 60000
+    
+    # какой split brain resolver provider использовать
+    downing-provider-class = "akka.cluster.sbr.SplitBrainResolverProvider"
+
+    split-brain-resolver {
+      # какую стратегию используем
+      active-strategy = static-quorum
+
+      # при недоступности кластера выключаем ту часть кластера, в которой нод меньше заданного количества
+      static-quorum {
+        # минимальное число нод в кластере
+        quorum-size = 2
+      }
+
+      # через какое время в кластере singleton-ы должны включиться на доступной ноде (если до этого они были включены на недоступной)
+      stable-after = 30s
+    }
+{% endif %}
+    seed-nodes = [
+        "akka://application@{{ host.plexus_server }}:{{ ports.plexus_server_cluster }}",
+        "akka://application@{{ host.plexus_resource }}:{{ ports.plexus_resource_cluster }}"
+    ]
+    log-info-verbose = on
+  }
+}
+
+slick.dbs {
+  default {
+    db {
+      url = "jdbc:postgresql://{{ host.postgres_backend }}:{{ ports.postgres_backend_main }}/accounts"
+      user = "postgres"
+      password = "{{ postgres_back_password }}"
+      idleTimeout = "300s"
+      numThreads = 10
+    }
+  }
+  journal {
+    db {
+      url = "jdbc:postgresql://{{ host.postgres_backend }}:{{ ports.postgres_backend_main }}/plexus_journal"
+      user = "postgres"
+      password = "{{ postgres_back_password }}"
+    }
+  }
+}
+
+{% if host.zabbix_web is defined%}
+zabbix {
+  base-url = "http://{{ host.zabbix_web }}:{{ ports.zabbix_web_main }}"
+  username = "Admin"
+  password = "zabbix"
+  available-hosts = [
+{% if available_hosts %}    
+{% for adr in groups['servers'] %}
+    "{{ hostvars[adr].inventory_hostname }}"{% if not loop.last %}, 
+{% endif %}
+{% endfor %}
+{% endif %}
+
+  ]
+}
+{% endif %}
+
+{% if host.ingest_service is defined %}
+ingest {
+  base-url = "http://{{ host.ingest_service }}:{{ ports.ingest_service_main }}"
+}
+{% endif %}
+
+{% if host.asr_train_service is defined %}
+s2t-train {
+  base-url = "http://{{ host.asr_train_service }}:{{ ports.asr_train_service_main }}"
+  shell-command = "bash -c"
+  ansible-command-pattern = "/usr/local/bin/ansible-playbook -i ansible/hosts ansible/update_model.yml -e model_url={{ '{{ url }}' }} -e model_lang={{ '{{ lang }}' }}"
+  ansible-command-timeout = 5m
+  ansible-langid-command-pattern = "/usr/local/bin/ansible-playbook -i ansible/hosts ansible/update_lid_model.yml -e model_url={{ '{{ url }}' }}"
+  name-lang-pattern = "^.*__lang=([^_]+)__.*$"
+}
+{% endif %}
+
+{% if proxmox_api_user is defined %}
+proxmox {
+  default-base-url-pattern = "https://{{ '{{ ip }}' }}:8006"
+  default-username = "{{ proxmox_api_user }}"
+  default-password = "{{ proxmox_api_password }}"
+  auth-expiration = "100m"
+}
+{% endif %}
+
+docker {
+  default-base-url-pattern = "http://{{ '{{ ip }}' }}:2375"
+}
+
+{% if host.milvus_rw is defined %}
+milvus {
+  base-url = "http://{{ host.milvus_rw }}:{{ ports.milvus_rw_http }}"
+}
+{% endif %}
+
+{% if host.notification_service is defined and host.notification_service != '' %}
+alert {
+  base-url = "http://{{ host.notification_service }}:{{ ports.notification_service_main }}"
+}
+
+{% if notification_que_type == "redis" %}
+base-redis-importer {
+  consumer-id = "plexus-server" // значение должно быть уникальным на импортер
+  max-poll-records = 500 // это дефолт, эту настройку можно не писать 
+  batch-time-window = "1 min" // это дефолт, эту настройку можно не писать 
+  batch-limit = 10000 // это дефолт, эту настройку можно не писать 
+  restart-policy {
+    min-backoff = "5 sec" // это дефолт, эту настройку можно не писать 
+    max-backoff = "5 min" // это дефолт, эту настройку можно не писать 
+    random-factor = 0.2 // это дефолт, эту настройку можно не писать 
+  }
+  pool {
+    test-on-create = false
+    test-on-acquire = false
+    test-on-release = false
+    max-total = 2
+    max-idle = 2
+    min-idle = 0
+  }
+}
+
+alert-redis-importer {
+  stream = "{{ stream_notifications }}" // как в notification-service-е
+}
+
+redis {
+  urls = [
+{%- set redis_addr = [] -%}
+{%- for addr in hosts.redis_dpp -%}
+{%- for port in range(1, redis_dpp_nodes+1) -%}
+{{ redis_addr.append("redis://"+addr+":"+((ports.redis_dpp_main | int + port) | string))}}
+{%- endfor -%}
+{%- endfor -%}
+"{{ redis_addr | join("\",\"") }}"]
+  cluster-topology-refresh-period-seconds = 600 // это дефолт, эту настройку можно не писать 
+}
+{% endif %}
+
+{% if notification_que_type == "kafka" %}
+base-kafka-importer {
+  kafka.consumer {
+    kafka-clients {
+      bootstrap.servers = "{{ groups['kafka'] | map('extract', hostvars, 'ansible_host') | list | join(':9092,') }}:9092"
+    }
+  }
+}
+kb-alert-importer {
+  topic = "kb-notifications" // как в сервисе нотификаций настройка kafka.exporter.topic
+}
+alert-importer {
+  topic = "notifications" // как в сервисе нотификаций настройка kafka.exporter.kb-topic
+}
+{% endif %}
+{% endif %}
+
+{% if backend_feedback_extended %}
+feedback {
+  limits {
+    text-length = 16000
+    files-count = 5
+  }
+}
+{% endif %}
+
+{% if backend_mattermost %}
+mattermost {
+  client {
+    base-url = "{{ mattermost_url }}"
+    bearer-token = "{{ mattermost_bearer_token }}"
+  }
+  feedback-sender {
+    channel-id = "{{ mattermost_channel_id }}"
+    limits {
+      text-length = 16000
+      files-count = 5
+    }
+  }
+}
+{% endif %}
+
+{% if backend_mail and backend_feedback_extended %}
+mail {
+  feedback-sender {
+    subject = "{{ mail_feedback_subject }}"
+    //email-from = ${play.mailer.user}
+    //email-to = ${play.mailer.user}
+  }
+}
+{% endif %}
+
+spell-checker {
+{% if backend_spell_checker %}
+  base-url = "http://{{ host.dpp_spell_checker}}:{{ ports.dpp_spell_checker_http }}"
+{% endif %}
+  languages = ["ru", "en"]
+}
+
+{% if versions.plexus_reports is version('0.0.1', '>=') and versions.plexus_server is version('3.16.0', '>=') %}
+# если необходимо включить фронтовые отчёты
+frontend-report {
+  base-url = "http://{{ host.plexus_reports }}:{{ ports.plexus_reports_main }}" // новый сервис фронтовых отчётов
+  temp-base-path = "/tmp" // путь, где будут локально храниться сгенерированные отчёты перед отправкой в ФС и на почту 
+  cookie-ttl-minutes = 1 // время жизни куки аутентификации при формировании отчётов
+  file-limit = 10000 // максимальное количество файлов, которое можно запросить за раз
+  min-interval-seconds = 60 // минимальный интервал генерации отчётов
+  
+{% if backend_mail %}
+  # если необходимо включить отправку фронтовых отчётов по почте
+  mail {
+    subject = "TP Отчёт" // заголовок письма
+    text = """
+Направляем Вам автоматически сгенерированный отчёт из Touchpoint Analytics.
+    """ // текст письма
+    email-from = ${play.mailer.user} // кто отправитель (лучше не переопределять)
+  }
+{% endif %}
+}
+{% endif %}
+
+{% if backend_billing and versions.plexus_server is version('3.27.0', '>=') %}
+billing-elastic4s {
+  hosts = [
+{%- set es_addr = [] -%}
+{%- for addr in hosts.elasticsearch -%}
+{{ es_addr.append("{}:{}".format(addr, ports.elasticsearch_main)) }}
+{%- endfor -%}
+"{{ es_addr | join("\",\"") }}"]
+}
+{% endif %}

@@ -1,0 +1,65 @@
+---
+
+- name: "Set global vars"
+  import_role:
+    name: set-global-vars
+  tags: always
+
+- name: "Set local vars"
+  import_tasks: set-vars.yml
+  tags:
+    - always
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: "Install DPP"
+  include: "install-dpp.yml"
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start
+
+- name: "Wait dppservice"
+  uri:
+    url: "http://{{ host.dpp }}:{{ ports.dpp_main }}/streams"
+    status_code: 200
+  register: result_dpp
+  until: result_dpp.status == 200
+  retries: 60
+  delay: 1
+  run_once: true
+  check_mode: false
+  tags:
+    - put-templates
+
+- name: "PUT templates"
+  run_once: true
+  include: put-template.yml
+  loop: "{{ dpp_templates }}"
+  loop_control:
+    loop_var: template_name
+
+- name: "Set crontab"
+  cron:
+    name: "DPP reload"
+    job: "/usr/bin/docker restart {{ service_name }}"
+    hour: "3"
+    minute: "0"
+  tags:
+    - never
+    - cron
+
+- name: "Remove crontab"
+  cron:
+    name: "DPP reload"
+    job: "/usr/bin/docker restart {{ service_name }}"
+    hour: "3"
+    minute: "0"
+    state: absent
+  tags:
+    - never
+    - remove-cron

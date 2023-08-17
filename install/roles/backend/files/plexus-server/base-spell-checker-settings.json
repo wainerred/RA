@@ -1,0 +1,29 @@
+{
+    "available_languages": [
+      "ru",
+      "en"
+    ],
+    "dictionaries": {
+      "en": [
+        "extra_dict.dic",
+        "cities.dic"
+      ],
+      "ru": [
+        "extra_dict.dic",
+        "brands.dic",
+        "emojis.dic",
+        "PIK.dic",
+        "names.dic",
+        "family_names.dic",
+        "organization.dic",
+        "location.dic",
+        "rus_cities.dic",
+        "hh.dic"
+      ]
+    },
+    "language_field": "language",
+    "fields_to_process": [
+      "operator.transcript"
+    ],
+    "expanded_dictionary_paths": []
+  }

@@ -1,0 +1,68 @@
+---
+- name: "Create directories"
+  file:
+    path: "{{ dest_path }}/{{ item | basename }}"
+    state: directory
+    mode: "644"
+  with_items:
+    - '{{ models }}'
+
+- name: Set empty list for installed models
+  set_fact:
+    folders_list: []
+    new_models: []
+
+- name: Filling 'new_models' list
+  set_fact:
+    new_models: "{{ new_models + [item | basename] }}"
+  with_items:
+    - '{{ models }}'
+
+- name: Print new models list
+  debug:
+    var: new_models
+
+- name: Get installed models
+  find:
+    file_type: directory
+    paths: '{{ dest_path }}'
+  register: tmp_folders_list
+
+- name: Filling 'folders_list'
+  set_fact:
+    folders_list: "{{ folders_list + [item.path | basename] }}"
+  with_items:
+    - '{{ tmp_folders_list.files }}'
+
+- name: Set models for delete
+  set_fact:
+    folders_list: '{{ folders_list | difference(new_models) }}'
+
+- name: Delete old models
+  file:
+    state: absent
+    path: '{{ dest_path }}/{{ item }}'
+  with_items:
+    - '{{ folders_list }}'
+
+- name: Updade models
+  synchronize:
+    src: "roles/dpp-entity-recognition/tasks/files/{{ item }}/"
+    dest: "{{ dest_path }}/{{ item | basename }}"
+    delete: true
+    recursive: true
+  when: not dpp_entity_recognition_pull_external_model
+  with_items:
+    - '{{ models }}'
+
+- name: Updade models
+  synchronize:
+    src: "rsync://{{ host.distrib }}/distrib{{ src_path }}/{{ item }}/"
+    dest: "{{ dest_path }}/{{ item | basename }}"
+    delete: true
+    recursive: true
+    mode: pull
+  delegate_to: "{{ ansible_host }}"
+  when: dpp_entity_recognition_pull_external_model
+  with_items:
+    - '{{ models }}'

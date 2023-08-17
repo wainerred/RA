@@ -1,0 +1,6 @@
+service_name: "{{ dictionary_hosts.plexus_api_swagger.name }}"
+service_img: "{{ dictionary_hosts.plexus_api_swagger.img }}"
+service_tag: "{{ dictionary_hosts.plexus_api_swagger.tag }}"
+service_repo: "{{ dictionary_hosts.plexus_api_swagger.repo }}"
+service_mnt_dir_loc: "{{ docker_mounts_root }}/{{ dictionary_hosts.plexus_api_swagger.name }}"
+service_compose_dir: "{{ docker_compose_root }}/{{ dictionary_hosts.plexus_api_swagger.name }}"

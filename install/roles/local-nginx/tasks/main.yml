@@ -1,0 +1,26 @@
+---
+- name: Set global vars
+  import_role:
+    name: set-global-vars
+  tags:
+    - always
+
+- name: "Set vars"
+  include_vars: main.yml
+  tags:
+    - always
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+  tags:
+    - never
+
+- name: "install_nginx"
+  include: install_nginx.yml
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start

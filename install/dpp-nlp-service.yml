@@ -1,0 +1,6 @@
+---
+- name: "Install nlp-service"
+  hosts:
+    - dpp_nlp_service
+  roles:
+    - dpp-nlp-service

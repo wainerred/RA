@@ -1,0 +1,35 @@
+---
+- name: "WORKER : {{ file_service.service_name }} : Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ file_service.service_mnt_dir_loc }}/logs"
+    - "{{ file_service.service_mnt_dir_loc }}/conf"
+    - "{{ file_service.service_mnt_dir_glfs }}"
+  loop_control:
+    loop_var: dir_item
+
+- name: Stat file_service_data_dir
+  shell: "set -o pipefail && df --output=size {{ file_service_data_dir }} | tail -1"
+  register: stat_file_service_data_fir
+  args:
+    executable: /bin/bash
+  check_mode: false
+  when: not file_service_total_storage_capacity
+
+- name: Set capasity storage
+  ansible.builtin.set_fact:
+    file_service_total_storage_capacity: "{{ (stat_file_service_data_fir.stdout | int * 1000 * 0.9) | int }}"
+  when: not file_service_total_storage_capacity
+
+- name: "WORKER : {{ file_service.service_name }} : Generate config"
+  template:
+    src: "{{ conf_item }}"
+    dest: "{{ file_service.service_mnt_dir_loc }}/conf/{{ conf_item | basename | regex_replace('.j2', '') }}"
+    mode: 0755
+  with_fileglob:
+    - "templates/file-service/conf/*.j2"
+  loop_control:
+    loop_var: conf_item

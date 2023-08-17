@@ -1,0 +1,27 @@
+include "application.conf"
+service {
+  api.service {
+    bind {
+      address = 0.0.0.0
+      port = {{ ports.entity_service_main }}
+    }
+  }
+}
+
+clients {
+  elastic {
+    hosts = [
+{%- for es_ip in hosts.elasticsearch_entity %}
+"{{ es_ip }}:{{ ports.elasticsearch_entity_main }}"{%- if not loop.last %}, {% endif %}
+{% endfor %}]
+    connection-request-timeout = "1 min"
+    connect-timeout = "1 min"
+    socket-timeout = "1 min"
+    index {
+      main {
+        index-name = {{ entities_index }}
+        mapping-name = "entities"
+      }
+    }
+  }
+}

@@ -1,0 +1,508 @@
+---
+proxy_env:
+  https_proxy: http://proxy.ies.local:3128
+  http_proxy: http://proxy.ies.local:3128
+docker_repo: "{{ hostvars[groups['ansible_server'][0]].ansible_host }}:5000"
+backend_spell_checker: true
+frontend_ico_path: /favicon.ico
+dictionary_hosts:
+  # service_name:
+  #   name: elasticsearch-7-{{ project_name }}-{{ area }}
+  #   img: elasticsearch-with-morph
+  #   tag: 7.9.3-20210526-b3
+  #   repo: "{{ docker_repo }}"
+  #   ext_repo: 10.230.84.210:5000
+  #   host: "{{ hostvars[groups['elasticsearch_master'][0]].ansible_host }}"
+  #   hosts: "{{ groups['elasticsearch_master'] | map("extract", hostvars, "ansible_host")
+  #     | list }}"
+  #   ports:
+  #     main: 9200
+  #     transport: 9300
+  distrib:
+    host: "{{ hostvars[groups['ansible_server'][0]].ansible_host }}"
+  redis_dpp:
+    name: redis-{{ project_name }}-{{ area }}
+    img: redis
+    tag: 6.0.7
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: "{{ hostvars[groups['redis_dpp'][0]].ansible_host }}"
+    hosts: "{{ groups['redis_dpp'] | map('extract', hostvars, 'ansible_host')
+      | list }}"
+    ports:
+      main: 30001
+  redis_archiver:
+    name: redis-{{ project_name }}-{{ area }}
+    img: redis
+    tag: 6.0.7
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: "{{ hostvars[groups['redis_archiver'][0]].ansible_host }}"
+    hosts: "{{ groups['redis_archiver'] | map('extract', hostvars, 'ansible_host')
+      | list }}"
+    ports:
+      main: 30001
+  elasticsearch:
+    name: elasticsearch-{{ project_name }}-{{ area }}
+    img: elasticsearch-with-morph
+    tag: 7.9.3-20210526-b3
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''elasticsearch_master''][0]].ansible_host }}'
+    hosts: '{{ groups[''elasticsearch_master''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 9200
+      transport: 9300
+  elasticsearch_entity:
+    name: elasticsearch-entity-{{ project_name }}-{{ area }}
+    img: elasticsearch-with-morph
+    tag: 7.9.3-20210526-b3
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''elasticsearch_entity_master''][0]].ansible_host }}'
+    hosts: '{{ groups[''elasticsearch_entity_master''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 9200
+      transport: 9300
+  elasticsearch_spell_checker:
+    name: elasticsearch-spell-checker-{{ project_name }}-{{ area }}
+    img: elasticsearch-with-morph
+    tag: 7.9.3-20210526-b3
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''elasticsearch_spell_checker_master''][0]].ansible_host }}'
+    hosts: '{{ groups[''elasticsearch_spell_checker_master''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 9200
+      transport: 9300
+  # tensorflow:
+  #   name: tensorflow-{{ project_name }}-{{ area }}
+  #   img: tensorflow-serving
+  #   tag: custom-2.3.0
+  #   repo: "{{ docker_repo }}"
+  #   ext_repo: 10.230.84.210:5000
+  #   host: '{{ hostvars[groups[''tensorflow''][0]].ansible_host }}'
+  #   hosts: '{{ groups[''tensorflow''] | map(''extract'', hostvars, ''ansible_host'')
+  #     | list }}'
+  #   ports:
+  #     asr_main: 8510
+  triton:
+    name: triton-{{ project_name }}-{{ area }}
+    img: tritonserver
+    tag: custom-cpu-22.04
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''triton''][0]].ansible_host }}'
+    hosts: '{{ groups[''triton''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      asr_main: 8011
+      # asr_2: 8013
+      sd: 8014
+      lid: 8021
+      http: 8031
+      metrics: 8041
+  iii_speech_service:
+    name: 3i-speech-service-{{ project_name }}-{{ area }}
+    img: 3i-speech-service
+    tag: 20230713-b165
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000/dev
+    host: '{{ hostvars[groups[''iii_speech_service''][0]].ansible_host }}'
+    hosts: '{{ groups[''iii_speech_service''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      asr: 51010
+      sd: 51004
+      file_converter: 51020
+      langid: 51002
+      gender: 51003
+  highlight_server:
+    name: highlight-server-{{ project_name }}-{{ area }}
+    img: highlight-server
+    tag: 20220809-b27
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''highlight''][0]].ansible_host }}'
+    hosts: '{{ groups[''highlight''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 11501
+  clusterization:
+    name: clusterization-{{ project_name }}-{{ area }}
+    img: clusterization
+    tag: 20230420-b83
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000/dev
+    host: '{{ hostvars[groups[''clusterization''][0]].ansible_host }}'
+    hosts: '{{ groups[''clusterization''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 12100
+  local_nginx:
+    name: local-nginx-{{ project_name }}-{{ area }}
+    img: nginx
+    tag: 1.17.5
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    ports:
+      es: 8855
+  entity_service:
+    name: entity-service-{{ project_name }}-{{ area }}
+    img: kes-entity-service
+    tag: 2.1.0-20210921-b4
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''entity_service''][0]].ansible_host }}'
+    hosts: '{{ groups[''entity_service''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 15000
+  query_service:
+    name: query-service-{{ project_name }}-{{ area }}
+    img: kes-query-service
+    tag: 0.1.2-5-add-synonym-service-c018c17-20200114-b21
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''query_service''][0]].ansible_host }}'
+    hosts: '{{ groups[''query_service''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 5851
+  dpp:
+    name: dpp-{{ project_name }}-{{ area }}
+    img: dpp-2
+    tag: 1.10.0-20230718-b376
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''dpp''][0]].ansible_host }}'
+    hosts: '{{ groups[''dpp''] | map(''extract'', hostvars, ''ansible_host'') | list
+      }}'
+    ports:
+      main: 8001
+  dpp_archiver:
+    name: dpp-archiver-{{ project_name }}-{{ area }}
+    img: dpp-2-archiver
+    tag: 1.1.6-20230714-b135
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''dpp_archiver''][0]].ansible_host }}'
+    hosts: '{{ groups[''dpp_archiver''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      grpc: 51001
+      http: 8002
+  dpp_elastic_exporter:
+    name: dpp-elastic-exporter-{{ project_name }}-{{ area }}
+    img: dpp-2-exporter-elastic
+    tag: 20221205-b59
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''dpp_elastic_exporter''][0]].ansible_host }}'
+    hosts: '{{ groups[''dpp_elastic_exporter''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      grpc: 51003
+  dpp_exporter_rabbitmq:
+    name: dpp-exporter-rabbitmq-{{ project_name }}-{{ area }}
+    img: dpp-2-exporter-rabbitmq
+    tag: 1.0.0-20230324-b2
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''dpp_exporter_rabbitmq''][0]].ansible_host }}'
+    hosts: '{{ groups[''dpp_exporter_rabbitmq''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      grpc: 51005
+  dpp_dictionary_enricher:
+    name: dpp-dictionary-enricher-{{ project_name }}-{{ area }}
+    img: dpp-2-dictionary-enricher
+    tag: 20230417-b19
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''dpp_dictionary_enricher''][0]].ansible_host }}'
+    hosts: '{{ groups[''dpp_dictionary_enricher''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      grpc: 51004
+  dpp_dictionary_service:
+    name: dpp-dictionary-service-{{ project_name }}-{{ area }}
+    img: dpp-2-dictionary-service
+    tag: 20220809-b8
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''dpp_dictionary_service''][0]].ansible_host }}'
+    hosts: '{{ groups[''dpp_dictionary_service''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 8003
+  dpp_category:
+    name: dpp-category-{{ project_name }}-{{ area }}
+    img: category-processor
+    tag: 20230208-b86
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000/dev
+    host: '{{ hostvars[groups[''dpp_category''][0]].ansible_host }}'
+    hosts: '{{ groups[''dpp_category''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      grpc: 51007
+      http: 8005
+  dpp_nlp_service:
+    name: nlp-service-{{ project_name }}-{{ area }}
+    img: nlp-service
+    tag: 20220805-b33
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000/dev
+    host: '{{ hostvars[groups[''dpp_nlp_service''][0]].ansible_host }}'
+    hosts: '{{ groups[''dpp_nlp_service''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      grpc: 50052
+  postgres_file_service:
+    name: postgres-dpp-{{ project_name }}-{{ area }}
+    img: postgres
+    tag: 10.11
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''postgres_file_service''][0]].ansible_host }}'
+    hosts: '{{ groups[''postgres_file_service''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 5432
+  postgres_dpp:
+    name: postgres-dpp-{{ project_name }}-{{ area }}
+    img: postgres
+    tag: 10.11
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''postgres_dpp''][0]].ansible_host }}'
+    hosts: '{{ groups[''postgres_dpp''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 5432
+  postgres_backend:
+    name: postgres-dpp-{{ project_name }}-{{ area }}
+    img: postgres
+    tag: 10.11
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''postgres_backend''][0]].ansible_host }}'
+    hosts: '{{ groups[''postgres_backend''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 5432
+  file_service:
+    name: file-service-{{ project_name }}-{{ area }}
+    img: file-service
+    tag: 3.8.0-20230418-b116
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''file_service''][0]].ansible_host }}'
+    hosts: '{{ groups[''file_service''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 8082
+  file_service_cleaner:
+    name: file-service-cleaner-{{ project_name }}-{{ area }}
+    img: file-service-cleaner
+    tag: 20200221-b1
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''file_service''][0]].ansible_host }}'
+    hosts: '{{ groups[''file_service''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+  nginx_file_service:
+    name: file-nginx-{{ project_name }}-{{ area }}
+    img: nginx
+    tag: 1.17.5
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''file_service''][0]].ansible_host }}'
+    hosts: '{{ groups[''file_service''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 8090
+  plexus_server:
+    name: plexus-server-{{ project_name }}-{{ area }}
+    img: plexus-server
+    tag: 3.31.0-20230807-b289
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''plexus_server''][0]].ansible_host }}'
+    hosts: '{{ groups[''plexus_server''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 9000
+      cluster: 2551
+  plexus_api_swagger:
+    name: plexus-api-swagger-{{ project_name }}-{{ area }}
+    img: plexus-api-swagger
+    tag: 3.31.0-20230807-b289
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''plexus_api_swagger''][0]].ansible_host }}'
+    hosts: '{{ groups[''plexus_api_swagger''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 9005
+  plexus_resource:
+    name: plexus-resource-{{ project_name }}-{{ area }}
+    img: plexus-server
+    tag: 3.31.0-20230807-b289
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''plexus_resource''][0]].ansible_host }}'
+    hosts: '{{ groups[''plexus_resource''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 9001
+      cluster: 2552
+  plexus_auth:
+    name: plexus-auth-{{ project_name }}-{{ area }}
+    img: plexus-auth
+    tag: 3.31.0-20230807-b289
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''plexus_auth''][0]].ansible_host }}'
+    hosts: '{{ groups[''plexus_auth''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 9002
+  plexus_rsyslog:
+    name: plexus-rsyslog-{{ project_name }}-{{ area }}
+    img: plexus-rsyslog
+    tag: 3.31.0-20230807-b289
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''plexus_rsyslog''][0]].ansible_host }}'
+    hosts: '{{ groups[''plexus_rsyslog''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+  plexus_reports:
+    name: reports-{{ project_name }}-{{ area }}
+    img: reports-service-tp2
+    tag: 0.0.1-20230404-b5
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''plexus_reports''][0]].ansible_host }}'
+    hosts: '{{ groups[''plexus_reports''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 3000
+  frontend:
+    name: frontend-{{ project_name }}-{{ area }}
+    img: touchpoint-20-energosbt
+    tag: 2.0.23-20230816-b52
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.220/energosbt
+    host: '{{ hostvars[groups[''frontend''][0]].ansible_host }}'
+    hosts: '{{ groups[''frontend''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 80
+  notification_service:
+    name: notification-service-{{ project_name }}-{{ area }}
+    img: notification-service
+    tag: 1.3.0-20211007_b22
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''notification_service''][0]].ansible_host }}'
+    hosts: '{{ groups[''notification_service''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 3851
+  dpp_painless_processor:
+    name: painless-processor-{{ project_name }}-{{ area }}
+    img: painless-processor
+    tag: 0.0.1-20221222-b15
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''dpp_painless_processor''][0]].ansible_host }}'
+    hosts: '{{ groups[''dpp_painless_processor''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      grpc: 51008
+      rest: 2851
+  cn_builder:
+    name: cn-builder-{{ project_name }}-{{ area }}
+    img: cn-builder
+    tag: 0.0.2-20211209-b11
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''cn_builder''][0]].ansible_host }}'
+    hosts: '{{ groups[''cn_builder''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 8851
+  diarization_features:
+    name: diarization-features-{{ project_name }}-{{ area }}
+    img: diarization-features
+    tag: v10
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''diarization_features''][0]].ansible_host }}'
+    hosts: '{{ groups[''diarization_features''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      main: 50082
+  dpp_spell_checker:
+    name: dpp-spell-checker-{{ project_name }}-{{ area }}
+    img: spell-checker-service
+    tag: 20221117-b45
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000/dev
+    host: '{{ hostvars[groups[''dpp_spell_checker''][0]].ansible_host }}'
+    hosts: '{{ groups[''dpp_spell_checker''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      grpc: 51015
+      http: 8601
+  dpp_file_cutter:
+    name: dpp-file-cutter-{{ project_name }}-{{ area }}
+    img: file-cutter
+    tag: 20220425-b6
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000/dev
+    host: '{{ hostvars[groups[''dpp_file_cutter''][0]].ansible_host }}'
+    hosts: '{{ groups[''dpp_file_cutter''] | map(''extract'', hostvars, ''ansible_host'')
+      | list }}'
+    ports:
+      grpc: 51020
+  elasticsearch_dump:
+    name: "elasticsearch-dump-{{ project_name }}-{{ area }}"
+    img:  elasticsearch-dump
+    tag:  v6.28.0
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+  records_pusher:
+    name: records-pusher-{{ service | default('''') }}-{{ project_name }}-{{ area }}
+    img: records-pusher
+    tag: 20230726-b22
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000/energosbt
+    host: '{{ hostvars[groups[''records_pusher''][0]].ansible_host }}'
+  dpp_proxy:
+    name: dpp-proxy-{{ project_name }}-{{ area }}
+    img: dpp-frontend-proxy
+    tag: 20220713-b6
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''dpp''][0]].ansible_host }}'
+    hosts: '{{ groups[''dpp''] | map(''extract'', hostvars, ''ansible_host'') | list
+      }}'
+    ports:
+      main: 8031
+  dpp_frontend:
+    name: dpp-front-{{ project_name }}-{{ area }}
+    img: dpp-frontend
+    tag: 20220708-b13
+    repo: "{{ docker_repo }}"
+    ext_repo: 10.230.84.210:5000
+    host: '{{ hostvars[groups[''dpp''][0]].ansible_host }}'
+    hosts: '{{ groups[''dpp''] | map(''extract'', hostvars, ''ansible_host'') | list
+      }}'
+    ports:
+      main: 8030

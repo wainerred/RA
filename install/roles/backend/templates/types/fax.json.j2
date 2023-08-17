@@ -1,0 +1,241 @@
+{
+  "fields": {
+    "url": {
+      "type": "string",
+      "display_names": {
+        "en": "URL",
+        "ru": "Ссылка"
+      },
+      "operations": {
+        "fetch": true,
+        "exists": false,
+        "equals": false,
+        "script_input_schema": true
+      },
+      "elastic": {},
+      "view": {
+        "url": false
+      },
+      "multiple": false,
+      "source": false
+    },
+    "metadata": {
+      "type": "object",
+      "multiple": true,
+      "source": true,
+      "display_names": {
+        "en": "Metadata",
+        "ru": "Метаданные"
+      },
+      "operations": {
+        "fetch": true,
+        "script_input_schema": true
+      },
+      "elastic": {
+        "dynamic": true
+      },
+      "view": {}
+    },
+    "file": {
+      "operations": {
+        "script_input_schema": true
+      },
+      "display_names": {
+        "en": "file",
+        "ru": "file"
+      },
+      "view": {},
+      "elastic": {
+        "dynamic": false
+      },
+      "multiple": false,
+      "type": "object",
+      "source": true
+    },
+    "file.created_date": {
+      "operations": {},
+      "display_names": {
+        "en": "file.created_date",
+        "ru": "file.created_date"
+      },
+      "view": {},
+      "elastic": {},
+      "multiple": false,
+      "type": "date",
+      "source": false
+    },
+    "file.link": {
+      "operations": {},
+      "display_names": {
+        "en": "file.link",
+        "ru": "file.link"
+      },
+      "view": {
+        "url": true
+      },
+      "elastic": {
+        "index": false,
+        "doc_values": false
+      },
+      "multiple": false,
+      "type": "string",
+      "source": false
+    },
+    "file.content_type": {
+      "operations": {},
+      "display_names": {
+        "en": "file.content_type",
+        "ru": "file.content_type"
+      },
+      "view": {},
+      "elastic": {},
+      "multiple": false,
+      "type": "string",
+      "source": false
+    },
+    "file.md5": {
+      "operations": {},
+      "display_names": {
+        "en": "file.md5",
+        "ru": "file.md5"
+      },
+      "view": {},
+      "elastic": {},
+      "multiple": false,
+      "type": "string",
+      "source": false
+    },
+    "file.name": {
+      "operations": {},
+      "display_names": {
+        "en": "file.name",
+        "ru": "file.name"
+      },
+      "view": {},
+      "elastic": {},
+      "multiple": false,
+      "type": "string",
+      "source": false
+    },
+    "file.owner_id": {
+      "operations": {},
+      "display_names": {
+        "en": "file.owner_id",
+        "ru": "file.owner_id"
+      },
+      "view": {},
+      "elastic": {
+        "index": false,
+        "doc_values": false
+      },
+      "multiple": false,
+      "type": "string",
+      "source": false
+    },
+    "file.size": {
+      "operations": {},
+      "display_names": {
+        "en": "file.size",
+        "ru": "file.size"
+      },
+      "view": {},
+      "elastic": {},
+      "multiple": false,
+      "type": "long",
+      "source": false
+    },
+    "file.id": {
+      "operations": {},
+      "display_names": {
+        "en": "file.id",
+        "ru": "file.id"
+      },
+      "view": {},
+      "elastic": {},
+      "multiple": true,
+      "type": "string",
+      "source": false
+    },
+    "file.tags": {
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "equals": true,
+        "aggregate": true
+      },
+      "display_names": {
+        "en": "File tags",
+        "ru": "Метки файла"
+      },
+      "view": {},
+      "elastic": {},
+      "multiple": true,
+      "type": "string",
+      "source": false
+    },
+    "file.metadata": {
+      "operations": {},
+      "display_names": {
+        "en": "file.metadata",
+        "ru": "file.metadata"
+      },
+      "view": {},
+      "elastic": {
+        "enabled": false
+      },
+      "multiple": false,
+      "type": "object",
+      "source": true
+    },
+    "file.properties": {
+      "operations": {},
+      "display_names": {
+        "en": "File properties",
+        "ru": "Свойства файла"
+      },
+      "view": {},
+      "elastic": {
+        "dynamic": true
+      },
+      "multiple": false,
+      "type": "object",
+      "source": true
+    },
+    "media_url": {
+      "operations": {
+        "fetch": true,
+        "equals": true,
+        "script_input_schema": true
+      },
+      "display_names": {
+        "en": "media_url",
+        "ru": "Ссылка на файл"
+      },
+      "view": {},
+      "multiple": false,
+      "type": "string",
+      "source": false
+    },
+    "media_compressed_url": {
+      "operations": {
+        "fetch": true,
+        "exists": true,
+        "script_input_schema": true
+      },
+      "display_names": {
+        "en": "media_compressed_url",
+        "ru": "Ссылка на сжатый файл"
+      },
+      "view": {},
+      "multiple": false,
+      "type": "string",
+      "source": false
+    }
+  },
+  "dynamic_templates": [],
+  "display_names": {
+    "ru": "Факсы",
+    "en": "Faxes"
+  },
+  "default": false
+}

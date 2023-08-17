@@ -1,0 +1,11 @@
+{
+    "name": "Category",
+    "kind": "grpc",
+    "type": "processor",
+    "urls": [
+{% for adr in hosts.dpp_category %}
+        "{{ adr }}:{{ ports.dpp_category_grpc }}"{% if not loop.last %},
+{% endif %}
+{% endfor %}
+    ]
+}

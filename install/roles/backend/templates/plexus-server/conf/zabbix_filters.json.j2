@@ -1,0 +1,372 @@
+{
+  "host_group_filters": {
+    "filter": {
+      "name": [
+        "Discovered hosts",
+        "Hypervisors"
+      ]
+    }
+  },
+  "service_group_filters": {
+    "filter": {
+      "name": "Discovered hosts"
+    }
+  },
+  "host_template_filters": {
+    "filter": {
+      "host": [
+        "Linux by Zabbix agent"
+      ]
+    }
+  },
+  "service_template_filters": {
+    "filter": {
+      "host": [
+        "Docker by Zabbix agent 2"
+      ]
+    }
+  },
+  "host_base_params": {
+    "selectInterfaces": [
+      "ip",
+      "type"
+    ],
+    "selectGroups": [
+      "name"
+    ],
+    "selectTags": "extend",
+    "output": [
+      "host",
+      "hostid"
+    ]
+  },
+  "host_item_base_params": {
+    "searchByAny": true,
+    "startSearch": true,
+    "search": {
+      "key_": [
+        "system.hostname",
+        "system.uptime",
+        "zabbix[host,agent,available]",
+        "gpu.temp[",
+        "system.cpu.load[all,avg1]",
+        "system.cpu.load[all,avg5]",
+        "system.cpu.load[all,avg15]",
+        "system.cpu.util",
+        "vm.memory.size[pavailable]",
+        "vm.memory.size[total]",
+        "vm.memory.size[available]",
+        "vm.memory.utilization",
+        "vfs.fs.size[/,pused]"
+      ]
+    },
+    "output": [
+      "itemid",
+      "key_",
+      "hostid",
+      "lastvalue"
+    ]
+  },
+  "host_item_params": {
+    "tags": [
+      {
+        "tag": "Application",
+        "value": "Docker",
+        "operator": "1"
+      },
+      {
+        "tag": "Application",
+        "value": "General",
+        "operator": "1"
+      },
+      {
+        "tag": "Application",
+        "value": "CPU",
+        "operator": "1"
+      },
+      {
+        "tag": "Application",
+        "value": "Memory",
+        "operator": "1"
+      },
+      {
+        "tag": "Application",
+        "value": "Monitoring agent",
+        "operator": "1"
+      },
+      {
+        "tag": "Application",
+        "value": "Status",
+        "operator": "1"
+      },
+      {
+        "tag": "Application",
+        "value": "Filesystem "
+      },
+      {
+        "tag": "Application",
+        "value": "Interface "
+      },
+      {
+        "tag": "Application",
+        "value": "Disk "
+      },
+      {
+        "tag": "Application",
+        "value": "Nvidia",
+        "operator": "1"
+      }
+    ],
+    "output": [
+      "itemid",
+      "key_",
+      "hostid",
+      "lastvalue"
+    ]
+  },
+  "host_trigger_params": {
+    "searchByAny": true,
+    "search": {
+      "description": [
+        ": Disk space is",
+        ": Running out of free inodes",
+        "Configured max number of ",
+        "Docker:"
+      ]
+    },
+    "output": [
+      "triggerid",
+      "description",
+      "comments",
+      "error",
+      "priority",
+      "state",
+      "value"
+    ]
+  },
+  "service_item_base_params": {
+    "output": [
+      "itemid",
+      "hostid",
+      "lastvalue",
+      "key_",
+      "name"
+    ],
+    "searchByAny": true,
+    "startSearch": true,
+    "search": {
+      "key_": [
+        "docker.container_info.started[\"/{{ '{#NAME}' }}",
+        "docker.container_info.state.status[\"/{{ '{#NAME}' }}",
+        "unmonitored[\"/{{ '{#NAME}' }}",
+        "docker.container_stats.cpu_usage.total.rate[\"/{{ '{#NAME}' }}",
+        "docker.container_stats.memory.usage[\"/{{ '{#NAME}' }}",
+        "docker.networks.rx_bytes[\"/{{ '{#NAME}' }}",
+        "docker.networks.tx_bytes[\"/{{ '{#NAME}' }}"
+      ]
+    }
+  },
+  "item_base_params": {
+    "output": [
+      "itemid",
+      "hostid",
+      "lastvalue",
+      "key_",
+      "name"
+    ]
+  },
+  "trigger_base_params": {
+    "output": [
+      "triggerid",
+      "description",
+      "comments",
+      "error",
+      "priority",
+      "state",
+      "value"
+    ]
+  },
+  "template_base_params": {
+    "output": [
+      "templateid"
+    ]
+  },
+  "dashboard_base_params": {
+    "output": [
+      "dashboardid",
+      "name"
+    ]
+  },
+  "problem_base_params": {
+    "selectTags": "extend",
+    "sortfield": [
+      "eventid"
+    ],
+    "sortorder": "DESC"
+  },
+  "base_service_groups": [
+    {
+      "id": "docker",
+      "item_filters": [
+        {
+          "type": "tag",
+          "values": [
+            {
+              "tag": "Application",
+              "value": "Docker: Container /{{ '{#NAME}' }}",
+              "operator": "1"
+            }
+          ]
+        }
+      ],
+      "trigger_filters": [
+        {
+          "type": "search_prefix",
+          "field": "description",
+          "values": [
+            "Container /{{ '{#NAME}' }}"
+          ]
+        }
+      ],
+      "template_filters": [
+        {
+          "type": "filter",
+          "field": "host",
+          "values": [
+            "Docker by Zabbix agent 2"
+          ]
+        }
+      ],
+      "dashboard_names": [
+        "Common Service Info"
+      ]
+    }
+  ],
+  "only_id_base_params": {
+    "output": []
+  },
+  "service_groups": [
+    {
+      "id": "redis",
+      "base_id": "docker",
+      "service_name_pattern": "^redis-{{ project_name }}-{{ area }}-.+$",
+      "item_filters": [
+        {
+          "type": "tag",
+          "values": [
+            {
+              "tag": "Application",
+              "value": "Redis",
+              "operator": "1"
+            },
+            {
+              "tag": "Application",
+              "value": "Redis: DB "
+            },
+            {
+              "tag": "Application",
+              "value": "Redis: Slave "
+            }
+          ]
+        }
+      ],
+      "trigger_filters": [
+        {
+          "type": "search_prefix",
+          "field": "description",
+          "values": [
+            "Redis: "
+          ]
+        }
+      ],
+      "template_filters": [
+        {
+          "type": "filter",
+          "field": "host",
+          "values": [
+            "Redis by Zabbix agent 2"
+          ]
+        }
+      ],
+      "dashboard_names": [
+        "Redis performance",
+        "Redis overview"
+      ]
+    },
+    {
+      "id": "elasticsearch",
+      "base_id": "docker",
+      "service_name_pattern": "^elasticsearch-7-{{ project_name }}-{{ area }}$",
+      "item_filters": [
+        {
+          "type": "tag",
+          "values": [
+            {
+              "tag": "Application",
+              "value": "ES cluster",
+              "operator": "1"
+            }
+          ]
+        }
+      ],
+      "trigger_filters": [
+        {
+          "type": "search_prefix",
+          "field": "description",
+          "values": [
+            "ES "
+          ]
+        }
+      ],
+      "template_filters": [],
+      "dashboard_names": []
+    },
+    {
+      "id": "file_service",
+      "base_id": "docker",
+      "service_name_pattern": "^.*-file-.*$",
+      "item_filters": [],
+      "trigger_filters": [],
+      "template_filters": [],
+      "dashboard_names": []
+    },
+    {
+      "id": "ingest",
+      "base_id": "docker",
+      "service_name_pattern": "^ingest-service-{{ project_name }}-{{ area }}_ingest-service-{{ project_name }}-{{ area }}.*$",
+      "item_filters": [
+        {
+          "type": "tag",
+          "values": [
+            {
+              "tag": "ch_es_stats",
+              "value": "difference_doc",
+              "operator": "1"
+            }
+          ]
+        }
+      ],
+      "trigger_filters": [
+        {
+          "type": "search_prefix",
+          "field": "description",
+          "values": [
+            "Difference more"
+          ]
+        }
+      ],
+      "template_filters": [
+        {
+          "type": "filter",
+          "field": "host",
+          "values": [
+            "Difference count CH and ES"
+          ]
+        }
+      ],
+      "dashboard_names": [
+        "Doc count"
+      ]
+    }
+  ]
+}

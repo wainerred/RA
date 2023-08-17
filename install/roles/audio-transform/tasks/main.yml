@@ -1,0 +1,23 @@
+---
+# tasks file for audio-transform
+- name: "Set global vars"
+  ansible.builtin.import_role:
+    name: set-global-vars
+  tags: always
+
+- name: "Set role vars"
+  ansible.builtin.include_vars: "{{ service }}.yml"
+  tags: always
+
+- name: "Stop service"
+  ansible.builtin.import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: "Install"
+  ansible.builtin.include_tasks: "install.yml"
+
+- name: "Start service"
+  ansible.builtin.import_role:
+    name: _docker
+    tasks_from: start

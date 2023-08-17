@@ -1,0 +1,41 @@
+{
+  "passports": {
+    "connection_settings": {
+      "template_id": "images",
+      "field_map": {
+        "file.properties.phonenumber_to": "phone",
+        "file.properties.phonenumber_from": "phone"
+      }
+    },
+    "fields": {
+      "name": {
+        "type": "string",
+        "name": "ФИО"
+      },
+      "passport": {
+        "type": "string",
+        "name": "Серия номер"
+      },
+      "phone": {
+        "type": "string",
+        "name": "Телефон"
+      },
+      "birth_date": {
+        "type": "string",
+        "name": "Дата рождения"
+      },
+      "issue_date": {
+        "type": "string",
+        "name": "Дата выдачи"
+      },
+      "sex": {
+        "type": "string",
+        "name": "Пол"
+      },
+      "image": {
+        "type": "base64_image",
+        "name": "Фото"
+      }
+    }
+  }
+}

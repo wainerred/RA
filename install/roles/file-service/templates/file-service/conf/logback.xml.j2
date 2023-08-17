@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="LOG_PATH" value="/file-service/logs"/>
+    <property name="LOG_FILE_NAME" value="file-service"/>
+    <property name="ROTATE_LOG_FILE_NAME" value="rotate"/>
+    <property name="CACHE_LOG_FILE_NAME" value="cache"/>
+    <property name="ADD_LOG_FILE_NAME" value="add"/>
+    <property name="ERROR_ADD_LOG_FILE_NAME" value="error-add"/>
+    <property name="DELETE_LOG_FILE_NAME" value="delete"/>
+    <property name="ERROR_DELETE_LOG_FILE_NAME" value="error-delete"/>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 100 days' worth of history -->
+            <maxHistory>100</maxHistory>
+            <!-- keep 5GB of total history -->
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %level %logger [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ROTATE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${ROTATE_LOG_FILE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/${ROTATE_LOG_FILE_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 100 days' worth of history -->
+            <maxHistory>100</maxHistory>
+            <!-- keep 5GB of total history -->
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %level %logger [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="CACHE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${CACHE_LOG_FILE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/${CACHE_LOG_FILE_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 100 days' worth of history -->
+            <maxHistory>100</maxHistory>
+            <!-- keep 5GB of total history -->
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %level %logger [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ADD_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${ADD_LOG_FILE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/${ADD_LOG_FILE_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 100 days' worth of history -->
+            <maxHistory>100</maxHistory>
+            <!-- keep 5GB of total history -->
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %level %logger [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ERROR_ADD_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${ERROR_ADD_LOG_FILE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/${ERROR_ADD_LOG_FILE_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 100 days' worth of history -->
+            <maxHistory>100</maxHistory>
+            <!-- keep 5GB of total history -->
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %level %logger [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="DELETE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${DELETE_LOG_FILE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/${DELETE_LOG_FILE_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 100 days' worth of history -->
+            <maxHistory>100</maxHistory>
+            <!-- keep 5GB of total history -->
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %level %logger [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ERROR_DELETE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${ERROR_DELETE_LOG_FILE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/${ERROR_DELETE_LOG_FILE_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- keep 100 days' worth of history -->
+            <maxHistory>100</maxHistory>
+            <!-- keep 5GB of total history -->
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %level %logger [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.out</target>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%level) %cyan(%logger{15}) [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="ru.dsslab.fileservice.api.db.postgres.v3.PostgressDBClient-rotate" level="DEBUG" additivity="false">
+        <appender-ref ref="ROTATE_FILE" />
+    </logger>
+    <logger name="ru.dsslab.fileservice.api.file.FileHandlerImpl-rotate" level="DEBUG" additivity="false">
+        <appender-ref ref="ROTATE_FILE" />
+    </logger>
+    <logger name="ru.dsslab.fileservice.api.rotation" level="INFO" additivity="false">
+        <appender-ref ref="ROTATE_FILE" />
+    </logger>
+
+    <logger name="ru.dsslab.fileservice.api.db.postgres.v3.PostgressDBClient-cache" level="DEBUG" additivity="false">
+        <appender-ref ref="CACHE_FILE" />
+    </logger>
+    <logger name="ru.dsslab.fileservice.api.storage" level="DEBUG" additivity="false">
+        <appender-ref ref="CACHE_FILE" />
+    </logger>
+
+    <logger name="ru.dsslab.fileservice.api.db.postgres.v3.PostgressDBClient-add" level="DEBUG" additivity="false">
+        <appender-ref ref="ADD_FILE" />
+    </logger>
+    <logger name="ru.dsslab.fileservice.api.file.FileHandlerImpl-add" level="DEBUG" additivity="false">
+        <appender-ref ref="ADD_FILE" />
+    </logger>
+    <logger name="ru.dsslab.fileservice.api.Boot$FileServiceApiImpl$1$-add" level="DEBUG" additivity="false">
+        <appender-ref ref="ADD_FILE" />
+    </logger>
+    
+    <logger name="ru.dsslab.fileservice.api.db.cache.CacheCreateFileService-add" level="DEBUG" additivity="false">
+        <appender-ref ref="ADD_FILE" />
+    </logger>    
+
+    <logger name="ru.dsslab.fileservice.api.db.cache.CreateFileProcessor-add" level="TRACE" additivity="false">
+        <appender-ref ref="ADD_FILE" />
+    </logger>
+    
+    <logger name="slick.jdbc.JdbcBackend.benchmark" level="TRACE" additivity="false">
+        <appender-ref ref="ADD_FILE" />
+    </logger> 
+
+    <logger name="ru.dsslab.fileservice.api.db.postgres.v3.PostgressDBClient-error-add" level="DEBUG" additivity="false">
+        <appender-ref ref="ERROR_ADD_FILE" />
+    </logger>
+    <logger name="ru.dsslab.fileservice.api.file.FileHandlerImpl-error-add" level="DEBUG" additivity="false">
+        <appender-ref ref="ERROR_ADD_FILE" />
+    </logger>
+    
+    <logger name="ru.dsslab.fileservice.api.db.cache.CacheCreateFileService-error-add" level="DEBUG" additivity="false">
+        <appender-ref ref="ERROR_ADD_FILE" />
+    </logger>
+
+    <logger name="ru.dsslab.fileservice.api.db.postgres.v3.PostgressDBClient-delete" level="DEBUG" additivity="false">
+        <appender-ref ref="DELETE_FILE" />
+    </logger>
+    <logger name="ru.dsslab.fileservice.api.file.FileHandlerImpl-delete" level="DEBUG" additivity="false">
+        <appender-ref ref="DELETE_FILE" />
+    </logger>
+
+    <logger name="ru.dsslab.fileservice.api.db.postgres.v3.PostgressDBClient-error-delete" level="DEBUG" additivity="false">
+        <appender-ref ref="ERROR_DELETE_FILE" />
+    </logger>
+    <logger name="ru.dsslab.fileservice.api.file.FileHandlerImpl-error-delete" level="DEBUG" additivity="false">
+        <appender-ref ref="ERROR_DELETE_FILE" />
+    </logger>
+
+    <logger name="ru.dsslab.fileservice.api.db.postgres.v3" level="DEBUG"/>
+    <logger name="ru.dsslab.fileservice.api.service" level="DEBUG"/>
+    <logger name="ru.dsslab.fileservice.api.file" level="DEBUG"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

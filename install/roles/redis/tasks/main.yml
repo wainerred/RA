@@ -1,0 +1,29 @@
+---
+
+- name: Set global vars
+  import_role:
+    name: set-global-vars
+  tags: always
+
+- name: "Set role vars"
+  include: set_vars.yml
+  tags: always
+
+- name: "Install Redis"
+  include: install_redis.yml
+  with_sequence: count={{ redis_nodes }} format="%02d"
+  loop_control:
+    loop_var: redis_node
+
+- name: Init cluster
+  include: init-cluster.yml
+  run_once: true
+  tags:
+    - never
+    - init-cluster
+
+- name: Install check master script
+  include: check_master.yml
+  tags:
+    - never
+    - check

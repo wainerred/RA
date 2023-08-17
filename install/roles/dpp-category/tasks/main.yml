@@ -1,0 +1,98 @@
+---
+
+- name: "Set global vars"
+  import_role:
+    name: set-global-vars
+  tags:
+    - always
+
+- name: "Set local vars"
+  include_vars: main.yml
+  tags:
+    - always
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: "Install category"
+  include: "install-dpp-category.yml"
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start
+
+- name: Set local vars
+  set_fact:
+    mapping_content: "{{ lookup('file', 'files/index_templates/category_server_data_template.json') }}"
+    mapping_id: "category_server_data_template"
+  ignore_errors: true
+  run_once: true
+  tags:
+    - init
+
+- name: GET {{ mapping_id }}
+  uri:
+    url: "http://{{ host.elasticsearch }}:{{ ports.elasticsearch_main }}/_index_template/{{ mapping_id }}"
+    method: "GET"
+    validate_certs: false
+    return_content: true
+    status_code:
+      - 200
+      - 404
+  register: result_get_template
+  tags:
+    - init
+
+- name: Remove headers in result
+  set_fact:
+    getted_template: "{{ result_get_template.content | from_json }}.index_templates.index_template"
+  tags:
+    - init
+
+- name: diff module {{ mapping_id }}
+  set_fact:
+    diff_template: >-
+      {{
+        mapping_content | difference(getted_template)
+      }}
+  tags:
+    - init
+
+- name: "PUT {{ mapping_id }}"
+  uri:
+    url: "http://{{ host.elasticsearch }}:{{ ports.elasticsearch_main }}/_index_template/{{ mapping_id }}"
+    method: "PUT"
+    body_format: "json"
+    body: "{{ mapping_content }}"
+    validate_certs: false
+    status_code: "200"
+    return_content: true
+  run_once: true
+  when: diff_template | length > 0
+  tags:
+    - init
+
+- name: "Check es indices"
+  uri:
+    url: "http://{{ host.elasticsearch }}:{{ ports.elasticsearch_main }}/_cat/indices/*category_server_data*"
+    validate_certs: false
+    status_code: "200"
+    return_content: true
+  register: indices
+  tags:
+    - init
+
+- name: "PUT index category_server_data"
+  uri:
+    url: "http://{{ host.elasticsearch }}:{{ ports.elasticsearch_main }}/category_server_data"
+    method: "PUT"
+    validate_certs: false
+    status_code: "200"
+    return_content: true
+  when: "' category_server_data ' not in indices.content"
+  run_once: true
+  tags:
+    - init

@@ -1,0 +1,8 @@
+---
+
+# Install Tensorflow
+- name: 'Install Tensorflow'
+  hosts:
+    - tensorflow
+  roles:
+    - tensorflow

@@ -1,0 +1,3 @@
+---
+# defaults file for speaker-role-detector
+dpp_speaker_role_detector_mem_limit: false

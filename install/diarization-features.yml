@@ -1,0 +1,8 @@
+---
+
+# Install Tensorflow
+- name: 'Install diarization-features'
+  hosts:
+    - diarization_features
+  roles:
+    - diarization-features

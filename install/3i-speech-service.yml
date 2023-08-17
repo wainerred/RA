@@ -1,0 +1,8 @@
+---
+# Install 3i-speech-service
+- name: 'Install 3i-speech-service'
+  hosts:
+    - iii_speech_service
+  roles:
+    - speech-service
+  gather_facts: false

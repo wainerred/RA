@@ -1,0 +1,10 @@
+---
+
+- name: "Set variables"
+  set_fact:
+    service_name:         "{{ dictionary_hosts.clusterization.name }}"
+    service_img:          "{{ dictionary_hosts.clusterization.img }}"
+    service_tag:          "{{ dictionary_hosts.clusterization.tag }}"
+    service_repo:         "{{ dictionary_hosts.clusterization.repo }}"
+    service_mounts_dir:  "{{ docker_mounts_root }}/{{ dictionary_hosts.clusterization.name }}"
+    service_compose_dir: "{{ docker_compose_root }}/{{ dictionary_hosts.clusterization.name }}"

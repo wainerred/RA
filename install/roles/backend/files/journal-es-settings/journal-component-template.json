@@ -1,0 +1,142 @@
+{
+  "template": {
+    "mappings": {
+      "dynamic_templates": [
+        {
+          "default_objects": {
+            "mapping": {
+              "type": "object"
+            },
+            "match_mapping_type": "object"
+          }
+        },
+        {
+          "default_date_fields": {
+            "mapping": {
+              "type": "date"
+            },
+            "match_mapping_type": "date",
+            "match": "*"
+          }
+        },
+        {
+          "default_double_fields": {
+            "mapping": {
+              "type": "double"
+            },
+            "match_mapping_type": "double",
+            "match": "*"
+          }
+        },
+        {
+          "default_long_fields": {
+            "mapping": {
+              "type": "long"
+            },
+            "match_mapping_type": "long",
+            "match": "*"
+          }
+        },
+        {
+          "default_boolean_fields": {
+            "mapping": {
+              "type": "boolean"
+            },
+            "match_mapping_type": "boolean",
+            "match": "*"
+          }
+        },
+        {
+          "default_keyword_fields": {
+            "mapping": {
+              "type": "keyword"
+            },
+            "match_mapping_type": "string",
+            "match": "*"
+          }
+        }
+      ],
+      "properties": {
+        "view": {
+          "type": "object",
+          "enabled": false
+        },
+        "action_type": {
+          "type": "keyword"
+        },
+        "account_id": {
+          "type": "keyword"
+        },
+        "user_id": {
+          "type": "keyword"
+        },
+        "session_id": {
+          "type": "keyword"
+        },
+        "username": {
+          "type": "keyword"
+        },
+        "actual_username": {
+          "type": "keyword"
+        },
+        "ip": {
+          "type": "ip"
+        },
+        "created_date": {
+          "type": "date"
+        },
+        "resources": {
+          "type": "nested",
+          "include_in_parent": true,
+          "properties": {
+            "type": {
+              "type": "keyword"
+            },
+            "id": {
+              "type": "keyword"
+            },
+            "name": {
+              "type": "keyword"
+            }
+          }
+        },
+        "errors": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "integer"
+            }
+          }
+        },
+        "request": {
+          "type": "object",
+          "dynamic": true,
+          "properties": {
+            "search_documents": {
+              "type": "object",
+              "properties": {
+                "query": {
+                  "type": "text"
+                }
+              }
+            }
+          }
+        },
+        "response": {
+          "type": "object",
+          "dynamic": true,
+          "properties": {
+            "search_documents": {
+              "type": "object",
+              "properties": {
+                "document_count": {
+                  "type": "long"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+    "name": "Exporter postgresql",
+    "kind": "grpc",
+    "type": "exporter",
+    "urls": [
+{% for adr in hosts.dpp_exporter_postgresql %}
+        "{{ adr }}:{{ ports.dpp_exporter_postgresql_grpc }}"{% if not loop.last %},
+{% endif %}
+{% endfor %}
+    
+    ]
+}

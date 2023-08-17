@@ -1,0 +1,12 @@
+{
+    "name": "Exporter elastic",
+    "kind": "grpc",
+    "type": "exporter",
+    "urls": [
+{% for adr in hosts.dpp_elastic_exporter %}
+        "{{ adr }}:{{ ports.dpp_elastic_exporter_grpc }}"{% if not loop.last %}, 
+{% endif %}
+{% endfor %}
+    
+    ]
+}

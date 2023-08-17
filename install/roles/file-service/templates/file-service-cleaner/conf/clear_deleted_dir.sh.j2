@@ -1,0 +1,15 @@
+#!/bin/bash
+BASE_PATH=$1
+BLANK_DIR=$BASE_PATH/blank_deleted
+DELETED_DIR=$BASE_PATH/deleted
+DELETED_PID=$BASE_PATH/deleted.pid
+mkdir -p $BLANK_DIR
+if [[ -f "$DELETED_PID" ]]; then
+    echo "Try to delete prev deleting task by pid location "$DELETED_PID
+    kill -9 `cat $DELETED_PID`
+fi
+echo "Starting delete files task for dir "$DELETED_DIR
+find $DELETED_DIR/ -name '*' -delete &
+PID=$!
+echo "Added pid "$PID" to file "$DELETED_PID
+echo $PID > $DELETED_PID

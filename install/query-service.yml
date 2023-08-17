@@ -1,0 +1,7 @@
+---
+# Install query-service
+- name: "Install query-service"
+  hosts:
+    - query_service
+  roles:
+    - query-service

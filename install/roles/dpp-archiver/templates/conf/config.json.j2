@@ -1,0 +1,32 @@
+{
+    "grpc": {
+        "address": "0.0.0.0:{{ ports.dpp_archiver_grpc }}"
+    },
+    "oat": {
+        "port": {{ ports.dpp_archiver_http }}
+    },
+    "elastic": [
+        {
+            "host": "{{ internal_host if internal_host else ansible_host }}",
+            "port": {{ ports.local_nginx_es }}
+        } 
+    ],
+    "redis": {
+        "host": "{{ host.redis_archiver }}",
+        "port": {{ ports.redis_archiver_main | int + 1 }}
+    },
+    "max_queue": 200000,
+    "max_batch_size": 83886080,
+    "max_batch_count": 500,
+{% if dpp_archiver_sleep_after_search %}
+    "sleep_after_search": {{ dpp_archiver_sleep_after_search }},
+{% endif %}
+    "langs": [
+       "ru",
+       "en",
+       "uz",
+       "kk"
+    ],
+    "log_level" : "debug",
+    "default_text_type": "keyword"
+}

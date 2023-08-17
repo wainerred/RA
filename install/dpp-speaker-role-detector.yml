@@ -1,0 +1,6 @@
+---
+- name: "Install dpp-speaker-role-detector"
+  hosts:
+    - dpp_speaker_role_detector
+  roles:
+    - dpp-speaker-role-detector

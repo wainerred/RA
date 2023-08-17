@@ -1,0 +1,10 @@
+---
+
+# Install DB DPP
+- name: "Install postgre 'dpp'"
+  hosts:
+    - postgres_dpp
+  roles:
+    - postgresql
+  vars:
+    service: "postgres_dpp"

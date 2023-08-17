@@ -1,0 +1,11 @@
+window.WUI.features.additionalProjectLinks = [
+{% if frontend_external_links is defined %}
+{% for item in frontend_external_links %}
+{% if item == frontend_external_links[-1] %}
+    {name: '{{ item.name }}', href: '{{ item.link }}'}
+{% else %}
+    {name: '{{ item.name }}', href: '{{ item.link }}'},
+{% endif %}
+{% endfor %}
+{% endif %}
+];

@@ -1,0 +1,10 @@
+---
+- name: "Install elastic-exporter"
+  hosts:
+    - dpp_elastic_exporter
+  roles:
+    - local-nginx
+    - dpp-elastic-exporter
+  vars:
+    local_nginx_conf_d:
+      - elastic.conf.j2

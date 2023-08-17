@@ -1,0 +1,10 @@
+---
+
+# Install plexus-reports
+- name: "Install plexus-reports"
+  hosts:
+    - plexus_reports
+  roles:
+    - backend
+  vars:
+    service: plexus_reports

@@ -1,0 +1,31 @@
+---
+- name: "Check packages"
+  package_facts:
+    manager: auto
+
+- name: "Check 'nvidia-container-runtime' in packages"
+  shell: curl -s -L https://nvidia.github.io/nvidia-container-runtime/centos7/nvidia-container-runtime.repo | sudo tee /etc/yum.repos.d/nvidia-container-runtime.repo
+  when: "'nvidia-container-runtime' not in ansible_facts.packages"
+
+- yum:
+    name:
+      - nvidia-container-runtime
+  notify: restart docker
+
+- name: Patch /etc/docker/daemon.json
+  json_patch:
+    src: "/etc/docker/daemon.json"
+    pretty: true
+    create: true
+#    backup: true
+    operations:
+      - op: add
+        path: "/runtimes"
+        value:
+          {
+            "nvidia": {
+              "path": "nvidia-container-runtime",
+              "runtimeArgs": []
+            }
+          }
+  notify: restart docker

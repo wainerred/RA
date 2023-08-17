@@ -1,0 +1,65 @@
+{
+  "index_patterns": [
+    "category_server_data*"
+  ],
+  "template": {
+    "settings": {
+      "number_of_shards": 4,
+      "number_of_replicas": 1
+    },
+    "mappings": {
+      "_source": {
+        "enabled": true
+      },
+      "dynamic": false,
+      "properties": {
+        "data": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "keyword"
+            },
+            "query": {
+              "type": "keyword"
+            },
+            "language": {
+              "type": "keyword"
+            },
+            "weight": {
+              "type": "double"
+            },
+            "subtype": {
+              "type": "keyword"
+            },
+            "key_value":{
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "keyword"
+                },
+                "value": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "owner_data_version": {
+          "type": "keyword"
+        },
+        "type": {
+          "type": "keyword"
+        },
+        "owner": {
+          "type": "keyword"
+        },
+        "id": {
+          "type": "keyword"
+        }
+      }
+    }
+  },
+  "composed_of": [],
+  "priority": 100
+
+}

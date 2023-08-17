@@ -1,0 +1,16 @@
+---
+
+- name: "Install REDIS DPP"
+  hosts:
+    - redis_dpp
+  roles:
+    - redis
+  vars:
+    service: "redis_dpp"
+    redis_nodes: "{{ redis_dpp_nodes }}"
+
+# CREATE CLUSTER QA
+# redis-cli --cluster create \
+# 10.230.84.180:30002 10.230.84.181:30002 10.230.84.182:30002 \
+# 10.230.84.181:30003 10.230.84.182:30003 10.230.84.180:30003 \
+# --cluster-replicas 1

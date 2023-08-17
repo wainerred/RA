@@ -1,0 +1,26 @@
+version: '2.4'
+
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: always
+    mem_limit: {{ entity_mem_limit }}
+    network_mode: {{ docker_network_mode }}
+    environment:
+      JAVA_OPTS: >-
+        -Xmx{{ entity_mem_limit | regex_search('^[0-9]+') | int * 75 // 100 }}{{ entity_mem_limit | regex_search('\\w$') }}
+        -Duser.timezone=UTC
+        -Djava.net.preferIPv4Stack=true
+        -Dlogback.configurationFile=/app/conf/logback.xml
+        -Dconfig.file=/app/conf/service.conf
+    ports:
+      - {{ ports.entity_service_main }}:{{ ports.entity_service_main }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - "{{ service_mnt_dir_loc }}/logs:/app/logs"
+      - "{{ service_mnt_dir_loc }}/conf/service.conf:/app/conf/service.conf:ro"
+      - "{{ service_mnt_dir_loc }}/conf/logback.xml:/app/conf/logback.xml:ro"

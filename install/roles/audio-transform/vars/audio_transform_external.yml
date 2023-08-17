@@ -1,0 +1,10 @@
+---
+# vars file for audio-transform
+service_name: "{{ dictionary_hosts.audio_transform_external.name }}"
+service_img: "{{ dictionary_hosts.audio_transform_external.img }}"
+service_tag: "{{ dictionary_hosts.audio_transform_external.tag }}"
+service_repo: "{{ dictionary_hosts.audio_transform_external.repo }}"
+service_mnt_dir_loc: "{{ docker_mounts_root }}/{{ dictionary_hosts.audio_transform_external.name }}"
+service_compose_dir: "{{ docker_compose_root }}/{{ dictionary_hosts.audio_transform_external.name }}"
+
+audio_transform_port: "{{ ports.audio_transform_external_main }}"

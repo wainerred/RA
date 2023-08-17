@@ -1,0 +1,9 @@
+---
+- name: "Install 'audio-transform'"
+  hosts:
+    - audio_transform
+  roles:
+    - audio-transform
+  vars:
+    service: audio_transform
+  gather_facts: false

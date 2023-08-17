@@ -1,0 +1,332 @@
+[all:vars]
+# Путь, где будут лежать данные сервисов
+# Измените значение, если необходимо изменить путь
+# Например "/example/path/docker-mounts"
+docker_mounts_root              = /dss/docker-mounts
+
+# Путь, где будут лежать файлы запуска сервисов
+# Измените значение, если необходимо изменить путь
+# Например "/example/path/docker-compose"
+docker_compose_root             = /dss/docker-compose
+
+# Режим сети в докер контейнерах
+# Менять не требуется
+docker_network_mode             = bridge
+
+docker_login                    = 
+docker_pass                     = 
+
+# Условное название продукта, которое используется для нейминга каталогов, таблиц в БД и тд
+# Менять необязательно
+project_name                    = touchpoint
+
+# Условная зона деплоя, которая используется для нейминга каталогов, таблиц в БД и тд
+# Менять необязательно
+area                            = prod
+
+# Путь где будут храниться аудиозаписи файлового сервис
+# По умолчанию будет использоваться переменная docker_mounts_root
+# Но если необходимо записывать файлы на отдельный диск
+#   то необходимо раскомментировать строку ниже и указать путь
+# file_service_data_dir           = /storage/hdd/files-service
+
+# Модель для Triton
+# Изменений не требуется
+triton_models                      = ['asr/ru/16000/v1.6.1_ep10', 'diarization_v2/6.0', 'diarization_v3/4.0', 'sentiments_acoustic/2.0', 'sentiments_text/3.0', 'speech_detector/1.0']
+
+# Модели для Speech-service
+# Изменений не требуется
+asr_lm_models                   = ['triton/ru/ru_2023_02_26']
+asr_threads                     = 2
+sd_model                        = triton/speech_detector
+; nlp_model                       = 'v1.10.0'
+sentiments_acoustic             = triton/acoustic
+sentiments_text                 = triton/text
+langid_model                    = triton/lang_id_ru_kk
+gender_model                    = triton/v1.20.0
+triton_videocards               = [1]
+
+# Пароли с которыми создаются БД в Postgresql
+# Менять необязательно
+postgres_dpp_password           = NbjjYRuuG2JS9U4ZRF4Qs4jXDQ4VHU
+postgres_file_password          = {{ postgres_dpp_password }}
+postgres_back_password          = {{ postgres_dpp_password }}
+
+# Системный параметр для Redis
+# Если для Redis используется 1 сервер, то необходимо укзать 3, 
+# если используется 3 сервера, то необходимо указать 1 
+redis_dpp_nodes                 = 3
+
+# Домен для интерфейса 
+# Домен должен ссылаться на адрес, на котором развернут frontend
+# Требуется изменить 
+frontend_domain              = ['msk-es04-app139.ad.ies-holding.com']
+# Если необходим SSL для интерфейса, то необходимо установить значение True
+frontend_https_enabled       = True
+frontend_type                = default
+
+backend_users_dn             = DC=ad,DC=ies-holding,DC=com
+backend_ldap_server          = ldap://msk-ad04-dc01.ad.ies-holding.com:389
+backend_ldap_user_dn         = CN=s-msk-ra_ldap_reader,OU=RA,OU=EnergoSbyt,OU=Servers,OU=MSK,DC=ad,DC=ies-holding,DC=com
+backend_ldap_pass            = Ux8ephoh
+
+# УЗ для подключения к серверу на котором будут дале разворачиваться сервисы 
+ansible_ssh_user    = dss
+# Если пользователь имеет доступ к серверу без указания пароля, то строку
+#   ansible_ssh_pass удалить или закомментировать 
+ansible_ssh_pass    = NivjvUEaxa
+# Если необходимо указание, что пользователь должен работать с root правами
+#   необходимо оставить 2 строки, иначе удалить или закомментировать
+ansible_become      = true
+; ansible_become_pass={{ ansible_ssh_pass }}
+
+# В эту группу указать сервер, на который будет производиться установка
+# Обязательно корректно указать переменную ansible_host (IP адресс сервера)
+[servers]
+msk-es04-app138             ansible_host=10.5.12.238
+msk-es04-app139             ansible_host=10.5.12.239
+msk-es04-app140             ansible_host=10.5.12.240
+msk-es04-app141             ansible_host=10.5.12.241
+msk-es04-app142             ansible_host=10.5.12.242
+msk-es04-app143             ansible_host=10.5.12.243
+msk-es04-app144             ansible_host=10.5.12.244
+msk-es04-app208             ansible_host=10.5.24.106
+msk-es04-app216             ansible_host=10.5.24.123
+msk-es04-app217             ansible_host=10.5.24.124
+msk-es04-app218             ansible_host=10.5.24.128
+msk-es04-app219             ansible_host=10.5.24.129
+msk-es04-app242             ansible_host=10.5.24.163
+msk-es04-app243             ansible_host=10.5.24.164
+# ^ Далее используется только название сервера без указания переменной ansible_host
+
+
+# Если необходимо данные какого то сервиса вынести на другой диск, например Elasticsearch на SSD диск
+# необходимо к команде запуска добавить ` -e docker_mounts_root=/example/es/data/`
+# Напрмер для эластика получится команды вида:
+# docker-ansible-playbook -i production install/elasticsearch.yml -e docker_mounts_root=/example/es/data/
+
+[ansible_server]
+msk-es04-app139
+
+[redis_dpp]
+msk-es04-app138
+
+[redis_dpp:vars]
+; redis_mem_limit             = 3072M
+
+[redis_archiver:children]
+redis_dpp
+
+[elasticsearch_master]
+msk-es04-app138
+[elasticsearch_master:vars]
+es_master = true
+
+[elasticsearch_data]
+msk-es04-app138
+[elasticsearch_data:vars]
+es_data = true
+
+[elasticsearch:children]
+elasticsearch_master
+elasticsearch_data
+[elasticsearch:vars]
+; elasticsearch_mem_limit     = 6144M
+
+[elasticsearch_entity_master:children]
+elasticsearch_master
+
+[elasticsearch_entity:children]
+elasticsearch_entity_master
+
+[elasticsearch_spell_checker_master:children]
+elasticsearch_master
+
+[elasticsearch_spell_checker_data:children]
+elasticsearch_data
+
+[elasticsearch_spell_checker:children]
+elasticsearch_spell_checker_master
+elasticsearch_spell_checker_data
+
+[diarization_features]
+msk-es04-app144
+
+[diarization_features:vars]
+; diarization_features_mem_limit  = 1024M
+
+[triton]
+msk-es04-app144
+msk-es04-app208
+msk-es04-app216
+msk-es04-app217
+msk-es04-app218
+msk-es04-app219
+msk-es04-app242
+msk-es04-app243
+
+[triton:vars]
+; triton_mem_limit        = 24576M
+
+[iii_speech_service]
+msk-es04-app144
+msk-es04-app208
+msk-es04-app216
+msk-es04-app217
+msk-es04-app218
+msk-es04-app219
+msk-es04-app242
+msk-es04-app243
+
+[iii_speech_service:vars]
+; iii_speech_service_mem_limit    = 8192M
+
+[highlight]
+msk-es04-app143
+[highlight:vars]
+; highlight_mem_limit             = 1024M
+
+[clusterization]
+msk-es04-app143
+[clusterization:vars]
+; clusterization_mem_limit        = 4096M
+clusterization_thread_num       = 1
+
+[cn_builder]
+msk-es04-app143
+[cn_builder:vars]
+; cn_builder_mem_limit            = 2048M
+
+[postgres_dpp]
+msk-es04-app139
+[postgres_dpp:vars]
+; postgres_dpp_mem_limit          = 8192M
+
+[postgres_file_service]
+msk-es04-app139
+[postgres_file_service:vars]
+; postgres_file_service_mem_limit = 8192M
+
+[postgres_backend]
+msk-es04-app139
+[postgres_backend:vars]
+postgres_backend_mem_limit      = 8192M
+
+[query_service]
+msk-es04-app143
+[query_service:vars]
+query_service_mem_limit         = 2048M
+
+[notification_service]
+msk-es04-app143
+[notification_service:vars]
+; notification_service_mem_limit  = 2048M
+
+[dpp]
+msk-es04-app140
+[dpp:vars]
+; dpp_mem_limit                   = 4096M
+
+[dpp_archiver]
+msk-es04-app141
+[dpp_archiver:vars]
+; dpp_archiver_mem_limit          = 2048M
+
+[dpp_elastic_exporter]
+msk-es04-app141
+[dpp_elastic_exporter:vars]
+; dpp_elastic_exporter_mem_limit  = 2048M
+
+[dpp_exporter_rabbitmq]
+msk-es04-app141
+[dpp_elastic_exporter:vars]
+
+[dpp_dictionary_enricher]
+msk-es04-app140
+[dpp_dictionary_enricher:vars]
+; dpp_dictionary_enricher_mem_limit   = 2048M
+
+[dpp_dictionary_service]
+msk-es04-app142
+[dpp_dictionary_service:vars]
+; dpp_dictionary_service_mem_limit    = 2048M
+
+[dpp_category]
+msk-es04-app141
+[dpp_category:vars]
+; dpp_category_mem_limit          = 4096M
+
+[dpp_nlp_service]
+msk-es04-app142
+[dpp_nlp_service:vars]
+; dpp_nlp_service_mem_limit       = 2048M
+
+[dpp_painless_processor]
+msk-es04-app142
+[dpp_painless_processor:vars]
+; dpp_painless_processor_mem_limit    = 2048M
+
+[dpp_spell_checker]
+msk-es04-app142
+[dpp_spell_checker:vars]
+; dpp_spell_checker_mem_limit         = 2048M
+
+[dpp_file_cutter]
+msk-es04-app142
+[dpp_file_cutter:vars]
+; dpp_file_cutter_mem_limit           = 2048m
+
+[entity_service]
+msk-es04-app143
+[entity_service:vars]
+entity_mem_limit                = 2048m
+
+[file_service]
+msk-es04-app139
+[file_service:vars]
+file_service_mem_limit          = 4096M
+created_date_work_window = 1d
+file_service_postgres_numthreads = 10
+
+[nginx_file_service]
+msk-es04-app139
+[nginx_file_service:vars]
+; nginx_file_service_mem_limit    = 1024M
+
+[plexus_server]
+msk-es04-app139
+[plexus_server:vars]
+plexus_server_mem_limit         = 8192M
+
+[plexus_api_swagger]
+msk-es04-app139
+
+[plexus_resource]
+msk-es04-app139
+[plexus_resource:vars]
+; plexus_resource_mem_limit       = 4096M
+
+[plexus_auth]
+msk-es04-app139
+[plexus_auth:vars]
+; plexus_auth_mem_limit           = 1024M
+
+[plexus_rsyslog]
+msk-es04-app139
+[plexus_rsyslog:vars]
+; plexus_rsyslog_mem_limit       = 512M
+
+[plexus_reports]
+msk-es04-app139
+[plexus_reports:vars]
+plexus_reports_mem_limit        = 4096M
+
+[frontend]
+msk-es04-app139
+
+[chats_pusher]
+msk-es04-app139
+
+[records_pusher]
+msk-es04-app139
+

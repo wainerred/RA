@@ -1,0 +1,8 @@
+---
+triton_mem_limit: false
+triton_videocards:
+  - 0
+version_history_length: 10
+triton_type: cpu
+
+triton_pull_external_model: false

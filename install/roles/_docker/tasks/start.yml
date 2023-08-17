@@ -1,0 +1,55 @@
+---
+
+- set_fact:
+    docker_compose_path: "compose/docker-compose.yml.j2"
+  when: docker_compose_path is not defined
+  tags: compose
+
+- name: "Create directories"
+  file:
+    path: "{{ service_compose_dir }}"
+    state: directory
+  tags: compose
+
+- name: "{{ service_name }} : Generate docker-compose.yml"
+  template:
+    src: "{{ docker_compose_path }}"
+    dest: "{{ service_compose_dir }}/docker-compose.yml"
+  tags: compose
+
+- name: "Login to regestri"
+  docker_login:
+    registry_url: "{{ docker_registry_url }}"
+    username: "{{ docker_login }}"
+    password: "{{ docker_pass }}"
+    reauthorize: true
+  when: docker_ext_registry
+  tags:
+    - pull
+
+- name: "Start service"
+  docker_compose:
+    project_src: "{{ service_compose_dir }}"
+    state: present
+  environment:
+    DOCKER_CLIENT_TIMEOUT: 3000
+    COMPOSE_HTTP_TIMEOUT: 3000
+  register: start_output
+  tags:
+    - start
+    - restart
+
+- name: "Logout to regestri"
+  docker_login:
+    registry_url: "{{ docker_registry_url }}"
+    state: absent
+  when: docker_ext_registry
+  tags:
+    - pull
+
+- name: Start output
+  debug:
+    var: start_output
+  tags:
+    - never
+    - debug

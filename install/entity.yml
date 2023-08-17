@@ -1,0 +1,7 @@
+---
+
+- name: "Install entity"
+  hosts:
+    - entity_service
+  roles:
+    - entity

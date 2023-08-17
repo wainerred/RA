@@ -1,0 +1,58 @@
+version: '2.4'
+services:
+  {{ service_name }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}
+    restart: always
+{% if elasticsearch_mem_limit %}
+    mem_limit: {{ elasticsearch_mem_limit }}
+{% endif %}
+    network_mode: {{ docker_network_mode }}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - {{ ports.elasticsearch_main }}:{{ ports.elasticsearch_main }}
+      - {{ ports.elasticsearch_transport }}:{{ ports.elasticsearch_transport }}
+    environment:
+{% if hosts.elasticsearch | length > 1 %}
+      node.name: {{ inventory_hostname }}
+      cluster.name: es-pl
+      discovery.seed_hosts: {{ hosts.elasticsearch | difference([internal_host if internal_host else ansible_host]) | join(':{},'.format(ports.elasticsearch_transport)) }}:{{ ports.elasticsearch_transport }}
+      cluster.initial_master_nodes: {{ hosts.elasticsearch | join(':{},'.format(ports.elasticsearch_transport)) }}:{{ ports.elasticsearch_transport }}
+      bootstrap.memory_lock: "true"
+      network.bind_host: 0.0.0.0
+      network.publish_host: {{ internal_host if internal_host else ansible_host }}
+      http.port: {{ ports.elasticsearch_main }}
+      transport.bind_host: 0.0.0.0
+      transport.publish_host: {{ internal_host if internal_host else ansible_host }}
+      transport.tcp.port: {{ ports.elasticsearch_transport }}
+{% else %}
+      discovery.type: single-node
+{% endif %}
+{% if es_master is defined %}
+      node.master: "{{ es_master }}"
+{% else %}
+      node.master: "false"
+{% endif %}
+{% if es_data is defined %}
+      node.data: "{{ es_data }}"
+{% else %}
+      node.data: "false"
+{% endif %}
+      ES_JAVA_OPTS: >-
+{% if elasticsearch_mem_limit %}
+        -Xms{{ (elasticsearch_mem_limit[:-1]|int // 2)|int }}{{ elasticsearch_mem_limit[-1] }}
+        -Xmx{{ (elasticsearch_mem_limit[:-1]|int // 2)|int }}{{ elasticsearch_mem_limit[-1] }}
+{% else %}        
+        -Xms{{ ansible_memtotal_mb | int // 2 }}M
+        -Xmx{{ ansible_memtotal_mb | int // 2 }}M
+{% endif %}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - "{{ service_mnt_dir_loc }}/logs:/usr/share/elasticsearch/logs"
+      - "{{ service_mnt_dir_loc }}/data:/usr/share/elasticsearch/data"

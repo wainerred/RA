@@ -1,0 +1,61 @@
+---
+- name: "Set full template_path "
+  set_fact:
+    template_path: "{{ 'templates/templates/'+template_name+'.j2' }}"
+  tags:
+    - put-templates
+    - check-templates
+
+- name: "Set vars"
+  set_fact:
+    template_content: "{{ lookup('template', template_path) }}"
+    template_id: "{{ template_path | basename | replace('.j2', '') }}"
+  ignore_errors: true
+  tags:
+    - put-templates
+    - check-templates
+
+- name: GET template from dpp {{ template_id }}
+  uri:
+    url: "http://{{ host.dpp }}:{{ ports.dpp_main }}/templates/{{ template_id }}"
+    method: "GET"
+    validate_certs: false
+    return_content: true
+    status_code:
+      - 200
+      - 201
+      - 404
+  register: result_get_template
+  check_mode: false
+  tags:
+    - put-templates
+    - check-templates
+
+- name: Remove keys in result
+  set_fact:
+    getted_template: "{{ result_get_template.content | from_json | ansible.utils.remove_keys(target=['info', 'template_id', 'get_info_error']) }}"
+  tags:
+    - put-templates
+    - check-templates
+
+- name: diff module {{ template_id }}
+  ansible.utils.fact_diff:
+    before: "{{ getted_template | to_nice_yaml }}"
+    after: "{{ template_content | to_nice_yaml }}"
+  register: diff_template
+  tags:
+    - put-templates
+    - check-templates
+
+- name: "PUT {{ template_id }}"
+  uri:
+    url: "http://{{ host.dpp }}:{{ ports.dpp_main }}/templates/{{ template_id }}"
+    method: "PUT"
+    body_format: "json"
+    body: "{{ template_content }}"
+    validate_certs: false
+    status_code: 200
+    return_content: true
+  when: diff_template.changed
+  tags:
+    - put-templates

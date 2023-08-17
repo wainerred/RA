@@ -1,0 +1,13 @@
+---
+
+- name: "{{ plexus_rsyslog.service_name }} : Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+    mode: 0644
+  with_items:
+    - "{{ docker_mounts_root }}/{{ dictionary_hosts.plexus_server.name }}/logs"
+    - "{{ docker_mounts_root }}/{{ dictionary_hosts.plexus_resource.name }}/logs"
+    - "{{ docker_mounts_root }}/{{ dictionary_hosts.plexus_auth.name }}/logs"
+  loop_control:
+    loop_var: dir_item

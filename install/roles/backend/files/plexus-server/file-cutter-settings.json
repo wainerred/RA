@@ -1,0 +1,11 @@
+{
+  "fs_config": {
+    "tags_pointer": "/file/tags",
+    "properties_pointer": "/file/properties"
+  },
+  "process_config": {
+    "duration_treshold": 500,
+    "greedy_score_threshold": 75,
+    "text_len_threshold": 1
+  }
+}

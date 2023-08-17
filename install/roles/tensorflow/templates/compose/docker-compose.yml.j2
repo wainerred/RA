@@ -1,0 +1,31 @@
+version: '2.4'
+
+services:
+{% for iter in range(videocard_count) %}
+  {{ service_name }}-asr-0{{ iter | int + 1 }}:
+    image: {{ service_repo }}/{{ service_img }}:{{ service_tag }}
+    container_name: {{ service_name }}-asr-0{{ iter | int + 1 }}
+    restart: always
+{% if cpuset %}
+    cpuset: {{ cpuset }}
+{% endif %}
+{% if tensorflow_mem_limit %}
+    mem_limit: {{ tensorflow_mem_limit }}
+{% endif %}
+    environment:
+      PORT: {{ ports.tensorflow_asr_main | int + iter }}
+{% if tensorflow_type == "gpu" %}
+      NVIDIA_VISIBLE_DEVICES: {{ iter }}
+    runtime: nvidia
+{% endif %}
+    network_mode: {{ docker_network_mode }}
+    ports:
+      - {{ ports.tensorflow_asr_main | int + iter }}:{{ ports.tensorflow_asr_main | int + iter }}
+    logging:
+      driver: json-file
+      options:
+        max-size: 64M
+    volumes:
+      - "{{ service_mnt_dir_loc }}/tfs-models/{{ tfs_models }}:/models:ro"
+    command: --model_config_file=/models/models.config{{ ' --enable_batching=true --batching_parameters_file=/models/batching_parameters.txt' if tfs_batch_mode else '' }}
+{% endfor %}

@@ -1,0 +1,126 @@
+file-service {
+  actor-system.name = "file-service-actor-system"
+  api {
+    service {
+      bind {
+        address = 0.0.0.0
+        port = {{ ports.file_service_main }}
+        timeout = 10 sec
+      }
+      create-user-on-upload = true
+      use-tika = true
+      base-file-path = "/file-service/data/files"
+      delete-dir-path = "/file-service/data/deleted"
+      base-link-uri = "/storage/contents"
+      default-storage-limit = 10737418240
+      default-file-ttl = -1
+      operations-dispatcher = dispatchers.my-operations-dispatcher
+      upload-dispatcher = dispatchers.my-upload-dispatcher
+{% if versions.file_service is version('3.7.0', '>=') %}
+      content-type-extensions = [
+        {
+          content-type = "audio/mpeg"
+          extension = ".mp3"
+        }
+      ]
+{% endif %}
+{% if versions.file_service is version('3.8.0', '>=') %}
+      total-storage-capacity = {{ file_service_total_storage_capacity }}
+{% endif %}
+    }
+
+    postgres {
+      driver = "org.postgresql.Driver"
+      url = "jdbc:postgresql://{{ host.postgres_file_service }}:{{ ports.postgres_file_service_main }}/files?reWriteBatchedInserts=true"
+      user = "postgres"
+      password = "{{ postgres_file_password }}"
+      connectionTimeout = "15s"
+      idleTimeout = "60s"
+      numThreads = {{ file_service_postgres_numthreads }}
+    }
+
+    rotation {
+      step-limit = 30000 // было 10000
+      stash-capacity = 100000
+      delete-dispatcher = dispatchers.delete-dispatcher
+      created-date-work-window = {{ created_date_work_window }} // default = 14d
+      begin-ratio = {{ file_service_begin_ratio}}
+      complete-ratio = {{ file_service_complete_ratio }}
+      safe-window = 1d
+      source-file-safe-window = 1d
+    }
+
+    storage-cache {
+      stash-capacity = 100000
+    }
+
+    create-file-processor {
+      wait-delay = 100000   // in microseconds.
+                            // в предположении, что ожидаем от 4 до 5 файлов за 100 ms.
+                            // ожидаемое время появления файла (среднее время записи файла в гластер) от 20 ms до 25 ms.                    
+      commit-threshold = 10 // >=.
+                            // в предположении, что ожидаем от 4 до 5 файлов за 100 ms
+                            // и
+                            // параллельность добавления файлов хотя бы >= 5 (4).
+      commit-delay = 150000 // in microseconds; if commit-delay less or equal 0, use commit every message logic.
+                            // в предположении, что ожидаем хотя бы 10 файлов в секунду
+                            // и
+                            // параллельность добавления файлов хотя бы >= 10.
+                            // общее время ожидания >= 250000 == wait-delay + commit-delay.
+    }
+  }
+}
+
+dispatchers {
+  my-operations-dispatcher {
+    type = Dispatcher
+    executor = "thread-pool-executor"
+    thread-pool-executor {
+      fixed-pool-size = 16
+    }
+    throughput = 1
+  }
+
+  my-upload-dispatcher {
+    type = Dispatcher
+    executor = "thread-pool-executor"
+    thread-pool-executor {
+      fixed-pool-size = 16
+    }
+    throughput = 1
+  }
+
+  delete-dispatcher {
+    type = Dispatcher
+    executor = "thread-pool-executor"
+    thread-pool-executor {
+      fixed-pool-size = 16
+    }
+    throughput = 1
+  }
+}
+
+akka {
+
+  http {
+    server {
+      request-timeout = 120s
+      parsing.max-content-length = 10240m
+    }
+    host-connection-pool.max-open-requests = 64
+  }
+
+  loggers = [
+    akka.event.slf4j.Slf4jLogger
+  ]
+
+  logging-filter = akka.event.slf4j.Slf4jLoggingFilter
+  # Options: OFF, ERROR, WARNING, INFO, DEBUG
+  loglevel = DEBUG
+  stdout-loglevel = DEBUG
+
+  coordinated-shutdown.exit-jvm = on
+
+  extensions = [
+  ]
+}

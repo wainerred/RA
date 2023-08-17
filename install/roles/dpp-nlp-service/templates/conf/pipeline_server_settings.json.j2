@@ -1,0 +1,18 @@
+{
+  "nlp-service": {
+    "workers" : 8,
+    "pipeline_per_stream": 1,
+    "endpoint": "0.0.0.0:{{ ports.dpp_nlp_service_grpc }}"
+  },
+  "entities_config": {
+    "entitiesIndex": "/{{ entities_index }}/_search",
+    "entitiesAddress": "{{ host.elasticsearch_entity }}:{{ ports.elasticsearch_entity_main }}",
+    "vocabularyCachePath": "elastic_dump"
+  },
+  "language_detector": {
+    "source": "language_detection/fastText.ftz"
+  },
+  "logger": {
+    "loglevel": 6
+  }
+}

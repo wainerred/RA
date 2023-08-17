@@ -1,0 +1,14 @@
+{
+    "name": "painless-processor",
+    "kind": "grpc",
+    "type": "processor",
+    "urls": [
+{%- set painless_addr = [] -%}
+{%- for addr in hosts.dpp_painless_processor -%}
+{%- for painless_port in range(1, painless_count + 1) -%}
+{{ painless_addr.append(addr+":"+((ports.dpp_painless_processor_grpc | int + painless_port) | string))}}
+{%- endfor -%}
+{%- endfor -%}
+"{{ painless_addr | join("\",\"") }}"
+    ]
+}

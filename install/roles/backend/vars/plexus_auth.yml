@@ -1,0 +1,6 @@
+service_name:         "{{ dictionary_hosts.plexus_auth.name }}"
+service_img:          "{{ dictionary_hosts.plexus_auth.img }}"
+service_tag:          "{{ dictionary_hosts.plexus_auth.tag }}"
+service_repo:         "{{ dictionary_hosts.plexus_auth.repo }}"
+service_mnt_dir_loc:  "{{ docker_mounts_root }}/{{ dictionary_hosts.plexus_auth.name }}"
+service_compose_dir:  "{{ docker_compose_root }}/{{ dictionary_hosts.plexus_auth.name }}"

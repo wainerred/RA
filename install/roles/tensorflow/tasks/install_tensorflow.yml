@@ -1,0 +1,31 @@
+---
+- name: "{{ service_name }} : Remove directories"
+  file:
+    path: "{{ dir_item }}"
+    state: absent
+  with_items:
+    - "{{ service_mnt_dir_loc }}"
+  loop_control:
+    loop_var: dir_item
+  tags:
+    - never
+    - remove
+
+- name: "{{ service_name }} : Create directories"
+  file:
+    path: "{{ dir_item }}"
+    state: directory
+  with_items:
+    - "{{ service_compose_dir }}"
+    - "{{ service_mnt_dir_loc }}"
+  loop_control:
+    loop_var: dir_item
+
+- name: "Download {{ tfs_models }}"
+  include: updated_models.yml
+  vars:
+    src_path: /mediaserver-resources/tfs-models
+    dest_path: '{{ service_mnt_dir_loc }}/tfs-models'
+    models: '{{ tfs_models }}'
+  tags:
+    - models

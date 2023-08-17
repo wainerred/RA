@@ -1,0 +1,123 @@
+---
+
+- name: Set global vars
+  import_role:
+    name: set-global-vars
+  tags:
+    - always
+
+- name: "Set role vars"
+  include_vars: "{{ service }}.yml"
+  tags: always
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+
+- name: "DB init and patches"
+  include: "db-patches.yml"
+  run_once: true
+  when: "service == 'plexus_server'"
+  delegate_to: "{{ hostvars[groups['postgres_backend'][0]].inventory_hostname }}"
+  tags:
+    - patch-db
+
+- name: "Preparing {{ service }}"
+  include: "{{ service }}.yml"
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start
+
+- name: "Wait plexus-server"
+  uri:
+    url: "http://{{ host.plexus_server }}:{{ ports.plexus_server_main }}"
+    status_code: 401
+  register: result_plexus_server
+  until: result_plexus_server.status == 401
+  retries: 60
+  delay: 1
+  run_once: true
+  when: "service == 'plexus_server'"
+  tags:
+    - put-types
+    - internal-settings
+    - check-types
+
+- name: 'Login'
+  uri:
+    url: http://{{ host.plexus_auth }}:{{ ports.plexus_auth_main }}/login
+    method: POST
+    body_format: json
+    body:
+      username: "{{ backend_default_user }}"
+      password: "{{ backend_default_pass }}"
+    status_code: 200
+  register: login
+  when: "service == 'plexus_server'"
+  tags:
+    - put-types
+    - internal-settings
+    - check-types
+    - projects-sync
+    - update-permissions
+
+- name: "PUT types"
+  run_once: true
+  include: put-types.yml
+  with_items: "{{ backend_types }}"
+  loop_control:
+    loop_var: type_name
+  when: "service == 'plexus_server'"
+
+- name: Init internal settings
+  uri:
+    url: "http://{{ host.plexus_server }}:{{ ports.plexus_server_main }}/projects/internal-settings/initialize"
+    method: POST
+    validate_certs: false
+    status_code: 200
+    headers:
+      Cookie: "{{ login.set_cookie }}"
+  when: "service == 'plexus_server'"
+  tags:
+    - internal-settings
+
+- name: Projects-sync
+  uri:
+    url: "http://{{ host.plexus_server }}:{{ ports.plexus_server_main }}/projects/sync"
+    method: POST
+    validate_certs: false
+    status_code: 200
+    timeout: 600
+    headers:
+      Cookie: "{{ login.set_cookie }}"
+  when: "service == 'plexus_server'"
+  tags:
+    - never
+    - projects-sync
+
+- name: "Update account roles permissions"
+  uri:
+    url: "http://{{ host.plexus_server }}:{{ ports.plexus_server_main }}/accounts/account-roles/permissions/bulk"
+    method: POST
+    body_format: json
+    body: '{"data":[{"id":"document_export"}]}'
+    validate_certs: false
+    status_code: 200
+    timeout: 600
+    headers:
+      Cookie: "{{ login.set_cookie }}"
+  when: "service == 'plexus_server'"
+  register: update_permissions_output
+  tags:
+    - never
+    - update-permissions
+
+- name: "Print update account roles permissions output"
+  debug:
+    var: update_permissions_output
+  tags:
+    - never
+    - update-permissions

@@ -1,0 +1,32 @@
+---
+- name: Set global vars
+  import_role:
+    name: set-global-vars
+  tags:
+    - always
+
+- name: "Set role vars"
+  include_vars: main.yml
+  tags:
+    - always
+
+- name: "Stop service"
+  import_role:
+    name: _docker
+    tasks_from: stop
+  when: not swarm_mode.frontend
+
+- name: Preparing frontend
+  include: install-frontend.yml
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start
+  when: not swarm_mode.frontend
+
+- name: "Start service"
+  import_role:
+    name: _docker
+    tasks_from: start-stack
+  when: swarm_mode.frontend

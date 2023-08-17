@@ -1,0 +1,6 @@
+---
+- name: "Install dpp-entity-recognition"
+  hosts:
+    - dpp_entity_recognition
+  roles:
+    - dpp-entity-recognition

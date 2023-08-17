@@ -1,0 +1,38 @@
+dpp_exporter_rabbitmq_log_level: debug
+dpp_max_node_messages: 25000
+dpp_max_cache_size: 10000
+
+dpp_templates: 
+  - archive-receiver
+  - asr
+  - category
+  - dictionary-enricher
+  - exporter-elastic
+  - field-converter
+  - file-converter
+  - gender-id
+  - file-cutter
+  - lang-id
+  - local-exporter
+  - local-fields-generator
+  - local-fields-len-calculator
+  - local-first-call-resolution
+  - local-first-reply
+  - local-geo-ip
+  - local-highlight
+  - local-language-detector
+  - local-migrator
+  - local-receiver
+  - local-s2t-result
+  - local-silence
+  - local-string-replacer
+  - local-text-cleaner
+  - local-tika-result
+  - nlp
+  - painless-processor
+  - sd
+  - spell-checker
+  - speaker-role-detector
+  - local-empty
+  - exporter-rabbitmq
+  - local-extended-metadata

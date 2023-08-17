@@ -1,0 +1,6 @@
+service_name:         "{{ dictionary_hosts.plexus_resource.name }}"
+service_img:          "{{ dictionary_hosts.plexus_resource.img }}"
+service_tag:          "{{ dictionary_hosts.plexus_resource.tag }}"
+service_repo:         "{{ dictionary_hosts.plexus_resource.repo }}"
+service_mnt_dir_loc:  "{{ docker_mounts_root }}/{{ dictionary_hosts.plexus_resource.name }}"
+service_compose_dir:  "{{ docker_compose_root }}/{{ dictionary_hosts.plexus_resource.name }}"
